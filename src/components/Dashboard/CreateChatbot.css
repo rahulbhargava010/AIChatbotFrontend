@@ -1,0 +1,124 @@
+.create-chatbot-container {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.create-chatbot-card {
+    background: #fff;
+    color: #333;
+    width: 400px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.create-chatbot-card h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #6a11cb;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #6a11cb;
+    box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+}
+
+.btn-primary {
+    background: #6a11cb;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background: #2575fc;
+}
+
+.alert {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Wrapper for small image previews */
+.preview-container {
+    width: 100px; /* Small size for preview */
+    height: 100px;
+    overflow: hidden;
+    display: inline-block;
+    border-radius: 5px;
+    margin: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Style for preview images */
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fits within the box */
+}
+
+/* Container for multiple images */
+.image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+/* Delete button for image previews */
+.delete-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255, 0, 0, 0.7);
+    border: none;
+    color: white;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease-in-out;
+}
+
+.delete-button:hover {
+    background: rgba(255, 0, 0, 1);
+}

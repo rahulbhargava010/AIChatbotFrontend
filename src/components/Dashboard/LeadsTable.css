@@ -1,0 +1,56 @@
+.leads-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.filter-container label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.filter-container select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+/* Make DataTable responsive */
+@media screen and (max-width: 768px) {
+    .filter-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
