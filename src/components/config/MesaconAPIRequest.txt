@@ -1,0 +1,58 @@
+$postData = array(
+    't' => 'a',
+    'customer_name' => $_POST['name'],
+    'mobile' => $_POST['phone'],
+    'alt_mob_1' => '',
+    'email' => $_POST['email'],
+    'dialing_country' => 'India',
+    'country_code' => '+91',
+    'gender' => 'Male',
+    'budget' => '70 L',
+    'location' => $_POST['location'],
+    'possession' => 'Nov 2026',
+    'configuration' => '',
+    'remarks' => 'Closed',
+    'project_name' => $_POST['project'],
+    'birthdate' => '',
+    'parent_campaign_name' => $_POST['parent_campaign'],
+    'campaign_name' => $_POST['campaign'],
+);
+
+curl_setopt_array($curl, array(
+    CURLOPT_URL => 'https://mistitservices.tech/apis/ocev1/oceenqins',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => $postData,
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Bearer 66b9ed7c,7fb116!6b9edf#b7d7)0f!,66b9&ee06^2cc78',
+    ),
+));
+
+Array (    
+    [t] => a    
+    [customer_name] => test    
+    [mobile] => 9876060130    
+    [alt_mob_1] =>     
+    [email] => test0130@ps.com    
+    [dialing_country] => India    
+    [country_code] => +91    
+    [gender] => Male    
+    [budget] => 70 L    
+    [location] => Kharghar    
+    [possession] => Nov 2026    
+    [configuration] =>     
+    [remarks] => Closed    
+    [project_name] => Mesacon    
+    [birthdate] =>     
+    [parent_campaign_name] => Mesacon Digital Campaign - January 2025    
+    [campaign_name] => Real Estate & Property Portals
+)
+
+
+Output from the above API call:
+{ "cf-ray": "834a3c9f8d2d82d11ad8c7d3db6282d1-FRA", "status":503, "msg": "Error in query!!!"}

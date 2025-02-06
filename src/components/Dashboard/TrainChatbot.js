@@ -57,7 +57,7 @@ const TrainChatbot = () => {
                 {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}
                 <form className="train-chatbot-form" onSubmit={handleTrain}>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label htmlFor="page-url">Page URL</label>
                         <input
                             id="page-url"
@@ -67,7 +67,7 @@ const TrainChatbot = () => {
                             onChange={(e) => setPageUrl(e.target.value)}
                             className="input-field"
                         />
-                    </div>
+                    </div> */}
                     <div className="form-group">
                         <label htmlFor="file-upload">Upload File</label>
                         <input

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+// import chatbotTemplates from "../config/templates";
 import './CreateChatbot.css'; // Optional for additional styling
 
 const CreateChatbot = () => {
@@ -123,7 +124,7 @@ const CreateChatbot = () => {
                             value={webhook}
                             onChange={(e) => setWebhook(e.target.value)}
                             className="form-control"
-                        />
+                        /> 
                         <button onClick={() => setStep(2)} className="btn btn-primary w-100">Next</button>
                     </div>
                     

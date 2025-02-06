@@ -11,9 +11,11 @@ import LeadsTable from './components/Dashboard/LeadsTable';
 import Conversations from './components/Dashboard/Conversations';
 import UpdateChatbot from './components/Dashboard/UpdateChatbot';
 import ChatbotWidget from './components/Dashboard/ChatbotWidget';
+import TemplateSelection from './components/Dashboard/TemplateSelection';
 // import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard/Dashboard';
+import Navbar from "./components/Dashboard/Navbar"; // Import Navbar
 
 // import './App.css';
 
@@ -113,6 +115,7 @@ const App = () => {
     
     return (
         <Router>
+            <Navbar />
             <Routes>
                 <Route path="/" element={<AuthForm type="login" />} />
                 <Route path="/signup" element={<AuthForm type="signup" />} />
@@ -124,6 +127,7 @@ const App = () => {
                 <Route path="/dashboard/update/:chatbotId" element={<UpdateChatbot />} />
                 <Route path="/dashboard/chatbot-test/:chatbotId" element={<TestChatbot />} />
                 <Route path="/dashboard/conversations/:chatbotId" element={<Conversations />} />
+                <Route path="/dashboard/select-template/:chatbotId" element={<TemplateSelection />} />
 
                 <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
                 <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />

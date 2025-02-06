@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './TestChatbot.css';
 import { v4 as uuidv4 } from 'uuid';
+import { SketchPicker } from "react-color";
+import chatbotThemes from "../config/chatbotThemes";
 
 const TestChatbot = () => {
     const { chatbotId } = useParams();
@@ -31,6 +33,12 @@ const TestChatbot = () => {
     const [leadData, setLeadData] = useState({ name: '', phone: '', email: '' });
     const [chatbotData, setChatbotData] = useState(null);
     const [sessionId, setSessionId] = useState("");
+
+    const [selectedColor, setSelectedColor] = useState("#007bff");
+    const [selectedTextColor, setSelectedTextColor] = useState("#ffffff");
+    const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
+    const [showColorPicker, setShowColorPicker] = useState(false);
+
     const handleSendMessage = async () => {
         // console.log('Send Message check check', chatbotId);
         if (!input.trim()) return;
@@ -78,6 +86,18 @@ const TestChatbot = () => {
             handleSendMessage();
         }
     };
+
+    // const handleColorChange = (color) => {
+    //     setSelectedColor(color.hex);
+    // };
+    
+    // const handleTextColorChange = (color) => {
+    //     setSelectedTextColor(color.hex);
+    // };
+    
+    // const handleBubbleColorChange = (color) => {
+    //     setSelectedBubbleColor(color.hex);
+    // };
 
     useEffect(() => {
         // Assign a unique session ID per user/session
@@ -167,7 +187,7 @@ const TestChatbot = () => {
                         },
                     }
                 );
-                const { greeting, projectHighlights, buttons, webhook } = response.data;
+                const { greeting, projectHighlights, buttons, webhook, projectImages } = response.data;
                 // console.log('Welcome in project greeting: ' + response.data)
                 setWebhook(webhook);
                 setProjectLogo(projectLogo);
@@ -190,6 +210,7 @@ const TestChatbot = () => {
                 setMessages([
                     { sender: 'Bot', text: greeting },
                     { sender: 'Bot', text: projectHighlights },
+                    { images: projectImages },
                 ]);
                 // setButtons(buttons);
             } catch (err) {
@@ -199,6 +220,23 @@ const TestChatbot = () => {
         fetchWelcomeData();
     }, [chatbotId]);
 
+    const formatTimestamp = (timestamp) => {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - new Date(timestamp)) / 1000);
+
+        if (diffInSeconds < 60) {
+            return "Just now";
+        } else if (diffInSeconds < 3600) {
+            return `${Math.floor(diffInSeconds / 60)} min ago`;
+        } else if (diffInSeconds < 86400) {
+            return `${Math.floor(diffInSeconds / 3600)} hrs ago`;
+        } else {
+            return new Date(timestamp).toLocaleString();
+        }
+    };
+    // if (!chatbotData) return null;
+
+    const theme = chatbotThemes['default'] || chatbotThemes.default;
     const generateEmbedScript = () => {
         const script = `
                 <script>
@@ -257,7 +295,20 @@ const TestChatbot = () => {
 
     return (
         <div className="chatbot-wrapper">
-            <div className="test-chatbot-container chatbot-container p-4">
+            {/* <div className="color-picker-wrapper">
+                <button onClick={() => setShowColorPicker(!showColorPicker)}>Customize Theme</button>
+                {showColorPicker && (
+                    <div className="color-picker">
+                        <p>Background Color:</p>
+                        <SketchPicker color={selectedColor} onChangeComplete={handleColorChange} />
+                        <p>Text Color:</p>
+                        <SketchPicker color={selectedTextColor} onChangeComplete={handleTextColorChange} />
+                        <p>Bubble Color:</p>
+                        <SketchPicker color={selectedBubbleColor} onChangeComplete={handleBubbleColorChange} />
+                    </div>
+                )}
+            </div> */}
+            <div className="test-chatbot-container chatbot-container p-4" style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}>
                 {formVisible && (
                     <div className="chatbot-form-overlay">
                         <div className="chatbot-form-container mb-2">
@@ -281,25 +332,49 @@ const TestChatbot = () => {
                 )}
                 { chatVisible && (
                     <>
-                        {chatbotData?.projectLogo && (
-                            <div className="chatbot-logo">
-                                <img src={`http://localhost:3001/${chatbotData.projectLogo}`} alt="Project Logo" />
+                        <div className="d-flex header">
+                            {chatbotData?.projectLogo && (
+                                <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center" >
+                                    <img className="chatbot-logo-img" src={`http://localhost:3001/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
+                                    {/* <img src={`http://localhost:3001/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
+                                </div>
+                            )}
+                            <div>
+                            <h1 class="title">Hello, there</h1>
+                            <p class="subtitle">How can I help you today {chatbotData?.name}?</p>
                             </div>
-                        )}
-                        <h2 className="text-primary mb-2">Welcome to KRPL Chatbot</h2>
+                            {/* <h2 className="text-primary mb-2">Welcome to KRPL Chatbot</h2> */}
+                        </div>
                         <div className="chat-window p-2 mb-3 border rounded" ref={chatWindowRef}>
                             {messages.map((message, index) => (
                                 <div
                                     key={index}
                                     className={`message ${message.sender === 'User' ? 'user-message' : 'bot-message'}`}
+                                    
                                 >
-                                    <div className="message-bubble">
-                                        {message.text}
-                                        {message.sender === 'Bot' && message.score !== undefined && (
-                                            <div className="message-score">Score: {message.score.toFixed(2)}</div>
-                                        )}
-                                    </div>
+                                    { message.sender && (
+                                        <div className="message-bubble" style={{
+                                            backgroundColor: message.sender === "User" ? theme.userBubbleColor : theme.botBubbleColor,
+                                            textAlign: message.sender === "User" ? theme.botAlign : theme.userAlign,
+                                        }}>
+                                            {message.text}
+                                            
+                                        </div>
+                                    )}
+                                    {message.images && message.images.length > 0 && ( 
+                                        message.images.map((img, idx) => (
+                                            <img className="chatbot-logo-img" src={`http://localhost:3001/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
+                                        ))
+                                    )}
+                                    {/* <div className="timestamp">{formatTimestamp(message.timestamp)}</div> */}
+                                    {/* {message.sender === 'User' && message.score !== undefined && (
+                                            <>
+                                                <div className="message-score">Score: {message.score.toFixed(2)}</div>
+                                                
+                                            </>
+                                        )} */}
                                 </div>
+                                
                             ))}
                             {isTyping && (
                             <div className="message bot-message">
@@ -325,7 +400,11 @@ const TestChatbot = () => {
                 <div className="chatbot-footer">
                     <div className="button-container">
                         {buttons.map((button, index) => (
-                            <button key={index} onClick={() => handleButtonClick(button.action, button.label)} className="chatbot-button btn btn-xs">
+                            <button key={index} 
+                                onClick={() => handleButtonClick(button.action, button.label)} 
+                                className="chatbot-button btn btn-xs"
+                                style={{ backgroundColor: theme.buttonColor, color: theme.buttonTextColor, buttonHoverColor: theme.buttonHoverColor, borderRadius: theme.buttonBorderRadius}}
+                            >
                                 {button.label}
                             </button>
                         ))}
@@ -346,14 +425,14 @@ const TestChatbot = () => {
                 </div>
 
                 <button className="btn btn-primary w-100 mb-4 send-button" onClick={handleSendMessage}>Send</button>
-                <button className="btn btn-secondary w-100" onClick={generateEmbedScript}>Get Embed Script</button>
+                {/* <button className="btn btn-secondary w-100" onClick={generateEmbedScript}>Get Embed Script</button>
                 {embedScript && (
                     <div className="mt-3">
                         <h5>Embed Code:</h5>
                         <pre>{embedScript}</pre>
                         <p>Copy and paste the above script into any HTML page to embed the chatbot.</p>
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );

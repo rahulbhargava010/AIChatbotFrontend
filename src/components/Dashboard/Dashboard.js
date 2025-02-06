@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-
+import generateEmbedScript from "../config/embedScript";
 const Dashboard = () => {
     const [chatbots, setChatbots] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
     
     const fetchChatbots = async () => {
         try {
@@ -47,8 +48,16 @@ const Dashboard = () => {
         }
     };
 
+    const handleCopyScript = async (chatbotId) => {
+        // console.log('chatbot:', chatbotId);
+        const embedScript = generateEmbedScript(chatbotId)
+        // console.log('Copying script', embedScript);
+        navigator.clipboard.writeText(embedScript);
+        alert("Chatbot script copied to clipboard!");
+    };
+
     return (
-        <div className="dashboard-container">
+        <div className="dashboard-container container">
             <h1>My Chatbots</h1>
             {error && <p className="error">{error}</p>}
             <button onClick={handleCreateChatbot}>Create Chatbot</button>
@@ -64,10 +73,11 @@ const Dashboard = () => {
                 <h2 className="mb-4">Your Chatbots</h2>
                 <ul className="list-group btn-group btn-group-justified">
                     {chatbots.map((chatbot) => (
-                        <li key={chatbot._id} className="list-group-item d-flex justify-content-between align-items-center">
-                            <span>{chatbot.name}</span>
-                            <Link className="btn btn-success" to={`/dashboard/chatbot-test/${chatbot._id}`}>
-                                Test {chatbot.name}
+                        <><span>{chatbot.name}</span>
+                        <li key={chatbot._id} className="list-group-item d-flex flex-row align-items-right">
+                            
+                            <Link className="btn btn-warning" to={`/dashboard/chatbot-test/${chatbot._id}`}>
+                                Test
                             </Link>
                             <Link to={`/dashboard/update/${chatbot._id}`} className="btn btn-secondary">
                                 Update Chatbot
@@ -78,10 +88,14 @@ const Dashboard = () => {
                             <Link to={`/dashboard/conversations/${chatbot._id}`} className="btn btn-info">
                                 Conversations
                             </Link>
-                            <button className="btn btn-danger" onClick={() => handleDelete(chatbot._id)}>
+                            <Link className="btn btn-warning" onClick={() => handleCopyScript(chatbot._id)}>
+                                Copy Embed Scripts
+                            </Link>
+                            <Link className="btn btn-danger" onClick={() => handleDelete(chatbot._id)}>
                                 Delete
-                            </button>
+                            </Link>
                         </li>
+                        </>
                     ))}
                 </ul>
             </div>

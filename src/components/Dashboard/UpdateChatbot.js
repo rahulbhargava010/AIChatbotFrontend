@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import './UpdateChatbot.css';
+import ReactJson from "react-json-view";
 
 const UpdateChatbot = () => {
     const { chatbotId } = useParams();
@@ -61,7 +62,7 @@ const UpdateChatbot = () => {
     }, [chatbotId]);
 
     const handleUpdate = async () => {
-        if (!trainingData.trim()) {
+        if (!trainingData) {
             setStatusMessage('Training data cannot be empty');
             return;
         }
@@ -89,11 +90,19 @@ const UpdateChatbot = () => {
     return (
         <div className="update-chatbot-container">
             <h2>Update Chatbot Training</h2>
-            <textarea
-                value={trainingData}
+            {/* <textarea
+                value={JSON.stringify(trainingData, null, 2)}
                 onChange={(e) => setTrainingData(e.target.value)}
                 placeholder="Enter updated training data..."
                 className="training-textarea"
+            /> */}
+            <ReactJson
+                src={trainingData}
+                onEdit={(e) => setTrainingData(e.updated_src)}
+                onAdd={(e) => setTrainingData(e.updated_src)}
+                onDelete={(e) => setTrainingData(e.updated_src)}
+                theme="monokai"
+                collapsed={false}
             />
             <button onClick={handleUpdate} className="update-button">
                 Update Training
@@ -101,7 +110,7 @@ const UpdateChatbot = () => {
             {statusMessage && <p className="status-message">{statusMessage}</p>}
 
 
-            <div className="update-chatbot-container">
+            {/* <div className="update-chatbot-container">
                 <h2>Update Chatbot Training</h2>
                 <input
                     type="file"
@@ -110,7 +119,7 @@ const UpdateChatbot = () => {
                     className="file-upload-input"
                 />
                 {statusMessage && <p className="status-message">{statusMessage}</p>}
-            </div>
+            </div> */}
         </div>
     );
 };
