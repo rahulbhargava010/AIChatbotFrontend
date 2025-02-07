@@ -1,7 +1,6 @@
-.navbar {
+#chatbot-widget .navbar {
     display: none;
 }
-
 
 .typing-area {
     /* position: fixed; */

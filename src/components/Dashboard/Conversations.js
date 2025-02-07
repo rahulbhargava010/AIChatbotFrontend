@@ -22,7 +22,7 @@ const ConversationTable = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setConversations(response.data);
-            console.log(response.data);
+            console.log('response.data', response.data);
             console.log(response.data[0].messages.filter(msg => msg?.sender === 'User').length);
 
         } catch (error) {
@@ -42,6 +42,11 @@ const ConversationTable = () => {
             sortable: true,
         },
         {
+            name: 'Lead',
+            selector: row => row?.Lead?.name,
+            sortable: true,
+        },
+        {
             name: 'Last Updated',
             selector: row => new Date(row.createdAt).toLocaleString(),
             sortable: true,
@@ -49,7 +54,7 @@ const ConversationTable = () => {
     ];
 
     return (
-        <div className="conversation-table-container">
+        <div className="conversation-table-container container">
             <h2>Chatbot Conversations</h2>
             <DataTable
                 columns={columns}
@@ -60,14 +65,14 @@ const ConversationTable = () => {
                 onRowClicked={row => setSelectedConversation(row)}
             />
             {selectedConversation && (
-                <div className="conversation-detail container-fluid">
+                <div className="conversation-detail container-fluid" style={{border: "2px solid grey", borderRadius:"10px", padding: "20px"}}>
                     <h3>Conversation Details</h3>
                     <p><strong>Session ID:</strong> {selectedConversation.sessionId}</p>
                     <button onClick={() => setSelectedConversation(null)}>Close</button>
                     <div className="chat-history">
                         {selectedConversation.messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.sender === "Bot" ? "bot-message" : "user-message"}`}>
-                                <div className="message-bubble">{msg.text}</div>
+                                { msg?.text && <div className="message-bubble">{msg.text}</div> }
                             </div>
                         ))}
                     </div>

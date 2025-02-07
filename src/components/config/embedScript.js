@@ -1,10 +1,10 @@
 const generateEmbedScript = (chatbotId) => {
-    console.log('generateEmbedScript coming inside', chatbotId);
+    // console.log('generateEmbedScript coming inside', chatbotId);
     const script = `
     <script>
         (function() {
             const iframe = document.createElement('iframe');
-            iframe.src = 'http://localhost:3000/chatbot-widget/679f257a5ae98c2adf49eb4a';
+            iframe.src = 'http://localhost:3000/chatbot-widget/${chatbotId}';
             iframe.style.position = 'fixed';
             iframe.style.bottom = '80px';
             iframe.style.right = '40px';

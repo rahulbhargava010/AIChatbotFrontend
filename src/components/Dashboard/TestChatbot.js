@@ -33,7 +33,9 @@ const TestChatbot = () => {
     const [leadData, setLeadData] = useState({ name: '', phone: '', email: '' });
     const [chatbotData, setChatbotData] = useState(null);
     const [sessionId, setSessionId] = useState("");
-
+    const [conversation, setConversation] = useState("");
+    const storedSessionId = sessionStorage.getItem("chatbotSessionId") || uuidv4();
+    
     const [selectedColor, setSelectedColor] = useState("#007bff");
     const [selectedTextColor, setSelectedTextColor] = useState("#ffffff");
     const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
@@ -101,7 +103,7 @@ const TestChatbot = () => {
 
     useEffect(() => {
         // Assign a unique session ID per user/session
-        const storedSessionId = sessionStorage.getItem("chatbotSessionId") || uuidv4();
+        
         setSessionId(storedSessionId);
         sessionStorage.setItem("chatbotSessionId", storedSessionId);
         // Auto-save conversation every 10 seconds
@@ -114,18 +116,26 @@ const TestChatbot = () => {
 
     // Save chat message to backend
     const saveConversation = async (sessionId) => {
-        await axios.post('http://localhost:3001/api/conversations/save', {
-            chatbotId,
-            messages,
-            sessionId
-        }).catch(err => console.error("Error saving message:", err));
+        try {
+            const response = await axios.post('http://localhost:3001/api/conversations/save', {
+                chatbotId,
+                messages,
+                sessionId
+            })
+            console.log('conversation saveConversation: ', response)
+            console.log('conversation saveConversation _id: ', response.data.conversation._id)
+            setConversation(response.data.conversation._id);
+        } catch (err) {
+            console.error("Error saving message:", err)
+        }
     };
 
     const handleLeadSubmit = async () => {
         try {
             await axios.post('http://localhost:3001/api/leads/save', {
                 chatbotId,
-                leadData
+                leadData,
+                conversation
             });
             alert("Lead saved successfully!");
             setMessages((prevMessages) => [
@@ -162,6 +172,7 @@ const TestChatbot = () => {
                 if(buttonContent[action])
                     setMessages((prevMessages) => [...prevMessages, { sender: 'User', text: label }, { sender: 'Bot', text: buttonContent[action] }]);
             }
+            saveConversation(storedSessionId);
         } catch (err) {
             console.error('Error fetching content:', err);
         }
@@ -340,8 +351,8 @@ const TestChatbot = () => {
                                 </div>
                             )}
                             <div>
-                            <h1 class="title">Hello, there</h1>
-                            <p class="subtitle">How can I help you today {chatbotData?.name}?</p>
+                            <h1 className="title">Hello, there</h1>
+                            <p className="subtitle">How can I help you today {chatbotData?.name}?</p>
                             </div>
                             {/* <h2 className="text-primary mb-2">Welcome to KRPL Chatbot</h2> */}
                         </div>
