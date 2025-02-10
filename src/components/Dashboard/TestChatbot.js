@@ -325,7 +325,7 @@ const TestChatbot = () => {
                         <div className="chatbot-form-container mb-2">
                             <button className="close-button" onClick={() => { setFormVisible(false); setChatVisible(true); }}>×</button>
                             <h3>{formType === 'schedule_site_visit' ? 'Schedule Site Visit' : 'Get a Call Back'}</h3>
-                            <form action={formAction} method="POST" className="chatbot-form mb-3">
+                            <form method="POST" className="chatbot-form mb-3">
                                 <label>Name:</label>
                                 <input type="text" name="name" className="form-control" required value={leadData.name} onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}/>
 

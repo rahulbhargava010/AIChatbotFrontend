@@ -126,7 +126,7 @@ const App = () => {
                 <Route path="/dashboard/train/:chatbotId" element={<TrainChatbot />} />
                 <Route path="/dashboard/update/:chatbotId" element={<UpdateChatbot />} />
                 <Route path="/dashboard/chatbot-test/:chatbotId" element={<TestChatbot />} />
-                <Route path="/dashboard/conversations/:chatbotId" element={<Conversations />} />
+                <Route path="/dashboard/conversations/:chatbotId" element={<Conversations/>} />
                 <Route path="/dashboard/select-template/:chatbotId" element={<TemplateSelection />} />
 
                 <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
