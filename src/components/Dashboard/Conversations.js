@@ -3,6 +3,7 @@ import axios from 'axios';
 import DataTable from 'react-data-table-component';
 // import './ConversationTable.css';
 import { useParams } from 'react-router-dom';
+import api from "../config/axios";
 
 const ConversationTable = () => {
     const { chatbotId } = useParams();
@@ -16,8 +17,8 @@ const ConversationTable = () => {
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'http://localhost:3001/api/conversations/list',
+            const response = await api.post(
+                '/conversations/list',
                 { chatbotId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

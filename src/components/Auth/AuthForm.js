@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from "../config/axios";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './AuthForm.css';
 
@@ -16,16 +18,16 @@ const AuthForm = ({ type }) => {
         e.preventDefault();
         try {
             if (type === 'signup') {
-                const response = await axios.post('http://localhost:3001/api/users/register', { name, email, password });
+                const response = await api.post('/users/register', { name, email, password });
                 setMessage('Signup successful! Redirecting to login...');
                 setTimeout(() => navigate('/'), 2000);
             } else if (type === 'login') {
-                const response = await axios.post('http://localhost:3001/api/users/login', { email, password });
+                const response = await api.post('/users/login', { email, password });
                 localStorage.setItem('token', response.data.token);
                 setMessage('Login successful! Redirecting to dashboard...');
                 setTimeout(() => navigate('/dashboard'), 2000);
             } else if (type === 'forgot-password') {
-                await axios.post('http://localhost:3001/api/users/forgot-password', { email });
+                await api.post('/users/forgot-password', { email });
                 setMessage('Password reset link sent to your email!');
             }
             setError('');

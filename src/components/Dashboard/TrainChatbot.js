@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import api from "../config/axios";
+
 import './TrainChatbot.css'; // Import CSS for styling
 
 const TrainChatbot = () => {
@@ -37,7 +39,7 @@ const TrainChatbot = () => {
         }
         
         try {
-            const response = await axios.post('http://localhost:3001/api/aichatbots/train', formData, {
+            const response = await api.post('/aichatbots/train', formData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
             });
             setMessage(response.data.message);

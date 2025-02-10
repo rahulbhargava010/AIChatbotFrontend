@@ -4,7 +4,7 @@ const generateEmbedScript = (chatbotId) => {
     <script>
         (function() {
             const iframe = document.createElement('iframe');
-            iframe.src = 'http://localhost:3000/chatbot-widget/${chatbotId}';
+            iframe.src = 'https://assistai.propstory.com/${chatbotId}';
             iframe.style.position = 'fixed';
             iframe.style.bottom = '80px';
             iframe.style.right = '40px';

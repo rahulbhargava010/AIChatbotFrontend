@@ -4,6 +4,8 @@ import axios from 'axios';
 import './TestChatbot.css';
 import { v4 as uuidv4 } from 'uuid';
 import { SketchPicker } from "react-color";
+import api from "../config/axios";
+
 import chatbotThemes from "../config/chatbotThemes";
 
 const TestChatbot = () => {
@@ -117,7 +119,7 @@ const TestChatbot = () => {
     // Save chat message to backend
     const saveConversation = async (sessionId) => {
         try {
-            const response = await axios.post('http://localhost:3001/api/conversations/save', {
+            const response = await api.post('/conversations/save', {
                 chatbotId,
                 messages,
                 sessionId
@@ -132,7 +134,7 @@ const TestChatbot = () => {
 
     const handleLeadSubmit = async () => {
         try {
-            await axios.post('http://localhost:3001/api/leads/save', {
+            await api.post('/leads/save', {
                 chatbotId,
                 leadData,
                 conversation
@@ -189,8 +191,8 @@ const TestChatbot = () => {
             try {
                 const token = localStorage.getItem('token');
 
-                const response = await axios.post(
-                    'http://localhost:3001/api/aichatbots/welcome',
+                const response = await api.post(
+                    '/aichatbots/welcome',
                     { chatbotId },
                     {
                         headers: {
@@ -346,7 +348,7 @@ const TestChatbot = () => {
                         <div className="d-flex header">
                             {chatbotData?.projectLogo && (
                                 <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center" >
-                                    <img className="chatbot-logo-img" src={`http://localhost:3001/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
+                                    <img className="chatbot-logo-img" src={`https://assistai.propstory.com/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
                                     {/* <img src={`http://localhost:3001/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
                                 </div>
                             )}
@@ -374,7 +376,7 @@ const TestChatbot = () => {
                                     )}
                                     {message.images && message.images.length > 0 && ( 
                                         message.images.map((img, idx) => (
-                                            <img className="chatbot-logo-img" src={`http://localhost:3001/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
+                                            <img className="chatbot-logo-img" src={`http://assistai.propstory.com/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
                                         ))
                                     )}
                                     {/* <div className="timestamp">{formatTimestamp(message.timestamp)}</div> */}

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './CreateChatbot.css'
+import api from "../config/axios";
+
 const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
     const [name, setName] = useState('');
     const [chatbotId, setChatbotId] = useState('');
@@ -80,8 +82,8 @@ const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
             formData.append("buttonContent", JSON.stringify(buttonContent));
         }
         try {
-            const response = await axios.post(
-                'http://localhost:3001/api/chatbots/create',
+            const response = await api.post(
+                '/chatbots/create',
                 // { name, webhook, button_content: buttonContent, projectLogo, projectImages },
                 formData,
                 { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
@@ -206,7 +208,7 @@ const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
                         <label> Upload Project Logo:</label>
                         <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setProjectLogo)} />
                             {projectLogo && <div className="preview-container"><img src={ URL.createObjectURL(projectLogo)} alt="Project Logo" className="preview-image" /> </div>}
-                            {projectLogoURL && <div className="preview-container"><img src={ `http://localhost:3001/${projectLogoURL}` } alt="Project Logo" className="preview-image" /> </div>}
+                            {projectLogoURL && <div className="preview-container"><img src={ `https://assistai.propstory.com/${projectLogoURL}` } alt="Project Logo" className="preview-image" /> </div>}
                             <button className="delete-button" onClick={removeLogo}>×</button>
                         <hr/>
                         
@@ -222,7 +224,7 @@ const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
                             ))}
                             {projectImagesURL.map((img, index) => (
                                 <div className="preview-container">
-                                    <img key={index} src={`http://localhost:3001/${img}`} alt={`Project ${index + 1}`} className="preview-image" />
+                                    <img key={index} src={`https://assistai.propstory.com/${img}`} alt={`Project ${index + 1}`} className="preview-image" />
                                     <button className="delete-button" onClick={() => removeImage(index)}>×</button>
                                 </div>
                             ))}

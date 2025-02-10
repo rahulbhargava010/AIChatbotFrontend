@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import api from "./axios";
+
+
 import generateEmbedScript from "../config/embedScript";
 const Dashboard = () => {
     const [chatbots, setChatbots] = useState([]);
@@ -13,7 +16,7 @@ const Dashboard = () => {
     const fetchChatbots = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:3001/api/chatbots/list', {
+            const response = await api.get('/chatbots/list', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setChatbots(response.data);
@@ -36,7 +39,7 @@ const Dashboard = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(`http://localhost:3001/api/chatbots/delete`,
+            const response = await api.post(`/chatbots/delete`,
                 { chatbotId },
                 { headers: { Authorization: `Bearer ${token}` } },
             );

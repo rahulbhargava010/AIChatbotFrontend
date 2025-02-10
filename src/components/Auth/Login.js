@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Auth.css'; // Shared styling
+import api from "../config/axios";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/api/users/login', { email, password });
+            const response = await api.post('/users/login', { email, password });
             localStorage.setItem('token', response.data.token);
             setMessage('Login successful! Redirecting...');
             setError('');

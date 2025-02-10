@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from "../config/axios";
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const Signup = () => {
     const handleSignup = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/users/register', { email, password, name });
+            await api.post('/users/register', { email, password, name });
             navigate('/');
         } catch (err) {
             setError(err.response.data.error || 'Something went wrong');
