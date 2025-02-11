@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
+import api from "../config/axios";
 import './LeadsTable.css';
 
 const LeadsTable = () => {
@@ -20,8 +21,8 @@ const LeadsTable = () => {
     const fetchLeads = async (days) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'http://localhost:3001/api/leads/list',
+            const response = await api.post(
+                '/leads/list',
                 { days, chatbotId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

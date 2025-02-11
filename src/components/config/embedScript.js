@@ -4,7 +4,7 @@ const generateEmbedScript = (chatbotId) => {
     <script>
         (function() {
             const iframe = document.createElement('iframe');
-            iframe.src = 'https://assistai.propstory.com/${chatbotId}';
+            iframe.src = 'https://assist-ai.propstory.com/chatbot-widget/${chatbotId}';
             iframe.style.position = 'fixed';
             iframe.style.bottom = '80px';
             iframe.style.right = '40px';
@@ -24,33 +24,58 @@ const generateEmbedScript = (chatbotId) => {
             }, 10000);
 
             var toggleButton = document.createElement('button');
-            toggleButton.innerText = 'Hi!';
-            toggleButton.style.position = 'fixed';
-            toggleButton.style.bottom = '30px';
-            toggleButton.style.right = '20px';
+            var toggleImage = document.createElement('img');
+            toggleImage.src = "http://assist-ai.propstory.com/uploads/chat-bot-gif.gif"; 
+            toggleImage.alt = "AI Chatbot";
+
+            // toggleButton.innerText = 'Hi!';
+            // toggleButton.style.position = 'fixed';
+            // toggleButton.style.bottom = '30px';
+            // toggleButton.style.right = '20px';
             toggleButton.style.padding = '25px 25px';
             toggleButton.style.background = '#34b7f1';
-            toggleButton.style.color = 'white';
-            toggleButton.style.border = 'none';
-            toggleButton.style.borderRadius = '50%';
-            toggleButton.style.cursor = 'pointer';
-            toggleButton.style.zIndex = '1001';
+            // toggleButton.style.color = 'white';
+            // toggleButton.style.border = 'none';
+            // toggleButton.style.borderRadius = '50%';
+            // toggleButton.style.cursor = 'pointer';
+            // toggleButton.style.zIndex = '1001';
 
-            toggleButton.onclick = function() {
+            toggleImage.style.position = 'fixed';
+            toggleImage.style.bottom = '30px';
+            toggleImage.style.right = '20px';
+            // toggleImage.style.padding = '25px 25px';
+            // toggleImage.style.background = '#34b7f1';
+            // toggleImage.style.color = 'white';
+            // toggleImage.style.border = 'none';
+            // toggleImage.style.borderRadius = '50%';
+            toggleImage.style.cursor = 'pointer';
+            toggleImage.style.zIndex = '1001';
+
+            
+
+            // Set width and height (optional)
+            toggleImage.width = 50;
+            toggleImage.height = 50;
+
+
+            toggleImage.onclick = function() {
                 var chatbotIframe = document.getElementById('chatbot-widget');
                 if (chatbotIframe.style.display === 'none') {
                     chatbotIframe.style.display = 'block';
-                    toggleButton.innerText = 'Close';
-                    chatbotIframe.style.width = window.innerWidth <= 768 ? '100%' : '350px';
-                    chatbotIframe.style.height = window.innerWidth <= 768 ? '100%' : '500px';
-                    chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '20px';
-                    chatbotIframe.style.right = window.innerWidth <= 768 ? '0' : '20px';
+                    // toggleButton.innerText = 'Close';
+                    toggleImage.src = "http://assist-ai.propstory.com/uploads/letter-x-gif.gif"; 
+                    chatbotIframe.style.width = window.innerWidth <= 768 ? '100%' : '450px';
+                    chatbotIframe.style.height = window.innerWidth <= 768 ? '100%' : '550px';
+                    chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '80px';
+                    chatbotIframe.style.right = window.innerWidth <= 768 ? '0' : '40px';
                 } else {
-                    toggleButton.innerText = 'Hi!';
+                    // toggleButton.innerText = 'Hi!';
+                    toggleImage.src = "http://assist-ai.propstory.com/uploads/chat-bot-gif.gif"; 
                     chatbotIframe.style.display = 'none';
                 }   
             };
-            document.body.appendChild(toggleButton);
+            document.body.appendChild(toggleImage);
+            // document.body.appendChild(toggleButton);
         })();
     </script>
     `;

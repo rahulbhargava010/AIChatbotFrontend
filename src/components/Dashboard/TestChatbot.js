@@ -37,6 +37,7 @@ const TestChatbot = () => {
     const [sessionId, setSessionId] = useState("");
     const [conversation, setConversation] = useState("");
     const storedSessionId = sessionStorage.getItem("chatbotSessionId") || uuidv4();
+    const uniqueSessionId = localStorage.getItem("uniqueSessionId");
     
     const [selectedColor, setSelectedColor] = useState("#007bff");
     const [selectedTextColor, setSelectedTextColor] = useState("#ffffff");
@@ -56,14 +57,9 @@ const TestChatbot = () => {
         try {
             setIsTyping(true);
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'http://localhost:3001/api/aichatbots/respond',
+            const response = await api.post(
+                '/aichatbots/respond',
                 { chatbotId, message: input },
-                // {
-                //     headers: {
-                //         Authorization: `Bearer ${token}`,
-                //     },
-                // }
             );
             console.log('chatbot response from Test Chatbot', response);
             const { reply, score } = response.data;
@@ -73,6 +69,12 @@ const TestChatbot = () => {
                 { sender: 'Bot', text: reply, score }
             ]);
             setIsTyping(false);
+            await api.post("analytics/saveEvent", {
+                eventType: "chat_message",
+                sessionId: uniqueSessionId,
+                message: messages,
+                chatbotId
+            });
         } catch (err) {
             console.error('Failed to send message:', err);
             setMessages((prevMessages) => [
@@ -145,6 +147,13 @@ const TestChatbot = () => {
                 { sender: "Bot", text: `Thank you, ${leadData.name}, for submitting your enquiry!` },
             ]);
             setFormVisible(false);
+            await api.post("analytics/saveEvent", {
+                eventType: "form_submission",
+                sessionId: uniqueSessionId,
+                message: messages,
+                chatbotId,
+                leadData
+            });
         } catch (error) {
             console.error("Error saving lead:", error);
             alert("Failed to save lead.");
@@ -255,7 +264,7 @@ const TestChatbot = () => {
                 <script>
                 (function() {
                     const iframe = document.createElement('iframe');
-                    iframe.src = 'http://localhost:3000/chatbot-widget/679b2c0b101d48795ab7a4e2';
+                    iframe.src = 'https://assest-ai.propstory.com/chatbot-widget/679b2c0b101d48795ab7a4e2';
                     iframe.style.position = 'fixed';
                     iframe.style.bottom = '20px';
                     iframe.style.right = '20px';
@@ -327,7 +336,7 @@ const TestChatbot = () => {
                         <div className="chatbot-form-container mb-2">
                             <button className="close-button" onClick={() => { setFormVisible(false); setChatVisible(true); }}>×</button>
                             <h3>{formType === 'schedule_site_visit' ? 'Schedule Site Visit' : 'Get a Call Back'}</h3>
-                            <form method="POST" className="chatbot-form mb-3">
+                            <form className="chatbot-form mb-3">
                                 <label>Name:</label>
                                 <input type="text" name="name" className="form-control" required value={leadData.name} onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}/>
 
@@ -348,7 +357,7 @@ const TestChatbot = () => {
                         <div className="d-flex header">
                             {chatbotData?.projectLogo && (
                                 <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center" >
-                                    <img className="chatbot-logo-img" src={`https://assistai.propstory.com/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
+                                    <img className="chatbot-logo-img" src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
                                     {/* <img src={`http://localhost:3001/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
                                 </div>
                             )}
@@ -376,7 +385,7 @@ const TestChatbot = () => {
                                     )}
                                     {message.images && message.images.length > 0 && ( 
                                         message.images.map((img, idx) => (
-                                            <img className="chatbot-logo-img" src={`http://assistai.propstory.com/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
+                                            <img className="chatbot-logo-img" src={`http://assist-ai.propstory.com/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
                                         ))
                                     )}
                                     {/* <div className="timestamp">{formatTimestamp(message.timestamp)}</div> */}

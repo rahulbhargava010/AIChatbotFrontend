@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import api from "./axios";
+import api from "../config/axios";
 
 
 import generateEmbedScript from "../config/embedScript";

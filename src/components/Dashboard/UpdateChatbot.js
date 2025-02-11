@@ -133,6 +133,7 @@ import React, { useState, useEffect } from 'react';
 import ChatbotForm from './ChatbotForm';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import api from "../config/axios";
 
 const UpdateChatbot = () => {
     const [initialData, setInitialData] = useState(null);
@@ -151,7 +152,7 @@ const UpdateChatbot = () => {
                     return;
                 }
 
-                const response = await axios.post('http://localhost:3001/api/chatbots/chatbot-detail', chatbotData, {
+                const response = await api.post('/chatbots/chatbot-detail', chatbotData, {
                     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
                 });
 

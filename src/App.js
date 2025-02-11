@@ -15,8 +15,13 @@ import TemplateSelection from './components/Dashboard/TemplateSelection';
 // import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard/Dashboard';
+import AdminAnalytics from './components/Dashboard/AdminAnalytics';
 import Navbar from "./components/Dashboard/Navbar"; // Import Navbar
+import { v4 as uuidv4 } from "uuid";
+import api from "./components/config/axios";
 
+const sessionId = localStorage.getItem("uniqueSessionId") || uuidv4();
+localStorage.setItem("uniqueSessionId", sessionId);
 // import './App.css';
 
 const Header = () => {
@@ -26,6 +31,11 @@ const Header = () => {
         localStorage.removeItem('token'); // Clear token
         navigate('/'); // Redirect to login
     };
+
+    api.post("/analytics/saveEvent", {
+        eventType: "page_view",
+        sessionId,
+    });
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -42,7 +52,7 @@ const Header = () => {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
+                {/* <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
                             <Link className="nav-link" to="/dashboard/create">Create Chatbot</Link>
@@ -54,7 +64,7 @@ const Header = () => {
                             <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
                         </li>
                     </ul>
-                </div>
+                </div> */}
             </div>
         </nav>
     );
@@ -128,7 +138,7 @@ const App = () => {
                 <Route path="/dashboard/chatbot-test/:chatbotId" element={<TestChatbot />} />
                 <Route path="/dashboard/conversations/:chatbotId" element={<Conversations/>} />
                 <Route path="/dashboard/select-template/:chatbotId" element={<TemplateSelection />} />
-
+                <Route path="/dashboard/AdminAnalytics" element={<AdminAnalytics />} />
                 <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
                 <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
             </Routes>

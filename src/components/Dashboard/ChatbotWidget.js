@@ -39,6 +39,8 @@ const TestChatbot = () => {
     const [conversation, setConversation] = useState("");
 
     const storedSessionId = sessionStorage.getItem("chatbotSessionId") || uuidv4();
+    const uniqueSessionId = localStorage.getItem("uniqueSessionId");
+
     // const [selectedColor, setSelectedColor] = useState("#007bff");
     // const [selectedTextColor, setSelectedTextColor] = useState("#ffffff");
     // const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
@@ -74,6 +76,12 @@ const TestChatbot = () => {
                 { sender: 'Bot', text: reply, score }
             ]);
             setIsTyping(false);
+            await api.post("analytics/saveEvent", {
+                eventType: "chat_message",
+                sessionId: uniqueSessionId,
+                message: messages,
+                chatbotId
+            });
         } catch (err) {
             console.error('Failed to send message:', err);
             setMessages((prevMessages) => [
@@ -118,7 +126,7 @@ const TestChatbot = () => {
     // Save chat message to backend
     const saveConversation = async (sessionId) => {
         try {
-            const response = await axios.post('http://localhost:3001/api/conversations/save', {
+            const response = await api.post('/conversations/save', {
                 chatbotId,
                 messages,
                 sessionId
@@ -143,6 +151,13 @@ const TestChatbot = () => {
                 { sender: "Bot", text: `Thank you, ${leadData.name}, for submitting your enquiry!` },
             ]);
             setFormVisible(false);
+            await api.post("analytics/saveEvent", {
+                eventType: "form_submission",
+                sessionId: uniqueSessionId,
+                message: messages,
+                chatbotId,
+                leadData
+            });
         } catch (error) {
             console.error("Error saving lead:", error);
             alert("Failed to save lead.");
@@ -353,7 +368,7 @@ const TestChatbot = () => {
                         <div className="chatbot-form-container mb-2">
                             <button className="close-button" onClick={() => { setFormVisible(false); setChatVisible(true); }}>×</button>
                             <h3>{formType === 'schedule_site_visit' ? 'Schedule Site Visit' : 'Get a Call Back'}</h3>
-                            <form method="POST" className="chatbot-form mb-3">
+                            <form className="chatbot-form mb-3">
                                 <label>Name:</label>
                                 <input type="text" name="name" className="form-control" required value={leadData.name} onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}/>
 
@@ -374,8 +389,8 @@ const TestChatbot = () => {
                         <div className="d-flex header">
                             {chatbotData?.projectLogo && (
                                 <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center" >
-                                    <img className="chatbot-logo-img" src={`https://assistai.propstory.com/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
-                                    {/* <img src={`https://assistai.propstory.com/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
+                                    <img className="chatbot-logo-img" src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`} alt="Project Logo" height="60" width="60" style={{ borderRadius: "50%", marginRight: "10px" }}  />
+                                    {/* <img src={`https://assist-ai.propstory.com/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
                                 </div>
                             )}
                             <div style={{marginTop: "10px"}}>
@@ -409,7 +424,7 @@ const TestChatbot = () => {
                                     )}
                                     {message.images && message.images.length > 0 && ( 
                                         message.images.map((img, idx) => (
-                                            <img className="chatbot-logo-img" src={`https://assistai.propstory.com/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
+                                            <img className="chatbot-logo-img" src={`https://assist-ai.propstory.com/${img}`} alt="Project Logo" height="200" width="200" style={{ borderRadius: "10%", marginRight: "10px" }}  />
                                         ))
                                     )}
                                     {message.buttons && message.buttons.length > 0 && ( 
