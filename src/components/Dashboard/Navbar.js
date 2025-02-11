@@ -38,15 +38,15 @@ const Navbar = () => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <li className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Chatbot
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/dashboard/create">Create Chatbot</a>
-                            <a class="dropdown-item" href="/dashboard/list">Chatbot List</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a className="dropdown-item" href="/dashboard/create">Create Chatbot</a>
+                            <a className="dropdown-item" href="/dashboard/list">Chatbot List</a>
+                            <div className="dropdown-divider"></div>
+                            <a className="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li>
                         <li className="nav-item">

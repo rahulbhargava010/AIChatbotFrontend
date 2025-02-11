@@ -9,12 +9,25 @@ const socket = io("http://localhost:3001", {
 
 const AdminAnalytics = () => {
     const [analyticsData, setAnalyticsData] = useState([]);
+    const [stat, setStat] = useState([]);
     const [activeUsers, setActiveUsers] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await api.post("/analytics/analytics");
-            setAnalyticsData(response.data);
+            const token = localStorage.getItem('token');
+            if(token) {
+                const response = await api.post('/analytics/analytics', 
+                    { },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                setAnalyticsData(response.data);
+
+                const statResponse = await api.post('/conversations/stats',
+                    { },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                setStat(statResponse.data)
+            }
         };
         fetchData();
 
@@ -29,6 +42,9 @@ const AdminAnalytics = () => {
     <div className="container">
         <h2 className="mt-5">Chatbot Analytics</h2>
         <h3>Active Users: {activeUsers}</h3>
+        <h3>Chat Statistics</h3>
+        <p>Total Chats: {stat?.totalChats}</p>
+        <p>Average Messages Per Chat: {stat?.avgMessagesPerChat}</p>
         <table className="table table-bordered">
         <thead>
             <tr>
@@ -41,7 +57,7 @@ const AdminAnalytics = () => {
             </tr>
         </thead>
         <tbody>
-            {analyticsData.map((data) => (
+            {analyticsData?.map((data) => (
             <tr key={data._id}>
                 <td>{data.eventType}</td>
                 <td>{data.sessionId}</td>

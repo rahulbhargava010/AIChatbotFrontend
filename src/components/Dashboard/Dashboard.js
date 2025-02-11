@@ -91,6 +91,9 @@ const Dashboard = () => {
                             <Link to={`/dashboard/conversations/${chatbot._id}`} className="btn btn-info">
                                 Conversations
                             </Link>
+                            <Link to={`/dashboard/stats/${chatbot._id}`} className="btn btn-success">
+                                Stats
+                            </Link>
                             <Link className="btn btn-warning" onClick={() => handleCopyScript(chatbot._id)}>
                                 Copy Embed Scripts
                             </Link>

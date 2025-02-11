@@ -16,6 +16,7 @@ import TemplateSelection from './components/Dashboard/TemplateSelection';
 import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard/Dashboard';
 import AdminAnalytics from './components/Dashboard/AdminAnalytics';
+import ChatStats from './components/Dashboard/ChatStats';
 import Navbar from "./components/Dashboard/Navbar"; // Import Navbar
 import { v4 as uuidv4 } from "uuid";
 import api from "./components/config/axios";
@@ -140,6 +141,7 @@ const App = () => {
                 <Route path="/dashboard/select-template/:chatbotId" element={<TemplateSelection />} />
                 <Route path="/dashboard/AdminAnalytics" element={<AdminAnalytics />} />
                 <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
+                <Route path="/dashboard/stats/:chatbotId" element={<ChatStats />} />
                 <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
             </Routes>
         </Router>

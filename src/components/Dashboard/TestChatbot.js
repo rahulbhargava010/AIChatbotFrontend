@@ -72,7 +72,7 @@ const TestChatbot = () => {
             await api.post("analytics/saveEvent", {
                 eventType: "chat_message",
                 sessionId: uniqueSessionId,
-                message: messages,
+                messages,
                 chatbotId
             });
         } catch (err) {
@@ -150,7 +150,7 @@ const TestChatbot = () => {
             await api.post("analytics/saveEvent", {
                 eventType: "form_submission",
                 sessionId: uniqueSessionId,
-                message: messages,
+                messages,
                 chatbotId,
                 leadData
             });
