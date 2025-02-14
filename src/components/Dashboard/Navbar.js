@@ -56,8 +56,8 @@ const Navbar = () => {
                             <Link className="nav-link" to="/dashboard/AdminAnalytics">Analytics</Link>
                         </li>
                         <li className="nav-item">
-                            {/* <button className="btn btn-link nav-link" >Logout</button> */}
-                            <Link className="nav-link" onClick={handleLogout}>Logout</Link>
+                            <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
+                            {/* <Link className="nav-link" onClick={handleLogout}>Logout</Link> */}
                         </li>
                     </ul>
                 </div>

@@ -208,7 +208,7 @@ const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
                         <label> Upload Project Logo:</label>
                         <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setProjectLogo)} />
                             {projectLogo && <div className="preview-container"><img src={ URL.createObjectURL(projectLogo)} alt="Project Logo" className="preview-image" /> </div>}
-                            {projectLogoURL && <div className="preview-container"><img src={ `https://assistai.propstory.com/${projectLogoURL}` } alt="Project Logo" className="preview-image" /> </div>}
+                            {projectLogoURL && <div className="preview-container"><img src={ `https://assist-ai.propstory.com/${projectLogoURL}` } alt="Project Logo" className="preview-image" /> </div>}
                             <button className="delete-button" onClick={removeLogo}>×</button>
                         <hr/>
                         
@@ -224,7 +224,7 @@ const ChatbotForm = ({ initialData = {}, mode = 'create' }) => {
                             ))}
                             {projectImagesURL.map((img, index) => (
                                 <div className="preview-container">
-                                    <img key={index} src={`https://assistai.propstory.com/${img}`} alt={`Project ${index + 1}`} className="preview-image" />
+                                    <img key={index} src={`https://assist-ai.propstory.com/${img}`} alt={`Project ${index + 1}`} className="preview-image" />
                                     <button className="delete-button" onClick={() => removeImage(index)}>×</button>
                                 </div>
                             ))}
