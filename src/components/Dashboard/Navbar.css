@@ -1,5 +1,5 @@
 .navbar {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(105, 14, 197, 0.1);
     padding: 10px 15px;
 }
 
@@ -11,11 +11,12 @@
 .navbar-nav .nav-link {
     font-size: 1rem;
     padding: 10px 15px;
+    color: #fff;
     transition: color 0.3s ease-in-out;
 }
 
 .navbar-nav .nav-link:hover {
-    color: #ffc107 !important; /* Change to preferred hover color */
+    color: #AA10BD !important; /* Change to preferred hover color */
 }
 
 .navbar-toggler {

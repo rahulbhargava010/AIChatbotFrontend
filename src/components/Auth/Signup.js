@@ -9,11 +9,12 @@ const Signup = () => {
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [company, setCompany] = useState('user'); 
 
     const handleSignup = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/users/register', { email, password, name });
+            await api.post('/users/register', { email, password, name, company });
             navigate('/');
         } catch (err) {
             setError(err.response.data.error || 'Something went wrong');
@@ -31,6 +32,23 @@ const Signup = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
+
+                <div className="mb-3 select-wrapper">
+                    <label htmlFor="company" className="form-label">Select Company</label>
+                    <select
+                        id="company"
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        className="form-control form-select"
+                    >
+                        <option value="propstory">PropStory</option>
+                    <option value="shapoorji">Shapoorji Pallonji</option>
+                    <option value="purva">Puravankara</option>
+                    <option value="kolte">Kolte Patil</option>
+
+                    </select>
+                </div>
+
                 <input
                     type="email"
                     placeholder="Email"
@@ -43,6 +61,7 @@ const Signup = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+                
                 <button type="submit">Sign Up</button>
             </form>
             <p>

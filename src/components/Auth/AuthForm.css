@@ -1,35 +1,81 @@
 .auth-container {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    color: #fff;
+  background: linear-gradient(135deg, #061891, #0a0454, #aa10bd);
+  color: #fff;
 }
 
 .auth-card {
-    max-width: 400px;
-    animation: fadeIn 0.8s ease-in-out;
+  max-width: 400px;
+  animation: fadeIn 0.8s ease-in-out;
+  background: #fff;
+}
+.a-link{
+  color: #061891;
+  font-weight: 600;
+}
+.auth-container option{
+  background-color: #dddddd;
+}
+.select-wrapper {
+  position: relative;
 }
 
+.select-wrapper select {
+  padding-right: 30px;  /* Make space for the dropdown icon */
+}
+
+.select-wrapper::after {
+  content: '▼'; /* Unicode for dropdown icon */
+  font-size: 18px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
 .alert {
-    animation: slideIn 0.5s ease-in-out;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.animated {
+  animation: animated linear 4s;
+  animation-iteration-count: infinite;
+}
+@keyframes animated {
+  0% {
+    transform: translate(1px, 20px);
+  }
+  24% {
+    transform: translate(1px, 30px);
+  }
+  50% {
+    transform: translate(1px, 12px);
+  }
+  74% {
+    transform: translate(1px, 22px);
+  }
+  100% {
+    transform: translate(1px, 22px);
+  }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
