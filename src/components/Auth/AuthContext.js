@@ -7,21 +7,30 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  //     api
+  //       .get("/users/me")
+  //       .then((response) => setUser(response.data))
+  //       .catch(() => {
+  //         localStorage.removeItem("token");
+  //         setUser(null);
+  //       })
+  //       .finally(() => setLoading(false));
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      api
-        .get("/users/me")
-        .then((response) => setUser(response.data))
-        .catch(() => {
-          localStorage.removeItem("token");
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+      setUser({ token });
     }
+    setLoading(false);
   }, []);
 
   const login = (token) => {
