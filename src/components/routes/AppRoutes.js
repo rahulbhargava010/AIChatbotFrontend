@@ -22,13 +22,15 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<AuthForm type="login" />} />
+      <Route path="/" element={<Login />} />
       <Route path="/signup" element={<AuthForm type="signup" />} />
       <Route
         path="/forgot-password"
         element={<AuthForm type="forgot-password" />}
       />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+      <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<ProtectedLayout />}>
@@ -62,10 +64,6 @@ const AppRoutes = () => {
           />
           <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
           <Route path="/dashboard/stats/:chatbotId" element={<ChatStats />} />
-          <Route
-            path="/chatbot-widget/:chatbotId"
-            element={<ChatbotWidget />}
-          />
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />
