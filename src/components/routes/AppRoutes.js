@@ -21,8 +21,8 @@ import ProtectedLayout from "../Auth/ProtectedLayout";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/login" element={<AuthForm type="login" />} />
-      <Route path="/" element={<AuthForm type="login" />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
       <Route path="/signup" element={<AuthForm type="signup" />} />
       <Route
         path="/forgot-password"
