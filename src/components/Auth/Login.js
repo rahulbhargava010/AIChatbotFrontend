@@ -28,12 +28,21 @@ const Login = () => {
   };
 
     return (
-        <div className="auth-container d-flex justify-content-center align-items-center vh-100">
-            
-            <div className="auth-card p-4 shadow rounded bg-white">
+        <div className="container-fluid vh-100 d-flex justify-content-center align-items-center auth-container">
+        <div className="row w-100 align-items-center justify-content-center ms-auto">
+            <div className="col-md-6 d-none d-md-block text-center">
+                <img 
+                    src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png" 
+                    alt="AI Chatbot"
+                    className="img-fluid w-50 h-auto animated"
+                />
+            </div>
+    
+            <div className="col-md-5 auth-card p-4 shadow rounded bg-white">
                 <h2 className="text-center text-primary mb-4">Login</h2>
                 {message && <div className="alert alert-success">{message}</div>}
                 {error && <div className="alert alert-danger">{error}</div>}
+                
                 <form onSubmit={handleLogin}>
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label">Email</label>
@@ -60,7 +69,12 @@ const Login = () => {
                     <button type="submit" className="btn btn-primary w-100">Login</button>
                 </form>
             </div>
+            <div className="col-lg-1">
+
+            </div>
         </div>
+    </div>
+    
     );
 };
 

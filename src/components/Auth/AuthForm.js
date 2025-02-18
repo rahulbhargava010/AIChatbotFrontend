@@ -39,7 +39,7 @@ const AuthForm = ({ type }) => {
     };
 
     return (
-        <div className="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container mt-4">
+        <div className="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container mt-0">
         <div className="row d-flex align-items-center justify-content-evenly">
             
         {type !== 'forgot-password' && (
@@ -135,7 +135,7 @@ const AuthForm = ({ type }) => {
                         </p>
                     )}
                     {type === 'signup' && (
-                        <p>
+                        <p className='text-dark'>
                             Already have an account? <a href="/" className="text-decoration-none a-link">Login</a>
                         </p>
                     )}

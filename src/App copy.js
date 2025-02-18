@@ -88,7 +88,7 @@ const App = () => {
     
     return (
         <Router>
-            {/* <Navbar /> */}
+            <Navbar />
             <Routes>
                 <Route path="/" element={<AuthForm type="login" />} />
                 <Route path="/signup" element={<AuthForm type="signup" />} />

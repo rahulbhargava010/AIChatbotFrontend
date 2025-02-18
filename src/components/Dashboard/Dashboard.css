@@ -1,0 +1,29 @@
+.card_chat{
+    background-color: rgb(125, 81, 167);
+    color: #fff;
+    height: 8rem;
+    width: 8rem;
+    text-align: center;
+    margin: 0 0.2rem;
+}
+.card_chat:hover{
+    background-color: #6a11cb;
+    color: #fff;
+    font-weight: 600;
+}
+.card_chat:hover i{
+    font-size: 3rem;
+}
+.card_chat:hover p{
+    display: none;
+}
+.card_chat i{
+    font-size: 1.7rem;
+}
+.card_chat p{
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+.bg_sky{
+    background-color: #E9EFFB;
+}
