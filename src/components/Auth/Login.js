@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Auth.css'; // Shared styling
+import React, { useState } from "react";
+import { useAuth } from "./AuthContext"; // Import AuthContext
+import { useNavigate } from "react-router-dom";
 import api from "../config/axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./Auth.css";
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
-    
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await api.post('/users/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            setMessage('Login successful! Redirecting...');
-            setError('');
-            setTimeout(() => (window.location.href = '/dashboard'), 2000);
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to log in.');
-            setMessage('');
-        }
-    };
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post("/users/login", { email, password });
+      login(response.data.token); // Call login function from AuthContext
+      setMessage("Login successful! Redirecting...");
+      setError("");
+      setTimeout(() => navigate("/dashboard"), 2000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to log in.");
+      setMessage("");
+    }
+  };
 
     return (
         <div className="auth-container d-flex justify-content-center align-items-center vh-100">
