@@ -26,6 +26,7 @@ const Login = () => {
 
     return (
         <div className="auth-container d-flex justify-content-center align-items-center vh-100">
+            
             <div className="auth-card p-4 shadow rounded bg-white">
                 <h2 className="text-center text-primary mb-4">Login</h2>
                 {message && <div className="alert alert-success">{message}</div>}

@@ -12,6 +12,7 @@
     "dotenv": "^16.4.7",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
     "react-color": "^2.19.3",
     "react-data-table-component": "^7.6.2",
     "react-dom": "^19.0.0",
@@ -19,6 +20,7 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^7.1.2",
     "react-scripts": "5.0.1",
+    "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.14",
     "web-vitals": "^2.1.4"
   },
@@ -45,5 +47,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2"
   }
 }

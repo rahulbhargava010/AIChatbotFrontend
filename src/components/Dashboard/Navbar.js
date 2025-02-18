@@ -22,9 +22,9 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-black fixed-top">
             <div className="container">
-                <Link className="navbar-brand" to="/dashboard">PS Chatbot</Link>
+                <Link className="navbar-brand text-red-600" to="/dashboard">PropStory</Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -37,7 +37,7 @@ const Navbar = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav">
+                    <ul className="navbar-nav ms-auto">
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Chatbot
@@ -56,7 +56,7 @@ const Navbar = () => {
                             <Link className="nav-link" to="/dashboard/AdminAnalytics">Analytics</Link>
                         </li>
                         <li className="nav-item">
-                            <button className="btn btn-link nav-link" onClick={handleLogout}>Logout</button>
+                            <button className="btn btn-link nav-link mt-0" onClick={handleLogout}>Logout</button>
                             {/* <Link className="nav-link" onClick={handleLogout}>Logout</Link> */}
                         </li>
                     </ul>
