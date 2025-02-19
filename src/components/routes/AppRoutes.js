@@ -17,6 +17,7 @@ import ResetPassword from "../Auth/ResetPassword";
 import NotFound from "../Dashboard/NotFound";
 import Navbar from "../Dashboard/Navbar";
 import ProtectedLayout from "../Auth/ProtectedLayout";
+import CompanyForm from "../Dashboard/CompanyForm";
 
 const AppRoutes = () => {
   return (
@@ -62,6 +63,7 @@ const AppRoutes = () => {
             path="/dashboard/AdminAnalytics"
             element={<AdminAnalytics />}
           />
+          <Route path="/dashboard/addCompany" element={<CompanyForm />} />
           <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
           <Route path="/dashboard/stats/:chatbotId" element={<ChatStats />} />
         </Route>

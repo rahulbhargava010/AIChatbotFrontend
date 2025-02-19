@@ -14,6 +14,7 @@ import { useAuth } from "../Auth/AuthContext";
 const Navbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const userRole = localStorage.getItem("userRole");
   // const location = useLocation();
   // const navigate = useNavigate();
   // console.log("location: ", location);
@@ -84,6 +85,14 @@ const Navbar = () => {
                 Analytics
               </Link>
             </li>
+            {/* Show Add Company only for "ps-owner" role */}
+            {userRole === "ps-owner" && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/dashboard/addCompany">
+                  Add Company
+                </Link>
+              </li>
+            )}
             <li className="nav-item">
               <button
                 className="btn btn-link nav-link mt-0"
