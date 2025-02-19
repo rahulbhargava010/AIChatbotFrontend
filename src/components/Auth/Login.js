@@ -17,8 +17,9 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await api.post("/users/login", { email, password });
-      const { token } = response.data;
-      login(token); // Call login function from AuthContext
+      const { token, user } = response.data;
+      // console.log("USER:", user);
+      login(token, user); // Call login function from AuthContext
       setMessage("Login successful! Redirecting...");
       setError("");
       setTimeout(() => navigate("/dashboard"), 2000);

@@ -9,22 +9,25 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("userRole");
 
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser({ token });
+      setUser({ token, role }); // ✅ Store role on reload
     }
     setLoading(false);
   }, []);
 
-  const login = (token) => {
+  const login = (token, user) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("userRole", user.roles);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setUser({ token });
+    setUser({ token, role: user.role });
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userRole"); // ✅ Remove role on logout
     delete api.defaults.headers.common["Authorization"];
     setUser(null);
   };
