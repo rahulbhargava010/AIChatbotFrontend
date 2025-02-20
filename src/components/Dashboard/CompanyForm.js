@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import countryData from "../contants/countryData.json"; // Import JSON file
 
@@ -38,16 +38,12 @@ const CompanyForm = () => {
 
     try {
       const token = localStorage.getItem("token"); // Get token from localStorage
-      const response = await axios.post(
-        "http://localhost:3001/api/company/add",
-        company,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token in Authorization header
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await api.post("/company/add", company, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token in Authorization header
+          "Content-Type": "application/json",
+        },
+      });
 
       setMessage("Company added successfully!");
       setCompany({

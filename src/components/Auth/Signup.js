@@ -1,74 +1,112 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../config/axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const Signup = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const [company, setCompany] = useState('user'); 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [companies, setCompanies] = useState([]);
+  const [company, setCompany] = useState("");
+  const navigate = useNavigate();
 
-    const handleSignup = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post('/users/register', { email, password, name, company });
-            navigate('/');
-        } catch (err) {
-            setError(err.response.data.error || 'Something went wrong');
-        }
+  // Fetch companies from backend
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await api.get("/company/all");
+        setCompanies(response.data.companies);
+      } catch (err) {
+        setError("Failed to load companies");
+      }
     };
+    fetchCompanies();
+  }, []);
 
-    return (
-        <div className="auth-container">
-            <h2>Sign Up</h2>
-            {error && <p className="error">{error}</p>}
-            <form onSubmit={handleSignup}>
-                <input
-                    type="text"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/users/register", { email, password, name, company });
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.error || "Something went wrong");
+    }
+  };
 
-                <div className="mb-3 select-wrapper">
-                    <label htmlFor="company" className="form-label">Select Company</label>
-                    <select
-                        id="company"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        className="form-control form-select"
-                    >
-                        <option value="propstory">PropStory</option>
-                    <option value="shapoorji">Shapoorji Pallonji</option>
-                    <option value="purva">Puravankara</option>
-                    <option value="kolte">Kolte Patil</option>
+  return (
+    <div className="container d-flex justify-content-center align-items-center vh-100">
+      <div
+        className="card p-4 shadow-lg"
+        style={{ maxWidth: "400px", width: "100%" }}
+      >
+        <h2 className="text-center mb-4">Sign Up</h2>
+        {error && <p className="alert alert-danger">{error}</p>}
+        <form onSubmit={handleSignup}>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
-                    </select>
-                </div>
+          <div className="mb-3">
+            <label htmlFor="company" className="form-label">
+              Select Company
+            </label>
+            <select
+              id="company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              className="form-select"
+              required
+            >
+              <option value="">Select a company</option>
+              {companies.map((comp) => (
+                <option key={comp._id} value={comp.name}>
+                  {comp.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                
-                <button type="submit">Sign Up</button>
-            </form>
-            <p>
-                Already have an account? <a href="/">Login</a>
-            </p>
-        </div>
-    );
+          <div className="mb-3">
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary w-100">
+            Sign Up
+          </button>
+        </form>
+        <p className="text-center mt-3">
+          Already have an account? <a href="/">Login</a>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Signup;

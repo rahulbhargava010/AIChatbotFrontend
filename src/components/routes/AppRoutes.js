@@ -18,13 +18,14 @@ import NotFound from "../Dashboard/NotFound";
 import Navbar from "../Dashboard/Navbar";
 import ProtectedLayout from "../Auth/ProtectedLayout";
 import CompanyForm from "../Dashboard/CompanyForm";
+import Signup from "../Auth/Signup";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Login />} />
-      <Route path="/signup" element={<AuthForm type="signup" />} />
+      <Route path="/signup" element={<Signup />} />
       <Route
         path="/forgot-password"
         element={<AuthForm type="forgot-password" />}
@@ -63,7 +64,10 @@ const AppRoutes = () => {
             path="/dashboard/AdminAnalytics"
             element={<AdminAnalytics />}
           />
-          <Route path="/dashboard/addCompany" element={<CompanyForm />} />
+          {/* Protected Route for ps-owner only */}
+          <Route element={<ProtectedRoute allowedRoles={["ps-owner"]} />}>
+            <Route path="/dashboard/addCompany" element={<CompanyForm />} />
+          </Route>
           <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
           <Route path="/dashboard/stats/:chatbotId" element={<ChatStats />} />
         </Route>
