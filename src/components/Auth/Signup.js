@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -36,12 +36,23 @@ const Signup = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+
+    <div className="auth-container d-flex justify-content-center align-items-center vh-100">
+    <div className="row w-100 align-items-center justify-content-center">
+      <div className="col-md-6 d-none d-md-block text-center">
+        <img
+          src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png"
+          alt="AI Chatbot"
+          className="img-fluid w-50 h-auto animated"
+        />
+      </div>
+
+      <div className="col-md-5 p-4">
       <div
         className="card p-4 shadow-lg"
         style={{ maxWidth: "400px", width: "100%" }}
       >
-        <h2 className="text-center mb-4">Sign Up</h2>
+        <h2 className="text-center mb-4 text-primary fw-bold">Sign Up</h2>
         {error && <p className="alert alert-danger">{error}</p>}
         <form onSubmit={handleSignup}>
           <div className="mb-3">
@@ -56,9 +67,9 @@ const Signup = () => {
           </div>
 
           <div className="mb-3">
-            <label htmlFor="company" className="form-label">
+            {/* <label htmlFor="company" className="form-label">
               Select Company
-            </label>
+            </label> */}
             <select
               id="company"
               value={company}
@@ -101,11 +112,21 @@ const Signup = () => {
             Sign Up
           </button>
         </form>
+        
         <p className="text-center mt-3">
-          Already have an account? <a href="/">Login</a>
+          Already have an account? <Link className="a-link" to="/">Login</Link>
         </p>
       </div>
+
+
+      </div>
+      <div class="col-lg-1"></div>
     </div>
+  </div>
+
+    // <div className="auth-container d-flex justify-content-center align-items-center vh-100">
+      
+    // </div>
   );
 };
 
