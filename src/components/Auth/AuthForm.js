@@ -49,6 +49,18 @@ const AuthForm = ({ type }) => {
               className="img-fluid w-100 h-100 animated"
             />
           </div>
+    return (
+        <div className="container-fluid vh-100 d-flex align-items-center justify-content-center auth-container mt-0">
+        <div className="row d-flex align-items-center justify-content-evenly">
+            
+        {type !== 'forgot-password' && (
+            <div className="col-md-5 d-none d-md-block p-0">
+                <img 
+                    src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png" 
+                    alt="AI Chatbot"
+                    className="img-fluid w-100 h-100 animated"
+                />
+            </div>
         )}
 
         <div className="col-lg-2"></div>
@@ -177,6 +189,54 @@ const AuthForm = ({ type }) => {
           </div>
         </div>
       </div>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="form-control"
+                        />
+                    </div>
+                    {type !== 'forgot-password' && (
+                        <div className="mb-3">
+                            <label htmlFor="password" className="form-label">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="form-control"
+                            />
+                        </div>
+                    )}
+                    <button type="submit" className="btn btn-primary w-100">
+                        {type === 'signup' ? 'Sign Up' : type === 'login' ? 'Login' : 'Send Reset Link'}
+                    </button>
+                </form>
+    
+                <div className="mt-3 text-center">
+                    {type === 'login' && (
+                        <p className="text-dark">
+                            Don’t have an account? <a href="/signup" className="text-decoration-none a-link fw-bold">Sign Up</a>
+                        </p>
+                    )}
+                    {type === 'signup' && (
+                        <p className='text-dark'>
+                            Already have an account? <a href="/" className="text-decoration-none a-link">Login</a>
+                        </p>
+                    )}
+                    {type === 'login' && (
+                        <p>
+                            <a href="/forgot-password" className="text-decoration-none a-link fw-bold">Forgot Password?</a>
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
     </div>
   );
 };

@@ -16,7 +16,7 @@
 }
 
 .navbar-nav .nav-link:hover {
-    color: #AA10BD !important; /* Change to preferred hover color */
+    color: #ffc107 !important; /* Change to preferred hover color */
 }
 
 .navbar-toggler {

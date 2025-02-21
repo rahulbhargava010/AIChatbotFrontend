@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import api from "../config/axios";
+import "./Dashboard.css"
 
 
 import generateEmbedScript from "../config/embedScript";
@@ -61,9 +62,9 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container container p-0">
-            <h3>My Chatbots</h3>
+            {/* <h3>My Chatbots</h3> */}
             {error && <p className="error">{error}</p>}
-            <button onClick={handleCreateChatbot}>Create Chatbot</button>
+            {/* <button onClick={handleCreateChatbot}>Create Chatbot</button> */}
             {/* <div className="chatbots-list">
                 {chatbots.map((bot) => (
                     <div key={bot._id} className="chatbot-card">
@@ -77,29 +78,36 @@ const Dashboard = () => {
                 <ul className="list-group btn-group btn-group-justified">
                     {chatbots.map((chatbot) => (
                         <>
-                        <span className='fw-bold mb-3'>{chatbot.name}</span>
-                        <li key={chatbot._id} className="list-group-item d-flex flex-row align-items-right">
+                        <span className='fw-bold my-3'>{chatbot.name}</span>
+                        <li key={chatbot._id} className="list-group-item d-flex flex-row align-items-right shadow">
                             
-                            <Link className="btn btn-warning" to={`/dashboard/chatbot-test/${chatbot._id}`}>
-                                Test
+                            <Link className="btn card_chat" to={`/dashboard/chatbot-test/${chatbot._id}`}>
+                            <i className="bi bi-robot"></i>  
+                            <p>Test chatbot</p>
                             </Link>
-                            <Link to={`/dashboard/update/${chatbot._id}`} className="btn btn-secondary">
-                                Update Chatbot
+                            <Link to={`/dashboard/update/${chatbot._id}`} className="btn card_chat">
+                            <i className="bi bi-pencil-square"></i>  
+                                <p>Update Chatbot</p>
                             </Link>
-                            <Link to={`/dashboard/leads/${chatbot._id}`} className="btn btn-success">
-                                Leads
+                            <Link to={`/dashboard/leads/${chatbot._id}`} className="btn card_chat">
+                            <i className="bi bi-person-lines-fill"></i>  
+                                <p>Leads</p>
                             </Link>
-                            <Link to={`/dashboard/conversations/${chatbot._id}`} className="btn btn-info">
-                                Conversations
+                            <Link to={`/dashboard/conversations/${chatbot._id}`} className="btn card_chat">
+                            <i className="bi bi-chat-dots"></i>  
+                                <p>Conversations</p>
                             </Link>
-                            <Link to={`/dashboard/stats/${chatbot._id}`} className="btn btn-success">
-                                Stats
+                            <Link to={`/dashboard/stats/${chatbot._id}`} className="btn card_chat">
+                            <i className="bi bi-bar-chart-line"></i>  
+                                <p>Stats</p>
                             </Link>
-                            <Link className="btn btn-warning" onClick={() => handleCopyScript(chatbot._id)}>
-                                Copy Embed Scripts
+                            <Link className="btn card_chat" onClick={() => handleCopyScript(chatbot._id)}>
+                            <i className="bi bi-file-earmark-code"></i>  
+                                <p>Copy Embed Scripts</p>
                             </Link>
-                            <Link className="btn btn-danger" onClick={() => handleDelete(chatbot._id)}>
-                                Delete
+                            <Link className="btn card_chat" onClick={() => handleDelete(chatbot._id)}>
+                            <i className="bi bi-trash"></i>  
+                                <p>Delete</p>
                             </Link>
                         </li>
                         </>
