@@ -81,9 +81,9 @@ const CompaniesList = () => {
               </button>
             </div>
 
-            <div className="table-responsive">
+            <div className="table-responsive mt-3">
               <table className="table table-bordered text-center align-middle">
-                <thead className="table-dark">
+                <thead className="table-primary">
                   <tr>
                     <th>Sr. No</th>
                     <th>Company Name</th>
@@ -97,7 +97,7 @@ const CompaniesList = () => {
                         <td>{index + 1 + indexOfFirstCompany}</td>
                         <td>{company.name}</td>
                         <td>
-                          <button className="btn btn-info btn-sm me-2" onClick={() => navigate(`company/${company._id}`)}>
+                          <button className="btn btn-success btn-sm me-2" onClick={() => navigate(`company/${company._id}`)}>
                             <FaEye /> View
                           </button>
                           <button className="btn btn-warning btn-sm me-2" onClick={() => navigate(`edit-company/${company._id}`)}>
@@ -117,6 +117,60 @@ const CompaniesList = () => {
                 </tbody>
               </table>
             </div>
+             {/* Pagination */}
+        {filteredCompanies.length > companiesPerPage && (
+          <nav>
+            <ul className="pagination justify-content-center">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => paginate(currentPage - 1)}
+                >
+                  Previous
+                </button>
+              </li>
+              {Array.from(
+                {
+                  length: Math.ceil(
+                    filteredCompanies.length / companiesPerPage
+                  ),
+                },
+                (_, i) => (
+                  <li
+                    key={i}
+                    className={`page-item ${
+                      currentPage === i + 1 ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => paginate(i + 1)}
+                    >
+                      {i + 1}
+                    </button>
+                  </li>
+                )
+              )}
+              <li
+                className={`page-item ${
+                  currentPage ===
+                  Math.ceil(filteredCompanies.length / companiesPerPage)
+                    ? "disabled"
+                    : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => paginate(currentPage + 1)}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
           </div>
         </div>
 
