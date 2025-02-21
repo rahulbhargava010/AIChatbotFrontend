@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../Dashboard/Navbar"; // Adjust the path based on your project structure
+import Navbar from "../Dashboard/Navbar";
 
 const ProtectedLayout = () => {
   return (
