@@ -12,7 +12,7 @@ import ChatbotWidget from "../Dashboard/ChatbotWidget";
 import TemplateSelection from "../Dashboard/TemplateSelection";
 import AdminAnalytics from "../Dashboard/AdminAnalytics";
 import ChatStats from "../Dashboard/ChatStats";
-import AuthForm from "../Auth/AuthForm";
+// import AuthForm from "../Auth/AuthForm";
 import ResetPassword from "../Auth/ResetPassword";
 import NotFound from "../Dashboard/NotFound";
 import Navbar from "../Dashboard/Navbar";
@@ -22,6 +22,8 @@ import Signup from "../Auth/Signup";
 import CompaniesList from "../Dashboard/CompaniesList";
 import ViewCompany from "../Dashboard/ViewCompany";
 import EditCompany from "../Dashboard/EditCompany";
+import ForgotPassword from "../Auth/ForgotPassword";
+import UserList from "../Dashboard/UserList";
 
 const AppRoutes = () => {
   return (
@@ -29,10 +31,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route
-        path="/forgot-password"
-        element={<AuthForm type="forgot-password" />}
-      />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
@@ -71,6 +70,7 @@ const AppRoutes = () => {
           <Route element={<ProtectedRoute allowedRoles={["ps-owner"]} />}>
             <Route path="/dashboard/addCompany" element={<CompanyForm />} />
             <Route path="/dashboard/companyList" element={<CompaniesList />} />
+            <Route path="/dashboard/userList" element={<UserList />} />
             <Route
               path="/dashboard/companyList/company/:id"
               element={<ViewCompany />}

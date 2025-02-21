@@ -69,7 +69,7 @@ const EditCompany = () => {
         }
       );
       setSuccess("Company updated successfully!");
-      setTimeout(() => navigate("/dashboard/companyList"), 2000); // Redirect after success
+      setTimeout(() => navigate("/dashboard/companyList"), 2000);
     } catch (err) {
       setError("Failed to update company details");
     } finally {

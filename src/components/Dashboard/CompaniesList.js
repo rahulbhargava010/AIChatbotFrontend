@@ -31,7 +31,7 @@ const CompaniesList = () => {
     if (!isConfirmed) return;
 
     try {
-      await api.post("/company/delete", { company: companyId }); // Adjust API endpoint
+      await api.post("/company/delete", { company: companyId });
       setCompanies(companies.filter((company) => company._id !== companyId));
       alert("Company deleted successfully!");
     } catch (error) {

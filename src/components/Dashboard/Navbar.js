@@ -87,11 +87,18 @@ const Navbar = () => {
             </li>
             {/* Show Add Company only for "ps-owner" role */}
             {userRole === "ps-owner" && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/dashboard/addCompany">
-                  Add Company
-                </Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/dashboard/addCompany">
+                    Add Company
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/dashboard/userList">
+                    Users
+                  </Link>
+                </li>
+              </>
             )}
             <li className="nav-item">
               <button
