@@ -64,12 +64,12 @@ const CompanyForm = () => {
 
   return (
     <div
-      className="container-fluid d-flex justify-content-center align-items-center vh-80"
+      className="container-fluid d-flex justify-content-center align-items-center vh-80 mt-0"
       style={{ overflowY: "auto", marginTop: "100px" }}
     >
-      <div className="col-lg-6 col-md-8 col-sm-10 col-12">
+      <div className="col-lg-12">
         <div className="card shadow-lg p-4">
-          <h2 className="text-center mb-3">Add Company</h2>
+          {/* <h2 className="text-center mb-3">Add Company</h2> */}
           {message && <div className="alert alert-info">{message}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
@@ -104,7 +104,7 @@ const CompanyForm = () => {
               />
             </div>
             <div className="row">
-              <div className="col-md-6 mb-3">
+              <div className="col-md-12 mb-3">
                 <label className="form-label">State</label>
                 <select
                   name="state"
@@ -120,7 +120,7 @@ const CompanyForm = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-6 mb-3">
+              <div className="col-md-12 mb-3">
                 <label className="form-label">City</label>
                 <select
                   name="city"
