@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Auth.css";
+import "./AuthForm.css";
 
 const Login = () => {
   const { user, login } = useAuth();

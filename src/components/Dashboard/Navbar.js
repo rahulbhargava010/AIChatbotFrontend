@@ -89,8 +89,7 @@ const Navbar = () => {
             {userRole === "ps-owner" && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard/addCompany">
-                    Add Company
+                  <Link className="nav-link" to="/dashboard/companyList"> Company
                   </Link>
                 </li>
                 <li className="nav-item">
