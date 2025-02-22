@@ -24,6 +24,7 @@ import ViewCompany from "../Dashboard/ViewCompany";
 import EditCompany from "../Dashboard/EditCompany";
 import ForgotPassword from "../Auth/ForgotPassword";
 import UserList from "../Dashboard/UserList";
+import { NewDash } from "../Dashboard/NewDash";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +42,7 @@ const AppRoutes = () => {
           {" "}
           {/* Navbar will be included here */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/newDash" element={<NewDash />} />
           <Route path="/dashboard/create-chatbot" element={<CreateChatbot />} />
           <Route
             path="/dashboard/train/:chatbotId"

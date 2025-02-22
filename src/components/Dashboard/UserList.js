@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import api from "../config/axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { FaToggleOn, FaToggleOff, FaTrashAlt } from "react-icons/fa";
+import ReactPaginate from "react-paginate";
+import "./Dashboard.css";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(0);
+  const usersPerPage = 6;
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // ✅ Fetch users from the API
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -27,7 +27,6 @@ const UserList = () => {
           },
         }
       );
-      console.log("RES:", response);
       setUsers(response.data.user);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -37,8 +36,7 @@ const UserList = () => {
   const toggleActivation = async (userId, isActive) => {
     try {
       const token = localStorage.getItem("token");
-
-      const response = await api.post(
+      await api.post(
         "/users/activate",
         { userId, isActive: !isActive },
         {
@@ -48,24 +46,14 @@ const UserList = () => {
           },
         }
       );
-
-      if (response.status === 200) {
-        fetchUsers();
-      } else {
-        alert("Failed to update user status.");
-      }
+      fetchUsers();
     } catch (error) {
       console.error("Error updating user status:", error);
-      alert("Failed to update user status.");
     }
   };
 
   const handleDelete = async (userId) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-    if (!isConfirmed) return;
-
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       const token = localStorage.getItem("token");
       await api.post(
@@ -79,144 +67,84 @@ const UserList = () => {
         }
       );
       setUsers(users.filter((user) => user._id !== userId));
-      alert("User deleted successfully!");
     } catch (error) {
       console.error("Error deleting user:", error);
-      alert("Failed to delete user.");
     }
   };
 
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const offset = currentPage * usersPerPage;
+  const currentUsers = users.slice(offset, offset + usersPerPage);
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-lg p-4">
-        <h2 className="text-center mb-4">Users List</h2>
-        <div className="d-flex justify-content-center align-items-center mb-3">
-          <input
-            type="text"
-            className="form-control w-50"
-            placeholder="🔍 Search user..."
-            value={search}
-            onChange={handleSearch}
-          />
-        </div>
-        <div className="table-responsive">
-          <table className="table table-bordered text-center align-middle">
-            <thead className="table-dark">
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentUsers.length > 0 ? (
-                currentUsers.map((user, index) => (
-                  <tr key={user._id}>
-                    <td>{index + 1 + indexOfFirstUser}</td>
-                    <td>{user.name}</td>
-                    <td>
-                      {user.isActive == "active" ? (
-                        <FaToggleOn
-                          className="text-success"
-                          size={45}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => toggleActivation(user._id, true)}
-                        />
-                      ) : (
-                        <FaToggleOff
-                          className="text-danger"
-                          size={45}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => toggleActivation(user._id, false)}
-                        />
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(user._id)}
-                      >
-                        <FaTrashAlt /> Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-muted align-middle">
-                    No users found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredUsers.length > usersPerPage && (
-          <nav>
-            <ul className="pagination justify-content-center">
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => paginate(currentPage - 1)}
-                >
-                  Previous
-                </button>
-              </li>
-              {Array.from(
-                { length: Math.ceil(filteredUsers.length / usersPerPage) },
-                (_, i) => (
-                  <li
-                    key={i}
-                    className={`page-item ${
-                      currentPage === i + 1 ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => paginate(i + 1)}
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                )
-              )}
-              <li
-                className={`page-item ${
-                  currentPage === Math.ceil(filteredUsers.length / usersPerPage)
-                    ? "disabled"
-                    : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => paginate(currentPage + 1)}
-                >
-                  Next
-                </button>
-              </li>
-            </ul>
-          </nav>
-        )}
+    <div className="dashboard-container container">
+      <div className="d-flex justify-content-between align-items-center mb-5">
+        <h3 className="m-0">Users List</h3>
+        {/* <input
+          type="text"
+          className="form-control w-50"
+          placeholder="🔍 Search user..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        /> */}
       </div>
+
+      <div className="d-flex flex-wrap gap-3">
+        {currentUsers.map((user) => (
+          <div key={user._id} className="chatbot-card p-3">
+            <h5 className="flex-grow-1">{user.name}</h5>
+            <div className="chatbot-actions">
+              {user.isActive === "active" ? (
+                <FaToggleOn
+                  className="text-success btn"
+                  size={24}
+                  onClick={() => toggleActivation(user._id, true)}
+                />
+              ) : (
+                <FaToggleOff
+                  className="text-danger btn"
+                  size={24}
+                  onClick={() => toggleActivation(user._id, false)}
+                />
+              )}
+              <a
+                className="btn btn-danger"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete(user._id);
+                }}
+              >
+                <FaTrashAlt />
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <ReactPaginate
+        previousLabel={"<"}
+        nextLabel={">"}
+        breakLabel={"..."}
+        pageCount={Math.ceil(users.length / usersPerPage)}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center mt-4"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item disabled"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
     </div>
   );
 };

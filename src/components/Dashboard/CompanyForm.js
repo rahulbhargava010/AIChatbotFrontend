@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import countryData from "../contants/countryData.json"; // Import JSON file
@@ -40,12 +40,14 @@ const CompanyForm = () => {
       const token = localStorage.getItem("token"); // Get token from localStorage
       await api.post("/company/add", company, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add token in Authorization header
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
       setMessage("Company added successfully!");
+      setTimeout(() => setMessage(""), 2000);
+
       setCompany({
         name: "",
         GST: "",
@@ -63,13 +65,9 @@ const CompanyForm = () => {
   };
 
   return (
-    <div
-      className="container-fluid d-flex justify-content-center align-items-center vh-80 mt-0"
-      style={{ overflowY: "auto", marginTop: "100px" }}
-    >
-      <div className="col-lg-12">
-        <div className="card shadow-lg p-4">
-          {/* <h2 className="text-center mb-3">Add Company</h2> */}
+    <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 p-1">
+      <div className="col-lg-8 col-md-10 col-sm-12">
+        <div className="card shadow-lg p-4 w-100">
           {message && <div className="alert alert-info">{message}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
@@ -83,7 +81,29 @@ const CompanyForm = () => {
                 required
               />
             </div>
-            <div className="mb-3">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">GST</label>
+                <input
+                  type="text"
+                  name="GST"
+                  className="form-control"
+                  value={company.GST}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Website</label>
+                <input
+                  type="url"
+                  name="website"
+                  className="form-control"
+                  value={company.website}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            {/* <div className="mb-3">
               <label className="form-label">GST</label>
               <input
                 type="text"
@@ -92,7 +112,7 @@ const CompanyForm = () => {
                 value={company.GST}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             <div className="mb-3">
               <label className="form-label">Address</label>
               <input
@@ -104,7 +124,7 @@ const CompanyForm = () => {
               />
             </div>
             <div className="row">
-              <div className="col-md-12 mb-3">
+              <div className="col-md-6 mb-3">
                 <label className="form-label">State</label>
                 <select
                   name="state"
@@ -120,7 +140,7 @@ const CompanyForm = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-12 mb-3">
+              <div className="col-md-6 mb-3">
                 <label className="form-label">City</label>
                 <select
                   name="city"
@@ -132,20 +152,16 @@ const CompanyForm = () => {
                   <option value="">Select City</option>
                   {company.state &&
                     countryData.states
-                      .find((state) => state.name === company.state) // Find the selected state
-                      ?.cities.map(
-                        (
-                          city // Access its cities array
-                        ) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        )
-                      )}
+                      .find((state) => state.name === company.state)
+                      ?.cities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
                 </select>
               </div>
             </div>
-            <div className="mb-3">
+            {/* <div className="mb-3">
               <label className="form-label">Website</label>
               <input
                 type="url"
@@ -154,26 +170,28 @@ const CompanyForm = () => {
                 value={company.website}
                 onChange={handleChange}
               />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Phone</label>
-              <input
-                type="text"
-                name="phone"
-                className="form-control"
-                value={company.phone}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                value={company.email}
-                onChange={handleChange}
-              />
+            </div> */}
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  className="form-control"
+                  value={company.phone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  className="form-control"
+                  value={company.email}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
             <div className="mb-3">
               <label className="form-label">Description</label>

@@ -10,10 +10,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("userRole");
+    const userId = localStorage.getItem("userId");
 
     if (token) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser({ token, role }); // ✅ Store role on reload
+      setUser({ token, role, userId });
     }
     setLoading(false);
   }, []);
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
   const login = (token, user) => {
     localStorage.setItem("token", token);
     localStorage.setItem("userRole", user.roles);
+    localStorage.setItem("userId", user._id);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser({ token, role: user.role });
   };
