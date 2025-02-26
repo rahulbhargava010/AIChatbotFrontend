@@ -24,7 +24,7 @@ const handleLeadSubmit = async (
 
     const ipAddress = ipResponse.data.ip;
 
-    let locationData = {};
+    let location = {};
     try {
       console.log("Fetching Geolocation...");
       const geoResponse = await axios.get(
@@ -32,7 +32,7 @@ const handleLeadSubmit = async (
       );
       console.log("Geolocation Response:", geoResponse.data);
 
-      locationData = {
+      location = {
         country: geoResponse.data.country_name,
         region: geoResponse.data.region,
         city: geoResponse.data.city,
@@ -46,7 +46,7 @@ const handleLeadSubmit = async (
       ipAddress,
       userAgent,
       device,
-      locationData,
+      location,
     };
 
     console.log("LeadData:", updatedLeadData);

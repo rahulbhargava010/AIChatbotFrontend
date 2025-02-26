@@ -43,7 +43,8 @@ const Dashboard = () => {
     navigate("/dashboard/create-chatbot");
   };
 
-  const handleDelete = async (chatbotId) => {
+  const handleDelete = async (chatbotId, e) => {
+    e.stopPropagation();
     if (!window.confirm("Are you sure you want to delete this chatbot?"))
       return;
 
@@ -64,7 +65,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleCopyScript = (chatbotId) => {
+  const handleCopyScript = (chatbotId, e) => {
+    e.stopPropagation();
     const embedScript = generateEmbedScript(chatbotId);
     navigator.clipboard.writeText(embedScript);
     alert("Chatbot script copied to clipboard!");
@@ -90,47 +92,63 @@ const Dashboard = () => {
 
       <div className="d-flex flex-wrap gap-3">
         {currentChatbots.map((chatbot) => (
-          <div key={chatbot._id} className="chatbot-card p-3">
+          <div
+            key={chatbot._id}
+            className="chatbot-card p-3"
+            onClick={() => navigate(`/dashboard/chatbot/${chatbot._id}`)}
+            style={{ cursor: "pointer" }}
+          >
             <h5 className="flex-grow-1">{chatbot.name}</h5>
-            <div className="chatbot-actions">
+            <div
+              className="chatbot-actions"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Link
                 className="btn"
                 to={`/dashboard/chatbot-test/${chatbot._id}`}
+                onClick={(e) => e.stopPropagation()}
               >
                 <FaPlay />
               </Link>
-              <Link className="btn" to={`/dashboard/update/${chatbot._id}`}>
+              <Link
+                className="btn"
+                to={`/dashboard/update/${chatbot._id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FaEdit />
               </Link>
-              <Link className="btn" to={`/dashboard/leads/${chatbot._id}`}>
+              <Link
+                className="btn"
+                to={`/dashboard/leads/${chatbot._id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FaUsers />
               </Link>
               <Link
                 className="btn"
                 to={`/dashboard/conversations/${chatbot._id}`}
+                onClick={(e) => e.stopPropagation()}
               >
                 <FaComments />
               </Link>
-              <Link className="btn" to={`/dashboard/stats/${chatbot._id}`}>
+              <Link
+                className="btn"
+                to={`/dashboard/stats/${chatbot._id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FaChartLine />
               </Link>
               <a
                 className="btn"
                 href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleCopyScript(chatbot._id);
-                }}
+                onClick={(e) => handleCopyScript(chatbot._id, e)}
               >
                 <FaCode />
               </a>
               <a
                 className="btn btn-danger"
                 href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleDelete(chatbot._id);
-                }}
+                onClick={(e) => handleDelete(chatbot._id, e)}
               >
                 <FaTrash />
               </a>

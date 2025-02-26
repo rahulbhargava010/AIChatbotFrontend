@@ -27,8 +27,6 @@
 }
 
 .chatbot-card:hover {
-  transform: translateY(-3px);
-  /* box-shadow: 0 6px 15px rgba(128, 0, 128, 0.3); */
   box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
 }
 

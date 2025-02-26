@@ -53,6 +53,13 @@ const UserList = () => {
   };
 
   const handleDelete = async (userId) => {
+    const loggedInUserId = localStorage.getItem("userId");
+
+    if (userId === loggedInUserId) {
+      alert("You cannot delete your own account.");
+      return;
+    }
+
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       const token = localStorage.getItem("token");
@@ -95,7 +102,7 @@ const UserList = () => {
       <div className="d-flex flex-wrap gap-3">
         {currentUsers.map((user) => (
           <div key={user._id} className="chatbot-card p-3">
-            <h5 className="flex-grow-1">{user.name}</h5>
+            <h5 className="flex-grow-1">{user?.name}</h5>
             <div className="chatbot-actions">
               {user.isActive === "active" ? (
                 <FaToggleOn
