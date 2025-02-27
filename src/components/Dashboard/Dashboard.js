@@ -30,7 +30,7 @@ const Dashboard = () => {
         const response = await api.get("/chatbots/list", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setChatbots(response.data);
+        setChatbots(Array.isArray(response?.data) ? response.data : []);
       } catch (err) {
         setError(err.response?.data?.error || "Failed to fetch chatbots");
       }

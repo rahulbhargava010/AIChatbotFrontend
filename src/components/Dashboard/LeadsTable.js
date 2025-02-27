@@ -1,111 +1,174 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import DataTable from 'react-data-table-component';
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+} from "@tanstack/react-table";
 import api from "../config/axios";
-import './LeadsTable.css';
+import "./LeadsTable.css";
 
 const LeadsTable = () => {
-    const { chatbotId } = useParams();
-    const [leads, setLeads] = useState([]);
-    const [filteredLeads, setFilteredLeads] = useState([]);
-    const [chatbotNames, setChatbotNames] = useState([]);
-    const [selectedChatbot, setSelectedChatbot] = useState("All");
-    const [selectedDate, setSelectedDate] = useState(15);
-    const [sortOrder, setSortOrder] = useState("desc");
+  const { chatbotId } = useParams();
+  const [leads, setLeads] = useState([]);
+  const [filteredLeads, setFilteredLeads] = useState([]);
+  const [chatbotNames, setChatbotNames] = useState([]);
+  const [selectedChatbot, setSelectedChatbot] = useState("All");
+  const [selectedDate, setSelectedDate] = useState(15);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [selectedLead, setSelectedLead] = useState(null);
 
-    useEffect(() => {
-        fetchLeads(selectedDate);
-    }, [selectedDate]);
+  useEffect(() => {
+    fetchLeads(selectedDate, startDate, endDate);
+  }, [selectedDate, startDate, endDate]);
 
-    const fetchLeads = async (days) => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await api.post(
-                '/leads/list',
-                { days, chatbotId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            // const response = await axios.get(`http://localhost:3001/api/chatbots/leads?days=${days}`);
-            setLeads(response.data);
-            setFilteredLeads(response.data);
+  const fetchLeads = async (days, start, end) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/leads/list",
+        { days, chatbot: chatbotId, startDate: start, endDate: end },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setLeads(response.data);
+      setFilteredLeads(response.data);
 
-            // Extract chatbot names for filter options
-            const uniqueChatbotNames = [...new Set(response.data.map((lead) => lead.chatbotName))];
-            setChatbotNames(["All", ...uniqueChatbotNames]);
-        } catch (error) {
-            console.error("Error fetching leads:", error);
-        }
-    };
+      const uniqueChatbotNames = [
+        ...new Set(response.data.map((lead) => lead.chatbotName)),
+      ];
+      setChatbotNames(["All", ...uniqueChatbotNames]);
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+    }
+  };
 
-    const handleFilterChange = (event) => {
-        const selected = event.target.value;
-        setSelectedChatbot(selected);
-
-        if (selected === "All") {
-            setFilteredLeads(leads);
-        } else {
-            setFilteredLeads(leads.filter((lead) => lead.chatbotName === selected));
-        }
-    };
-
-    const handleDateFilterChange = (event) => {
-        setSelectedDate(event.target.value);
-    };
-
-    const columns = [
-        {
-            name: 'Name',
-            selector: row => row.name,
-            sortable: true,
-        },
-        {
-            name: 'Email',
-            selector: row => row.email,
-        },
-        {
-            name: 'Phone',
-            selector: row => row.phone,
-        },
-        {
-            name: 'Chatbot Name',
-            selector: row => row.chatbotName,
-            sortable: true,
-        },
-        {
-            name: 'Created Time',
-            selector: row => new Date(row.createdAt).toLocaleString(),
-            sortable: true,
-        }
-    ];
-
-    return (
-        <div className="leads-container">
-            <h2>Leads Table</h2>
-            <div className="filter-container">
-                <label>Filter by Chatbot Name:</label>
-                <select value={selectedChatbot} onChange={handleFilterChange}>
-                    {chatbotNames.map((name, index) => (
-                        <option key={index} value={name}>{name}</option>
-                    ))}
-                </select>
-                <label>Filter by Last:</label>
-                <select value={selectedDate} onChange={handleDateFilterChange}>
-                    <option value={7}>7 Days</option>
-                    <option value={15}>15 Days</option>
-                    <option value={30}>30 Days</option>
-                    <option value={90}>90 Days</option>
-                </select>
-            </div>
-            <DataTable
-                columns={columns}
-                data={filteredLeads}
-                pagination
-                highlightOnHover
-                responsive
-            />
-        </div>
+  const handleFilterChange = (event) => {
+    const selected = event.target.value;
+    setSelectedChatbot(selected);
+    setFilteredLeads(
+      selected === "All"
+        ? leads
+        : leads.filter((lead) => lead.chatbotName === selected)
     );
+  };
+
+  const handleDateFilterChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
+
+  const handleRowClick = (leadId) => {
+    setSelectedLead(leadId);
+    console.log("SelectedLead:", leadId);
+  };
+
+  const columns = useMemo(
+    () => [
+      { header: "Name", accessorKey: "name" },
+      { header: "Email", accessorKey: "email" },
+      { header: "Phone", accessorKey: "phone" },
+      { header: "Chatbot Name", accessorKey: "chatbotName" },
+      {
+        header: "Created Time",
+        accessorKey: "createdAt",
+        cell: (info) => new Date(info.getValue()).toLocaleString(),
+      },
+    ],
+    []
+  );
+
+  const table = useReactTable({
+    columns,
+    data: filteredLeads,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  return (
+    <div className="leads-container">
+      <h2>Leads Table</h2>
+      <div className="filter-container">
+        <label>Filter by Chatbot Name:</label>
+        <select value={selectedChatbot} onChange={handleFilterChange}>
+          {chatbotNames.map((name, index) => (
+            <option key={index} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <label>Filter by Last:</label>
+        <select value={selectedDate} onChange={handleDateFilterChange}>
+          <option value={7}>7 Days</option>
+          <option value={15}>15 Days</option>
+          <option value={30}>30 Days</option>
+          <option value={90}>90 Days</option>
+        </select>
+        <label>Start Date:</label>
+        <input type="date" value={startDate} onChange={handleStartDateChange} />
+        <label>End Date:</label>
+        <input type="date" value={endDate} onChange={handleEndDateChange} />
+      </div>
+      <table className="leads-table">
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((column) => (
+                <th
+                  key={column.id}
+                  onClick={column.column.getToggleSortingHandler()}
+                >
+                  {column.column.columnDef.header}
+                  {column.column.getIsSorted() === "desc"
+                    ? " 🔽"
+                    : column.column.getIsSorted() === "asc"
+                    ? " 🔼"
+                    : ""}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              onClick={() => handleRowClick(row.original.chatbotId)}
+              style={{ cursor: "pointer" }}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>{cell.renderValue()}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="pagination">
+        <button
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </button>
+        <span>Page {table.getState().pagination.pageIndex + 1}</span>
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default LeadsTable;
