@@ -25,6 +25,7 @@ import EditCompany from "../Dashboard/EditCompany";
 import ForgotPassword from "../Auth/ForgotPassword";
 import UserList from "../Dashboard/UserList";
 import { NewDash } from "../Dashboard/NewDash";
+import ChatbotCard from "../Dashboard/ChatbotCard";
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,10 @@ const AppRoutes = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/newDash" element={<NewDash />} />
           <Route path="/dashboard/create-chatbot" element={<CreateChatbot />} />
+          <Route
+            path="/dashboard/chatbot/:chatbotId"
+            element={<ChatbotCard />}
+          />
           <Route
             path="/dashboard/train/:chatbotId"
             element={<TrainChatbot />}

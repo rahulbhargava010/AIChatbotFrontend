@@ -24,7 +24,7 @@
 //             const response = await axios.post('http://localhost:3001/api/chatbots/train', formData, {
 //                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
 //             });
-            
+
 //             setStatusMessage('Chatbot training file updated successfully!');
 //         } catch (err) {
 //             console.error('Error uploading file:', err);
@@ -34,7 +34,7 @@
 
 //     useEffect(() => {
 //         const fetchChatbotData = async () => {
-//             try { 
+//             try {
 //                 const token = localStorage.getItem('token');
 //                 // console.log('token from update file', token)
 //                 // console.log('token from update file chatbotId', chatbotId)
@@ -74,12 +74,12 @@
 //         const formData = new FormData();
 //         formData.append('chatbot_id', chatbotId);
 //         if (file) formData.append('file', file);
-        
+
 //         try {
 //             const response = await axios.post('http://localhost:3001/api/chatbots/train', formData, {
 //                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
 //             });
-            
+
 //             setStatusMessage('Chatbot training updated successfully!');
 //         } catch (err) {
 //             console.error('Error updating chatbot:', err);
@@ -109,7 +109,6 @@
 //             </button>
 //             {statusMessage && <p className="status-message">{statusMessage}</p>}
 
-
 //             {/* <div className="update-chatbot-container">
 //                 <h2>Update Chatbot Training</h2>
 //                 <input
@@ -126,62 +125,66 @@
 
 // export default UpdateChatbot;
 
-
-
-
-import React, { useState, useEffect } from 'react';
-import ChatbotForm from './ChatbotForm';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import ChatbotForm from "./ChatbotForm";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 import api from "../config/axios";
 
 const UpdateChatbot = () => {
-    const [initialData, setInitialData] = useState(null);
-    const { chatbotId } = useParams();
+  const [initialData, setInitialData] = useState(null);
+  const { chatbotId } = useParams();
 
-    useEffect(() => {
-        const fetchChatbotData = async () => {
-            try { 
-                const token = localStorage.getItem('token');
+  useEffect(() => {
+    const fetchChatbotData = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-                var chatbotData = {
-                    chatbotId
-                }
-                if (!chatbotData) {
-                    console.error('No chatbot data found');
-                    return;
-                }
-
-                const response = await api.post('/chatbots/chatbot-detail', chatbotData, {
-                    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-                });
-
-                setInitialData(response.data);
-            } catch (err) {
-                console.error('Error fetching chatbot data:', err);
-                // setStatusMessage('Failed to load chatbot data.');
-            }
+        var chatbotData = {
+          chatbot: chatbotId,
         };
+        if (!chatbotData) {
+          console.error("No chatbot data found");
+          return;
+        }
 
-        fetchChatbotData();
-    }, [chatbotId]);
-    const handleUpdate = (formData) => {
-        // Implement the API call to update the chatbot
-        // Example: axios.put(`/api/chatbots/${chatbotId}`, formData);
+        const response = await api.post(
+          "/chatbots/chatbot-detail",
+          chatbotData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setInitialData(response.data);
+      } catch (err) {
+        console.error("Error fetching chatbot data:", err);
+        // setStatusMessage('Failed to load chatbot data.');
+      }
     };
 
-    if (!initialData) return <div>Loading...</div>;
+    fetchChatbotData();
+  }, [chatbotId]);
+  const handleUpdate = (formData) => {
+    // Implement the API call to update the chatbot
+    // Example: axios.put(`/api/chatbots/${chatbotId}`, formData);
+  };
 
-    return (
-        <div>
-        {/* <h2>Update Chatbot</h2> */}
-        <ChatbotForm
-            initialData={initialData}
-            // onSubmit={handleUpdate}
-            mode="update"
-        />
-        </div>
-    );
+  if (!initialData) return <div>Loading...</div>;
+
+  return (
+    <div>
+      {/* <h2>Update Chatbot</h2> */}
+      <ChatbotForm
+        initialData={initialData}
+        // onSubmit={handleUpdate}
+        mode="update"
+      />
+    </div>
+  );
 };
 
 export default UpdateChatbot;
