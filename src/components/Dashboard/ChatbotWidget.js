@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./TestChatbot.css";
 import "./ChatbotWidget.css";
@@ -9,6 +9,15 @@ import handleLeadSubmit from "../config/handleLeadSubmit";
 import { v4 as uuidv4 } from "uuid";
 import { SketchPicker } from "react-color";
 import chatbotThemes from "../config/chatbotThemes";
+import { FirstScreen } from "./FirstScreen";
+import VoiceMessageInput from "./VoiceMessageInput";
+import { Send } from "lucide-react";
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
+
 
 const TestChatbot = () => {
   const { chatbotId } = useParams();
@@ -21,10 +30,10 @@ const TestChatbot = () => {
   const chatWindowRef = useRef(null);
   const [buttons] = useState([
     { label: "Highlights", action: "highlight" },
-    // { label: 'Location', action: 'location' },
-    // { label: 'Amenities', action: 'amenities' },
-    { label: "Brochure", action: "brochure" },
-    { label: "Schedule Site Visit", action: "schedule_site_visit" },
+    { label: 'Location', action: 'location' },
+    { label: 'Amenities', action: 'amenities' },
+    // { label: "Brochure", action: "brochure" },
+    // { label: "Schedule Site Visit", action: "schedule_site_visit" },
     // { label: 'Get a Call Back', action: 'get_callback' }
   ]);
 
@@ -48,6 +57,38 @@ const TestChatbot = () => {
   // const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
   // const [showColorPicker, setShowColorPicker] = useState(false);
 
+    const [utmParams, setUtmParams] = useState({
+      utmSource: "",
+      utmMedium: "",
+      utmCampaign: "",
+    });
+    const [currentUrl, setCurrentUrl] = useState("");
+    const [showFirstScreen, setShowFirstScreen] = useState(true);
+
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowFirstScreen(false);
+      }, 5000); // 5 seconds
+  
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    }, []);
+
+    useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const utmSource = urlParams.get("utm_source") || "";
+      const utmMedium = urlParams.get("utm_medium") || "";
+      const utmCampaign = urlParams.get("utm_campaign") || "";
+    
+      const newUtmParams = { utmSource, utmMedium, utmCampaign };
+      
+      setUtmParams(newUtmParams);
+      setCurrentUrl(window.location.href);
+    
+      console.log("Current URL Path:", window.location.href);
+      console.log("UTM Parameters:", newUtmParams); // Use the newUtmParams object here
+    }, []);
+    
   const handleSendMessage = async () => {
     // console.log('Send Message check check', chatbotId);
     if (!input.trim()) return;
@@ -331,94 +372,15 @@ const TestChatbot = () => {
     }
   };
 
-  // const toggleChatbotWidget = () => {
-  //     var chatbotIframe = document.getElementById('chatbot-widget');
-  //     if (chatbotIframe?.style.display === 'none') {
-  //         chatbotIframe?.style.display = 'block';
-  //         chatbotIframe?.style.width = window.innerWidth <= 768 ? '100%' : '350px';
-  //         chatbotIframe?.style.height = window.innerWidth <= 768 ? '100%' : '500px';
-  //         chatbotIframe?.style.bottom = window.innerWidth <= 768 ? '0' : '20px';
-  //         chatbotIframe?.style.right = window.innerWidth <= 768 ? '0' : '20px';
-  //     } else {
-  //         chatbotIframe.style.display = 'none';
-  //     }
-  // };
-  // if (!chatbotData) return null;
 
   const theme = chatbotThemes["default"] || chatbotThemes.default;
-  // const generateEmbedScript = () => {
-  //     const script = `
-  //             <script>
-  //             (function() {
-  //                 const iframe = document.createElement('iframe');
-  //                 iframe.src = 'http://localhost:3000/chatbot-widget/679b2c0b101d48795ab7a4e2';
-  //                 iframe.style.position = 'fixed';
-  //                 iframe.style.bottom = '20px';
-  //                 iframe.style.right = '20px';
-  //                 iframe.style.width = '400px';
-  //                 iframe.style.height = '600px';
-  //                 iframe.style.border = 'none';
-  //                 iframe.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-  //                 iframe.style.borderRadius = '10px';
-  //                 iframe.style.overflow = 'hidden';
-  //                 iframe.style.zIndex = '1000';
-  //                 iframe.style.display = 'none';
-  //                 iframe.id = 'chatbot-widget';
-  //                 document.body.appendChild(iframe);
-
-  //                 setTimeout(() => {
-  //                     iframe.style.display = 'block';
-  //                 }, 10000);
-
-  //                 var toggleButton = document.createElement('button');
-  //                 toggleButton.innerText = 'Chat';
-  //                 toggleButton.style.position = 'fixed';
-  //                 toggleButton.style.bottom = '20px';
-  //                 toggleButton.style.right = '20px';
-  //                 toggleButton.style.padding = '10px 15px';
-  //                 toggleButton.style.background = '#34b7f1';
-  //                 toggleButton.style.color = 'white';
-  //                 toggleButton.style.border = 'none';
-  //                 toggleButton.style.borderRadius = '20px';
-  //                 toggleButton.style.cursor = 'pointer';
-  //                 toggleButton.style.zIndex = '1001';
-
-  //                 toggleButton.onclick = function() {
-  //                     var chatbotIframe = document.getElementById('chatbot-widget');
-  //                     if (chatbotIframe.style.display === 'none') {
-  //                         chatbotIframe.style.display = 'block';
-  //                         chatbotIframe.style.width = window.innerWidth <= 768 ? '100%' : '350px';
-  //                         chatbotIframe.style.height = window.innerWidth <= 768 ? '100%' : '500px';
-  //                         chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '20px';
-  //                         chatbotIframe.style.right = window.innerWidth <= 768 ? '0' : '20px';
-  //                     } else {
-  //                         chatbotIframe.style.display = 'none';
-  //                     }
-  //                 };
-  //                 document.body.appendChild(toggleButton);
-  //             })();
-  //         </script>
-  //     `;
-  //     setEmbedScript(script);
-  // };
+  
 
   return (
     <div className="chatbot-wrapper">
-      {/* <div className="color-picker-wrapper">
-                <button onClick={() => setShowColorPicker(!showColorPicker)}>Customize Theme</button>
-                {showColorPicker && (
-                    <div className="color-picker">
-                        <p>Background Color:</p>
-                        <SketchPicker color={selectedColor} onChangeComplete={handleColorChange} />
-                        <p>Text Color:</p>
-                        <SketchPicker color={selectedTextColor} onChangeComplete={handleTextColorChange} />
-                        <p>Bubble Color:</p>
-                        <SketchPicker color={selectedBubbleColor} onChangeComplete={handleBubbleColorChange} />
-                    </div>
-                )}
-            </div> */}
+     
       <div
-        className="test-chatbot-container chatbot-container p-2"
+        className="test-chatbot-container chatbot-container p-3 window_bg_pink"
         style={{
           backgroundColor: theme.backgroundColor,
           color: theme.textColor,
@@ -509,120 +471,110 @@ const TestChatbot = () => {
           </div>
         )}
         {chatVisible && (
-          <>
-            <div className="d-flex header">
-              {chatbotData?.projectLogo && (
-                <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
-                  <img
-                    className="chatbot-logo-img"
-                    src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
-                    alt="Project Logo"
-                    height="60"
-                    width="60"
-                    style={{ borderRadius: "50%", marginRight: "10px" }}
-                  />
-                  {/* <img src={`https://assist-ai.propstory.com/uploads/${chatbotData.projectLogo}`} alt="Project Logo" /> */}
-                </div>
-              )}
-              <div style={{ marginTop: "10px" }}>
-                <h1 className="title">Hello, there</h1>
-                <p className="subtitle">
-                  How can I help you today {chatbotData?.name}?
-                </p>
-              </div>
-              {/* <button
-                                className="chatbot-close-btn"
-                                style={{ backgroundColor: theme.buttonColor, color: theme.buttonTextColor }}
-                                onClick={() => toggleChatbotWidget(false)}
-                            >
-                                X
-                            </button> */}
-              {/* <h2 className="text-primary mb-2">Welcome to KRPL Chatbot</h2> */}
-            </div>
-            <div
-              className="chat-window p-2 mb-3 border rounded"
-              ref={chatWindowRef}
-            >
-              {messages?.map((message, index) => (
-                <div
-                  key={index}
-                  className={`message ${
-                    message.sender === "User" ? "user-message" : "bot-message"
-                  }`}
-                >
-                  {message.sender && (
-                    <div
-                      className="message-bubble"
-                      style={{
-                        backgroundColor:
-                          message.sender === "User"
-                            ? theme.userBubbleColor
-                            : theme.botBubbleColor,
-                        textAlign:
-                          message.sender === "User"
-                            ? theme.botAlign
-                            : theme.userAlign,
-                      }}
-                    >
-                      {message.text}
-                    </div>
-                  )}
-                  {message.images &&
-                    message.images.length > 0 &&
-                    message.images.map((img, idx) => (
-                      <img
-                        className="chatbot-logo-img"
-                        src={`https://assist-ai.propstory.com/${img}`}
-                        alt="Project Logo"
-                        height="200"
-                        width="200"
-                        style={{ borderRadius: "10%", marginRight: "10px" }}
-                      />
-                    ))}
-                  {message.buttons &&
-                    message.buttons.length > 0 &&
-                    message.buttons.map((button, idx) => (
-                      <a
-                        key={index}
-                        onClick={() =>
-                          handleButtonClick(button.action, button.label)
-                        }
-                        className="button-52"
-                      >
-                        {button.label}
-                      </a>
-                    ))}
-
-                  {/* <div className="timestamp">{formatTimestamp(message.timestamp)}</div> */}
-                  {/* {message.sender === 'User' && message.score !== undefined && (
-                                            <>
-                                                <div className="message-score">Score: {message.score.toFixed(2)}</div>
-                                                
-                                            </>
-                                        )} */}
-                </div>
-              ))}
-              {isTyping && (
-                <div className="message bot-message">
-                  <div className="message-bubble typing-animation">
-                    <span className="dot"></span>
-                    <span className="dot"></span>
-                    <span className="dot"></span>
+        <>
+          {showFirstScreen ? (
+            <FirstScreen />
+          ) : (
+            <>
+              <div className="d-flex header justify-content-between align-items-center">
+                {chatbotData?.projectLogo && (
+                  <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
+                    <img
+                      className="chatbot-logo-img"
+                      src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
+                      alt="Project Logo"
+                      height="60"
+                      width="60"
+                      style={{ borderRadius: "50%", marginRight: "10px" }}
+                    />
                   </div>
+                )}
+                <div className="py-2">
+                  <h4 className="title">Propstory</h4>
+                  {/* <p className="subtitle">
+                    How can I help you today {chatbotData?.name}?
+                  </p> */}
                 </div>
-              )}
-            </div>
-          </>
-        )}
-        {/* <div className="button-container">
-                        {buttons.map((button, index) => (
-                            <button key={index} onClick={() => handleButtonClick(button.action, button.label)} className="chatbot-button">
-                                {button.label}
-                            </button>
-                        ))}
-                    </div> */}
+              </div>
+              <div className="p-2 rounded">
+                  <h>Hey, <span className="fw-bold"> {chatbotData?.name}</span> </h>
+                   <p className="subtitle py-1 mb-0">
+                    How May <span className="fw-bold">I assist you today?</span>
+                  </p>
+                </div>
+                <div className="rounded border-none bg-transparent">
+    <VoiceMessageInput />
+</div>
 
-        <div className="chatbot-footer">
+              <div
+                className="chat-window p-2 mb-3 border rounded scrollbar" id="style-8"
+                ref={chatWindowRef}
+              >
+               
+                {messages?.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`message ${
+                      message.sender === "User" ? "user-message" : "bot-message"
+                    }`}
+                  >
+                    {message.sender && (
+  <div
+    className="message-bubble"
+    style={{
+      backgroundColor: "rgba(252, 247, 251, 0.64)",
+      boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
+      borderRadius: "10px",
+      padding: "10px",
+      maxWidth: "80%",
+      width: "100%",
+      margin: "5px 0",
+      border: "2px solid rgb(255, 255, 255)",
+      fontSize: "13px",
+      textAlign: "left", // ✅ This will now apply correctly
+    }}
+  >
+    {message.text}
+  </div>
+)}
+
+                    {message.images &&
+                      message.images.map((img, idx) => (
+                        <img
+                          key={idx}
+                          className="chatbot-logo-img"
+                          src={`https://assist-ai.propstory.com/${img}`}
+                          alt="Project Logo"
+                          height="200"
+                          width="200"
+                          style={{ borderRadius: "10%", marginRight: "10px", marginBottom:"2rem" }}
+                        />
+                      ))}
+                    {message.buttons &&
+                      message.buttons.map((button, idx) => (
+                        <a
+                          key={idx}
+                          onClick={() =>
+                            handleButtonClick(button.action, button.label)
+                          }
+                          className="button-52"
+                        >
+                          {button.label}
+                        </a>
+                      ))}
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="message bot-message">
+                    <div className="message-bubble typing-animation">
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                    </div>
+                  </div>
+                )}
+              </div>
+                <div className="chatbot-footer d-flex justify-content-around">
           <div className="button-container">
             {buttons.map((button, index) => (
               <a
@@ -630,8 +582,8 @@ const TestChatbot = () => {
                 onClick={() => handleButtonClick(button.action, button.label)}
                 className="button-50"
                 style={{
-                  backgroundColor: theme.buttonColor,
-                  color: theme.buttonTextColor,
+                  // backgroundColor: theme.buttonColor,
+                  // color: theme.buttonTextColor,
                   buttonHoverColor: theme.buttonHoverColor,
                   borderRadius: theme.buttonBorderRadius,
                 }}
@@ -657,43 +609,27 @@ const TestChatbot = () => {
               <a
                 id="send-message-button"
                 className="icon material-symbols-rounded send-button"
-                onClick={handleSendMessage}
+                
               >
-                send
+                <button
+        className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
+      >
+        <Send className="w-2 h-2" />
+      </button>
               </a>
             </div>
           </div>
-          {/* <div className="action-buttons">
-                        <span id="theme-toggle-button" className="icon material-symbols-rounded">light_mode</span>
-                        <span id="delete-chat-button" className="icon material-symbols-rounded">delete</span>
-                    </div>
-                    <p className="disclaimer-text">
-                    Gemini may display inaccurate info, including about people, so double-check its responses.
-                    </p> */}
+     
         </div>
+            </>
+          )}
+        </>
+      )}
+      
+       
+      
 
-        {/* <div className="">
-                    <input
-                        type="text"
-                        className="form-control chat-input"
-                        placeholder="Type a message..."
-                        // value={message}
-                        // onChange={(e) => setMessage(e.target.value)}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                </div>
-
-                <button className="btn btn-primary w-100 mb-4 send-button" onClick={handleSendMessage}>Send</button> */}
-        {/* <button className="btn btn-secondary w-100" onClick={generateEmbedScript}>Get Embed Script</button>
-                {embedScript && (
-                    <div className="mt-3">
-                        <h5>Embed Code:</h5>
-                        <pre>{embedScript}</pre>
-                        <p>Copy and paste the above script into any HTML page to embed the chatbot.</p>
-                    </div>
-                )} */}
+      
       </div>
     </div>
   );
