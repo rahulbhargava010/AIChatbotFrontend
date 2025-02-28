@@ -26,6 +26,7 @@ import ForgotPassword from "../Auth/ForgotPassword";
 import UserList from "../Dashboard/UserList";
 import { NewDash } from "../Dashboard/NewDash";
 import ChatbotCard from "../Dashboard/ChatbotCard";
+import LeadDetails from "../Dashboard/LeadDetails";
 
 const AppRoutes = () => {
   return (
@@ -88,6 +89,10 @@ const AppRoutes = () => {
             />
           </Route>
           <Route path="/dashboard/leads/:chatbotId" element={<LeadsTable />} />
+          <Route
+            path="/dashboard/leads/leadDetails/:leadId"
+            element={<LeadDetails />}
+          />
           <Route path="/dashboard/stats/:chatbotId" element={<ChatStats />} />
         </Route>
       </Route>

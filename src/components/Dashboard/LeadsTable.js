@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import api from "../config/axios";
 import "./LeadsTable.css";
+import LeadDetails from "./LeadDetails";
 
 const LeadsTable = () => {
   const { chatbotId } = useParams();
@@ -19,6 +20,8 @@ const LeadsTable = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedLead, setSelectedLead] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLeads(selectedDate, startDate, endDate);
@@ -32,6 +35,7 @@ const LeadsTable = () => {
         { days, chatbot: chatbotId, startDate: start, endDate: end },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log(response.data);
       setLeads(response.data);
       setFilteredLeads(response.data);
 
@@ -67,8 +71,12 @@ const LeadsTable = () => {
   };
 
   const handleRowClick = (leadId) => {
-    setSelectedLead(leadId);
-    console.log("SelectedLead:", leadId);
+    // console.log(leadId);
+    // setSelectedLead(leadId);
+    // console.log("SelectedID:", selectedLead);
+    // console.log(leadId);
+    navigate(`/dashboard/leads/leadDetails/${leadId}`);
+    // console.log("SelectedLead:", leadId);
   };
 
   const columns = useMemo(
@@ -142,7 +150,7 @@ const LeadsTable = () => {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              onClick={() => handleRowClick(row.original.chatbotId)}
+              onClick={() => handleRowClick(row.original._id)}
               style={{ cursor: "pointer" }}
             >
               {row.getVisibleCells().map((cell) => (
