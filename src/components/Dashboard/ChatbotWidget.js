@@ -5,13 +5,13 @@ import "./TestChatbot.css";
 import "./ChatbotWidget.css";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
+import { Mic, Send } from "lucide-react";
 
 import { v4 as uuidv4 } from "uuid";
 import { SketchPicker } from "react-color";
 import chatbotThemes from "../config/chatbotThemes";
 import { FirstScreen } from "./FirstScreen";
-import VoiceMessageInput from "./VoiceMessageInput";
-import { Send } from "lucide-react";
+// import { Send } from "lucide-react";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -19,7 +19,13 @@ const useQuery = () => {
 
 
 
+
+
 const TestChatbot = () => {
+  const [isScreenOpen, setScreenOpen] = useState(true); // Default: Chatbot is open
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const { chatbotId } = useParams();
   const [messages, setMessages] = useState([]);
   // const [embedScript, setEmbedScript] = useState('');
@@ -56,7 +62,16 @@ const TestChatbot = () => {
   // const [selectedTextColor, setSelectedTextColor] = useState("#ffffff");
   // const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
   // const [showColorPicker, setShowColorPicker] = useState(false);
-
+  const handleRecord = () => {
+    setIsRecording(!isRecording);
+    // Add voice recording logic here
+  };
+  
+  const handleSend = () => {
+    console.log("Message sent:", message);
+    setMessage("");
+  };
+  
     const [utmParams, setUtmParams] = useState({
       utmSource: "",
       utmMedium: "",
@@ -377,8 +392,8 @@ const TestChatbot = () => {
   
 
   return (
-    <div className="chatbot-wrapper">
-     
+    // <div className="chatbot-wrapper">
+    <div className={`chatbot-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
       <div
         className="test-chatbot-container chatbot-container p-3 window_bg_pink"
         style={{
@@ -386,6 +401,7 @@ const TestChatbot = () => {
           color: theme.textColor,
         }}
       >
+
         {/* <button
                 className="chatbot-close-btn"
                 style={{ backgroundColor: theme.buttonColor, color: theme.buttonTextColor }}
@@ -395,7 +411,7 @@ const TestChatbot = () => {
             </button> */}
         {formVisible && (
           <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
-            <div className="chatbot-form-container mb-2">
+            <div className="chatbot-form-container">
               <button
                 className="close-button"
                 onClick={() => {
@@ -463,13 +479,21 @@ const TestChatbot = () => {
                 />
 
                 <button type="submit" className="btn btn-primary w-100">
-                  Submit
+                  SUBMIT
                 </button>
               </form>
               {/* <button className="close-button" onClick={() => setFormVisible(false)}>Close</button> */}
             </div>
           </div>
         )}
+
+<button
+              className="close_button "
+              onClick={() => setChatVisible(false)} // ✅ Hide chatbot on click
+            >
+              ×
+            </button>
+
         {chatVisible && (
         <>
           {showFirstScreen ? (
@@ -491,23 +515,53 @@ const TestChatbot = () => {
                 )}
                 <div className="py-2">
                   <h4 className="title">Propstory</h4>
+                  
                   {/* <p className="subtitle">
                     How can I help you today {chatbotData?.name}?
                   </p> */}
                 </div>
+                <div className="relative py-2">
+      {/* Menu Icon */}
+      <div
+        className="menu-toggle1 cursor-pointer p-2 rounded-md hover:bg-gray-200 transition"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <svg
+          stroke="currentColor"
+          fill="currentColor"
+          strokeWidth="0"
+          viewBox="0 0 448 512"
+          className="menu-icon"
+          height="1.5em"
+          width="1.5em"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path>
+        </svg>
+      </div>
+
+      {/* Dropdown Menu (Visible when clicked) */}
+      {isOpen && (
+        <div className="relative right-0 bg-white shadow-lg">
+          <ul className="menu_list bg-white text-center position-absolute list-unstyled">
+          <li className="border-b cursor-pointer">
+              Site Visit
+            </li>
+            <li className="border-b cursor-pointer">
+              Voice Call 
+            </li>
+            <li className="border-b cursor-pointer">
+             Video Call
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+                
               </div>
-              <div className="p-2 rounded">
-                  <h>Hey, <span className="fw-bold"> {chatbotData?.name}</span> </h>
-                   <p className="subtitle py-1 mb-0">
-                    How May <span className="fw-bold">I assist you today?</span>
-                  </p>
-                </div>
-                <div className="rounded border-none bg-transparent">
-    <VoiceMessageInput />
-</div>
 
               <div
-                className="chat-window p-2 mb-3 border rounded scrollbar" id="style-8"
+                className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8"
                 ref={chatWindowRef}
               >
                
@@ -594,9 +648,48 @@ const TestChatbot = () => {
           </div>
         </div>
 
-        <div className="typing-area">
+        {/* <div className="flex items-center p-2 rounded-full shadow-md w-96 justify-content-between">
+     <div className="mic_div d-flex justify-content-around">
+     <button
+        onClick={handleRecord}
+        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${isRecording ? "bg-red-500" : "bg-gray-200"}`}
+      >
+        <Mic className="w-4 h-4 text-gray-700" />
+      </button>
+      <input
+                type="text"
+                placeholder="Enter a prompt here"
+               className="flex-1 p-1 text-sm w-90 border-0 outline-none bg-transparent"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                required
+                style={{marginLeft:"-2.5rem"}}
+              />
+              <a
+                id="send-message-button"
+                className="icon material-symbols-rounded"
+                
+              >
+                <button
+        className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
+      >
+        <Send className="w-2 h-2" />
+      </button>
+              </a>
+     </div>
+    </div> */}
+
+    <div className="typing-area">
           <div className="typing-form">
-            <div className="input-wrapper form-control chat-input">
+         
+            <div className="input-wrapper form-control chat-input d-flex align-items-center">
+            <button
+        onClick={handleRecord}
+        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${isRecording ? "bg-red-500" : "bg-gray-200"}`}
+      >
+        <Mic className="w-4 h-4 text-gray-700" />
+      </button>
               <input
                 type="text"
                 placeholder="Enter a prompt here"
@@ -608,18 +701,24 @@ const TestChatbot = () => {
               />
               <a
                 id="send-message-button"
-                className="icon material-symbols-rounded send-button"
-                
+                className="icon material-symbols-rounded send-button p-0"
+                onClick={handleSendMessage}
               >
                 <button
-        className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
+        className="p-1 mt-3 bg-black rounded-5 bg_pink text-dark"
       >
         <Send className="w-2 h-2" />
       </button>
               </a>
             </div>
           </div>
-     
+          {/* <div className="action-buttons">
+                        <span id="theme-toggle-button" className="icon material-symbols-rounded">light_mode</span>
+                        <span id="delete-chat-button" className="icon material-symbols-rounded">delete</span>
+                    </div>
+                    <p className="disclaimer-text">
+                    Gemini may display inaccurate info, including about people, so double-check its responses.
+                    </p> */}
         </div>
             </>
           )}
