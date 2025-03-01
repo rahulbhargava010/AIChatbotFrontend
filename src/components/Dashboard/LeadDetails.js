@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../config/axios";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaRobot,
+  FaHistory,
+} from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const LeadDetails = () => {
   const [leadData, setLeadData] = useState(null);
@@ -29,36 +37,59 @@ const LeadDetails = () => {
     fetchLeadDetails();
   }, [leadId]);
 
-  if (!leadId) return <p>No lead selected.</p>;
-  if (loading) return <p>Loading lead details...</p>;
-  if (!leadData || !leadData.leadDetail) return <p>No lead details found.</p>;
+  if (!leadId) return <p className="text-center">No lead selected.</p>;
+  if (loading)
+    return (
+      <div className="text-center">
+        <div className="spinner-border" role="status"></div>
+      </div>
+    );
+  if (!leadData || !leadData.leadDetail)
+    return <p className="text-center">No lead details found.</p>;
 
   return (
-    <div className="lead-details">
-      {/* <button className="close-btn" onClick={onClose}>
-        Close
-      </button> */}
-      <h3>Lead Details</h3>
-      <p>
-        <strong>Name:</strong> {leadData.leadDetail.name}
-      </p>
-      <p>
-        <strong>Email:</strong> {leadData.leadDetail.email}
-      </p>
-      <p>
-        <strong>Phone:</strong> {leadData.leadDetail.phone}
-      </p>
-      <p>
-        <strong>Chatbot:</strong> {leadData.leadDetail.chatbotId?.name}
-      </p>
-      <h4>Activity Logs</h4>
-      <ul>
-        {leadData.activityLogs.map((log, index) => (
-          <li key={index}>
-            {log.timestamp} - {log.performedBy?.name}
+    <div className="container mt-4" style={{ maxWidth: "600px" }}>
+      <div className="card mb-3 p-3">
+        <h5 className="card-title text-center">Lead Details</h5>
+        <ul className="list-group list-group-flush">
+          <li className="list-group-item d-flex align-items-center">
+            <FaUser className="me-2 text-primary" /> <strong>Name:</strong>{" "}
+            {leadData.leadDetail.name}
           </li>
-        ))}
-      </ul>
+          <li className="list-group-item d-flex align-items-center">
+            <FaEnvelope className="me-2 text-primary" /> <strong>Email:</strong>{" "}
+            {leadData.leadDetail.email}
+          </li>
+          <li className="list-group-item d-flex align-items-center">
+            <FaPhone className="me-2 text-primary" /> <strong>Phone:</strong>{" "}
+            {leadData.leadDetail.phone}
+          </li>
+          <li className="list-group-item d-flex align-items-center">
+            <FaRobot className="me-2 text-primary" /> <strong>Chatbot:</strong>{" "}
+            {leadData.leadDetail.chatbotId?.name || "N/A"}
+          </li>
+        </ul>
+      </div>
+
+      <div className="card p-3">
+        <h6 className="card-title text-center">Activity Logs</h6>
+        {Array.isArray(leadData.activityLogs) &&
+        leadData.activityLogs.length > 0 ? (
+          <ul className="list-group">
+            {leadData.activityLogs.map((log, index) => (
+              <li
+                key={index}
+                className="list-group-item d-flex align-items-center"
+              >
+                <FaHistory className="me-2 text-danger" /> {log?.timestamp} -{" "}
+                {log?.performedBy?.name || "Unknown"}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center">No activity logs available.</p>
+        )}
+      </div>
     </div>
   );
 };
