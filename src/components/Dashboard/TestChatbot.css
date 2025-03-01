@@ -11,7 +11,7 @@
     flex-direction: column;
     justify-content: space-between;
     height: fit-content;
-    width: fit-content;
+    width: 400px;
     position: relative;
     /* margin: 10px auto; */
     border: 1px solid #ddd;
@@ -430,7 +430,7 @@ body {
   .get_started button{
     background-color: #000;
     color: #fff;
-    padding: 0.8rem 6rem;
+    padding: 0.8rem 8rem;
     bottom: 0;
     position: relative;
     border-radius: 2rem;

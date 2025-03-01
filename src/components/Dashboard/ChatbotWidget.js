@@ -22,7 +22,6 @@ const useQuery = () => {
 
 
 const TestChatbot = () => {
-  const [isScreenOpen, setScreenOpen] = useState(true); // Default: Chatbot is open
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -38,6 +37,7 @@ const TestChatbot = () => {
     { label: "Highlights", action: "highlight" },
     { label: 'Location', action: 'location' },
     { label: 'Amenities', action: 'amenities' },
+    
     // { label: "Brochure", action: "brochure" },
     // { label: "Schedule Site Visit", action: "schedule_site_visit" },
     // { label: 'Get a Call Back', action: 'get_callback' }
@@ -84,7 +84,7 @@ const TestChatbot = () => {
     useEffect(() => {
       const timer = setTimeout(() => {
         setShowFirstScreen(false);
-      }, 5000); // 5 seconds
+      }, 6000); // 5 seconds
   
       return () => clearTimeout(timer); // Cleanup timer on unmount
     }, []);
@@ -358,9 +358,9 @@ const TestChatbot = () => {
           { images: projectImages },
           {
             buttons: [
-              { label: "Location", action: "location" },
-              { label: "Amenities", action: "amenities" },
-              { label: "Get a Call Back", action: "get_callback" },
+              // { label: "Location", action: "location" },
+              // { label: "Amenities", action: "amenities" },
+              // { label: "Get a Call Back", action: "get_callback" },
             ],
           },
         ]);
@@ -392,8 +392,8 @@ const TestChatbot = () => {
   
 
   return (
-    // <div className="chatbot-wrapper">
     <div className={`chatbot-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
+     
       <div
         className="test-chatbot-container chatbot-container p-3 window_bg_pink"
         style={{
@@ -401,7 +401,6 @@ const TestChatbot = () => {
           color: theme.textColor,
         }}
       >
-
         {/* <button
                 className="chatbot-close-btn"
                 style={{ backgroundColor: theme.buttonColor, color: theme.buttonTextColor }}
@@ -479,27 +478,25 @@ const TestChatbot = () => {
                 />
 
                 <button type="submit" className="btn btn-primary w-100">
-                  SUBMIT
+                  Submit
                 </button>
               </form>
               {/* <button className="close-button" onClick={() => setFormVisible(false)}>Close</button> */}
             </div>
           </div>
         )}
-
-<button
-              className="close_button "
-              onClick={() => setChatVisible(false)} // ✅ Hide chatbot on click
-            >
-              ×
-            </button>
-
         {chatVisible && (
         <>
           {showFirstScreen ? (
             <FirstScreen />
           ) : (
             <>
+            <button
+  className="close_button"
+  onClick={() => setChatVisible(false)} // Hide chatbot
+>
+  ×
+</button>
               <div className="d-flex header justify-content-between align-items-center">
                 {chatbotData?.projectLogo && (
                   <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
@@ -515,7 +512,6 @@ const TestChatbot = () => {
                 )}
                 <div className="py-2">
                   <h4 className="title">Propstory</h4>
-                  
                   {/* <p className="subtitle">
                     How can I help you today {chatbotData?.name}?
                   </p> */}
@@ -705,7 +701,7 @@ const TestChatbot = () => {
                 onClick={handleSendMessage}
               >
                 <button
-        className="p-1 mt-3 bg-black rounded-5 bg_pink text-dark"
+        className="p-1 mt- bg-black rounded-5 bg_pink text-dark"
       >
         <Send className="w-2 h-2" />
       </button>
