@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap');
+body{
+  font-family: "Maven Pro", sans-serif;
+}
 #chatbot-widget .navbar {
     display: none;
 }
@@ -8,7 +12,7 @@
     left: 0;
     bottom: 0;
     padding: 5px;
-    background: var(--primary-color);
+    /* background: var(--primary-color); */
   }
   .typing-area :where(.typing-form, .action-buttons) {
     display: flex;
@@ -29,7 +33,7 @@
     font-size: 1rem;
     color: var(--text-color);
     /* padding: 1.1rem 4rem 1.1rem 1.5rem; */
-    padding: 3px 14px;
+    padding: 3px 0px;
     border-radius: 100px;
     background: var(--secondary-color);
   }
@@ -64,7 +68,7 @@
     transform: scale(0);
     background: transparent;
     transition: transform 0.2s ease;
-    margin-top: -17px;
+    margin-top: -21px;
   }
   .typing-form .typing-input:valid ~ #send-message-button {
     transform: scale(1);
@@ -91,11 +95,11 @@
       gap: 0.4rem;
     }
     .typing-form .input-wrapper {
-      height: 30px;
+      height: 35px;
     }
     .typing-form .typing-input {
       /* padding: 1.1rem 3.5rem 1.1rem 1.2rem; */
-      padding: 3px 14px;
+      padding: 3px 0px;
     }
     .typing-area .icon {
       height: 50px;
@@ -190,7 +194,7 @@
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  font-family: ITCAvantGardeStd-Bk,Arial,sans-serif;
+  /* font-family: ITCAvantGardeStd-Bk,Arial,sans-serif; */
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
@@ -259,29 +263,22 @@ filter: invert();
 .menu_list li{
   padding: 0.5rem 3rem;
   width: auto;
+  cursor: pointer;
   font-size: 13px;
 }
 
 .close_button{
-  position: absolute;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #000;
-  padding: 0;
-  margin-top: -20px;
-  font-size: 23px;
-  font-weight: 600;
-  right: 3px;
+  position: relative;
+ color: wheat;
+  right: 5px;
+  margin-left: 8px;
 }
 .close_button:hover{
   background: transparent;
-  font-size: 28px;
-  font-weight: 900;
 }
 .chatbot-wrapper {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: fit-content;
   height: fit-content;
@@ -298,8 +295,16 @@ filter: invert();
 }
 
 
-/* @media (min-width: 768px) {
-  .button-50 {
-    padding: 12px 50px;
+@media (max-width: 768px) {
+  .chatbot-wrapper {
+    position: fixed;
+    bottom: 0 !important;
+    left: 0;
+    width: fit-content;
+    height:auto;
+    background: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
   }
-} */
+}

@@ -5,7 +5,7 @@ import { FaAngleRight } from "react-icons/fa";
 
 export const FirstScreen = () => {
   return (
-    <div className='text-center'>
+    <div className='text-center first_screen'>
          <img src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx534j6m7oc5zo9.webp" alt="image" className='animated' />
 
          <div className='mt-5 text-center'>

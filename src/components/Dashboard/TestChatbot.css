@@ -1,22 +1,22 @@
 /* TestChatbot.css */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap');
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Maven Pro", sans-serif;
 }
 .test-chatbot-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: fit-content;
-    width: 400px;
+    height: 100vh;
+    width: fit-content;
     position: relative;
     /* margin: 10px auto; */
     border: 1px solid #ddd;
     border-radius: 8px;
-    background: #f5f5f5;
+    background: #fff;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -33,7 +33,7 @@
     max-height: 400px   ;
     overflow-x: hidden;
     overflow-y: auto;
-    background: #fff;
+    background: #f5f8fab8;
     border: none !important;
     padding: 10px;
     border-radius: 5px;
@@ -115,7 +115,8 @@
 .message-bubble {
     max-width: 70% !important;
     padding: 10px;
-    border-radius: 20px;
+    border-radius: 10px;
+    border-top-left-radius: 0 !important;
     font-size: 12px;
     text-align: left;
     line-height: 1.4;
@@ -123,8 +124,11 @@
 }
 
 .user-message .message-bubble {
-    background: #2575fc;
-    color: #000;
+    background: #007BFF !important;
+    color: #ffffff;
+    border-radius: 10px;
+    border-bottom-right-radius: 0 !important;
+    width: auto !important;
     border-top-right-radius: 0;
     letter-spacing: 1px;
 }
@@ -361,10 +365,8 @@ body {
   /* margin-top: 6vh; */
   /* padding: 1rem; */
   overflow-x: hidden;
-  background-color: #fff;
-  border-radius: 2rem;
-  padding: 0rem 1rem;
-  margin-bottom: 1rem;
+  background: linear-gradient(100deg, #F8DFE3, #E6D9F3, #FCF6F8, #F0CBD2, #E6D9F3);  /* border-radius: 2rem; */
+  /* margin-bottom: 1rem; */
 }
 .header :where(.title, .subtitle) {
   color: var(--text-color);
@@ -396,6 +398,11 @@ body {
 .window_bg_pink{
     background: linear-gradient(100deg, #F8DFE3, #E6D9F3, #FCF6F8, #F0CBD2,  #E6D9F3);
 }
+.first_screen{
+    padding: 0 1rem 4rem;
+    height: 100vh;
+    background: linear-gradient(100deg, #F8DFE3, #E6D9F3, #FCF6F8, #F0CBD2,  #E6D9F3);
+}
 .bg_transparent{
     background: transparent !important;
 }
@@ -408,7 +415,7 @@ body {
 .animated {
     animation: animated linear 4s;
     animation-iteration-count: infinite;
-    width: 75%;
+    width: 62%;
   }
   @keyframes animated {
     0% {

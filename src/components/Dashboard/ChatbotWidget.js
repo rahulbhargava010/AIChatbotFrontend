@@ -6,7 +6,6 @@ import "./ChatbotWidget.css";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
 import { Mic, Send } from "lucide-react";
-
 import { v4 as uuidv4 } from "uuid";
 import { SketchPicker } from "react-color";
 import chatbotThemes from "../config/chatbotThemes";
@@ -16,10 +15,6 @@ import { FirstScreen } from "./FirstScreen";
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
-
-
-
-
 
 const TestChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,12 +30,12 @@ const TestChatbot = () => {
   const chatWindowRef = useRef(null);
   const [buttons] = useState([
     { label: "Highlights", action: "highlight" },
-    { label: 'Location', action: 'location' },
-    { label: 'Amenities', action: 'amenities' },
-    
+    { label: "Location", action: "location" },
+    { label: "Amenities", action: "amenities" },
+
     // { label: "Brochure", action: "brochure" },
     // { label: "Schedule Site Visit", action: "schedule_site_visit" },
-    // { label: 'Get a Call Back', action: 'get_callback' }
+    { label: "Get a Call Back", action: "get_callback" },
   ]);
 
   const [formVisible, setFormVisible] = useState(false);
@@ -66,44 +61,43 @@ const TestChatbot = () => {
     setIsRecording(!isRecording);
     // Add voice recording logic here
   };
-  
+
   const handleSend = () => {
     console.log("Message sent:", message);
     setMessage("");
   };
-  
-    const [utmParams, setUtmParams] = useState({
-      utmSource: "",
-      utmMedium: "",
-      utmCampaign: "",
-    });
-    const [currentUrl, setCurrentUrl] = useState("");
-    const [showFirstScreen, setShowFirstScreen] = useState(true);
 
+  const [utmParams, setUtmParams] = useState({
+    utmSource: "",
+    utmMedium: "",
+    utmCampaign: "",
+  });
+  const [currentUrl, setCurrentUrl] = useState("");
+  const [showFirstScreen, setShowFirstScreen] = useState(true);
 
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setShowFirstScreen(false);
-      }, 6000); // 5 seconds
-  
-      return () => clearTimeout(timer); // Cleanup timer on unmount
-    }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFirstScreen(false);
+    }, 2000); // 5 seconds
 
-    useEffect(() => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const utmSource = urlParams.get("utm_source") || "";
-      const utmMedium = urlParams.get("utm_medium") || "";
-      const utmCampaign = urlParams.get("utm_campaign") || "";
-    
-      const newUtmParams = { utmSource, utmMedium, utmCampaign };
-      
-      setUtmParams(newUtmParams);
-      setCurrentUrl(window.location.href);
-    
-      console.log("Current URL Path:", window.location.href);
-      console.log("UTM Parameters:", newUtmParams); // Use the newUtmParams object here
-    }, []);
-    
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get("utm_source") || "";
+    const utmMedium = urlParams.get("utm_medium") || "";
+    const utmCampaign = urlParams.get("utm_campaign") || "";
+
+    const newUtmParams = { utmSource, utmMedium, utmCampaign };
+
+    setUtmParams(newUtmParams);
+    setCurrentUrl(window.location.href);
+
+    console.log("Current URL Path:", window.location.href);
+    console.log("UTM Parameters:", newUtmParams); // Use the newUtmParams object here
+  }, []);
+
   const handleSendMessage = async () => {
     // console.log('Send Message check check', chatbotId);
     if (!input.trim()) return;
@@ -285,12 +279,17 @@ const TestChatbot = () => {
         ["schedule_site_visit", "get_callback", "brochure"].includes(action)
       ) {
         setFormType(action);
+
         setFormVisible(true);
+
         // setFormAction(webhook)
+
         setChatVisible(false);
       } else {
         setFormVisible(false);
+
         setChatVisible(true);
+
         if (buttonContent[action])
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -298,6 +297,7 @@ const TestChatbot = () => {
             { sender: "Bot", text: buttonContent[action] },
           ]);
       }
+
       saveConversation(storedSessionId);
     } catch (err) {
       console.error("Error fetching content:", err);
@@ -387,27 +387,17 @@ const TestChatbot = () => {
     }
   };
 
-
   const theme = chatbotThemes["default"] || chatbotThemes.default;
-  
 
   return (
     <div className={`chatbot-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
-     
       <div
-        className="test-chatbot-container chatbot-container p-3 window_bg_pink"
-        style={{
-          backgroundColor: theme.backgroundColor,
-          color: theme.textColor,
-        }}
+        className="test-chatbot-container chatbot-container"
+        // style={{
+        //   backgroundColor: theme.backgroundColor,
+        //   color: theme.textColor,
+        // }}
       >
-        {/* <button
-                className="chatbot-close-btn"
-                style={{ backgroundColor: theme.buttonColor, color: theme.buttonTextColor }}
-                onClick={() => setChatVisible(false)}
-            >
-                Close
-            </button> */}
         {formVisible && (
           <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
             <div className="chatbot-form-container">
@@ -486,77 +476,180 @@ const TestChatbot = () => {
           </div>
         )}
         {chatVisible && (
-        <>
-          {showFirstScreen ? (
-            <FirstScreen />
-          ) : (
-            <>
-            <button
+          <>
+            {showFirstScreen ? (
+              <FirstScreen />
+            ) : (
+              <>
+                {/* <button
   className="close_button"
   onClick={() => setChatVisible(false)} // Hide chatbot
 >
   ×
-</button>
-              <div className="d-flex header justify-content-between align-items-center">
-                {chatbotData?.projectLogo && (
-                  <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
-                    <img
+</button> */}
+                <div className="d-flex header p-2 justify-content-between align-items-center">
+                  {/* <div>
+                <img
                       className="chatbot-logo-img"
-                      src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
+                      src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
+                      // src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
                       alt="Project Logo"
-                      height="60"
+                      height="50"
                       width="60"
-                      style={{ borderRadius: "50%", marginRight: "10px" }}
                     />
-                  </div>
-                )}
-                <div className="py-2">
-                  <h4 className="title">Propstory</h4>
-                  {/* <p className="subtitle">
+                </div> */}
+                  {chatbotData?.projectLogo && (
+                    <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
+                      <img
+                        className="chatbot-logo-img"
+                        src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
+                        // src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
+                        alt="Project Logo"
+                        height="50"
+                        width="60"
+                      />
+                    </div>
+                  )}
+                  <div className="py-2 text-center">
+                    <h4 className="title">
+                      PropStory Help Desk {chatbotData?.name}
+                    </h4>
+                    {/* <p className="subtitle">
                     How can I help you today {chatbotData?.name}?
                   </p> */}
+                  </div>
+
+                  <div className="relative py-2">
+                    {/* Menu Icon */}
+                    <div
+                      className="menu-toggle1 cursor-pointer rounded-md hover:bg-gray-200 transition align-items-center"
+                      onClick={() => setIsOpen(!isOpen)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="menu-icon"
+                        height="1.2em"
+                        width="1.4em"
+                      >
+                        <path d="M12 2C13.1 2 14 2.9 14 4s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z" />
+                      </svg>
+                      <div
+                        className="cursor-pointer fw-bold close_button"
+                        onClick={() => setChatVisible(false)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          width="22"
+                          height="22"
+                        >
+                          <path
+                            d="M6 6L18 18M6 18L18 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Dropdown Menu (Visible when clicked) */}
+                    {isOpen && (
+                      <div className="relative right-0 bg-white shadow-lg">
+                        <ul className="menu_list bg-white text-center position-absolute list-unstyled">
+                          <li>Site Visit</li>
+                          <li>Voice Call</li>
+                          <li>Video Call</li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="relative py-2">
-      {/* Menu Icon */}
-      <div
-        className="menu-toggle1 cursor-pointer p-2 rounded-md hover:bg-gray-200 transition"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <svg
-          stroke="currentColor"
-          fill="currentColor"
-          strokeWidth="0"
-          viewBox="0 0 448 512"
-          className="menu-icon"
-          height="1.5em"
-          width="1.5em"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path>
-        </svg>
-      </div>
 
-      {/* Dropdown Menu (Visible when clicked) */}
-      {isOpen && (
-        <div className="relative right-0 bg-white shadow-lg">
-          <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-          <li className="border-b cursor-pointer">
-              Site Visit
-            </li>
-            <li className="border-b cursor-pointer">
-              Voice Call 
-            </li>
-            <li className="border-b cursor-pointer">
-             Video Call
-            </li>
-          </ul>
-        </div>
-      )}
-    </div>
-                
-              </div>
+                <div
+                  className="chat-window p-4 mb-3 border rounded scrollbar"
+                  id="style-8"
+                  ref={chatWindowRef}
+                >
+                  {messages?.map((message, index) => {
+                    const hasContent =
+                      message.text ||
+                      message.images?.length ||
+                      message.buttons?.length;
 
-              <div
+                    return hasContent ? (
+                      <div
+                        key={index}
+                        className={`message ${
+                          message.sender === "User"
+                            ? "user-message"
+                            : "bot-message"
+                        }`}
+                      >
+                        {message.text && (
+                          <div
+                            className="message-bubble"
+                            style={{
+                              backgroundColor: "rgb(231 218 243 / 51%)",
+                              boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                              borderRadius: "10px",
+                              padding: "10px",
+                              maxWidth: "80%",
+                              width: "100%",
+                              margin: "5px 0",
+                              border: "2px solid rgb(255, 255, 255)",
+                              fontSize: "14px",
+                              textAlign: "left",
+                            }}
+                          >
+                            {message.text}
+                          </div>
+                        )}
+
+                        {message.images && message.images.length > 0 && (
+                          <div className="image-container">
+                            {message.images
+                              .filter((img) => img) // Ensure image URL is valid
+                              .map((img, idx) => (
+                                <img
+                                  key={idx}
+                                  className="chatbot-logo-img"
+                                  src={`https://assist-ai.propstory.com/${img}`}
+                                  alt="Project Logo"
+                                  height="200"
+                                  width="200"
+                                  style={{
+                                    borderRadius: "10%",
+                                    marginRight: "10px",
+                                    marginBottom: "2rem",
+                                  }}
+                                  onError={(e) =>
+                                    (e.target.style.display = "none")
+                                  } // Hide broken images
+                                />
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : null;
+                  })}
+
+                  {isTyping && (
+                    <div className="message bot-message">
+                      <div className="message-bubble typing-animation">
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* <div
                 className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8"
                 ref={chatWindowRef}
               >
@@ -623,28 +716,31 @@ const TestChatbot = () => {
                     </div>
                   </div>
                 )}
-              </div>
-                <div className="chatbot-footer d-flex justify-content-around">
-          <div className="button-container">
-            {buttons.map((button, index) => (
-              <a
-                key={index}
-                onClick={() => handleButtonClick(button.action, button.label)}
-                className="button-50"
-                style={{
-                  // backgroundColor: theme.buttonColor,
-                  // color: theme.buttonTextColor,
-                  buttonHoverColor: theme.buttonHoverColor,
-                  borderRadius: theme.buttonBorderRadius,
-                }}
-              >
-                {button.label}
-              </a>
-            ))}
-          </div>
-        </div>
+              </div> */}
 
-        {/* <div className="flex items-center p-2 rounded-full shadow-md w-96 justify-content-between">
+                <div className="chatbot-footer d-flex justify-content-around">
+                  <div className="button-container">
+                    {buttons.map((button, index) => (
+                      <a
+                        key={index}
+                        onClick={() =>
+                          handleButtonClick(button.action, button.label)
+                        }
+                        className="button-50"
+                        style={{
+                          // backgroundColor: theme.buttonColor,
+                          // color: theme.buttonTextColor,
+                          buttonHoverColor: theme.buttonHoverColor,
+                          borderRadius: theme.buttonBorderRadius,
+                        }}
+                      >
+                        {button.label}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* <div className="flex items-center p-2 rounded-full shadow-md w-96 justify-content-between">
      <div className="mic_div d-flex justify-content-around">
      <button
         onClick={handleRecord}
@@ -676,55 +772,49 @@ const TestChatbot = () => {
      </div>
     </div> */}
 
-    <div className="typing-area">
-          <div className="typing-form">
-         
-            <div className="input-wrapper form-control chat-input d-flex align-items-center">
-            <button
-        onClick={handleRecord}
-        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${isRecording ? "bg-red-500" : "bg-gray-200"}`}
-      >
-        <Mic className="w-4 h-4 text-gray-700" />
-      </button>
-              <input
-                type="text"
-                placeholder="Enter a prompt here"
-                className="typing-input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                required
-              />
-              <a
-                id="send-message-button"
-                className="icon material-symbols-rounded send-button p-0"
-                onClick={handleSendMessage}
-              >
-                <button
-        className="p-1 mt- bg-black rounded-5 bg_pink text-dark"
-      >
-        <Send className="w-2 h-2" />
-      </button>
-              </a>
-            </div>
-          </div>
-          {/* <div className="action-buttons">
+                <div className="typing-area window_bg_pink">
+                  <div className="typing-form">
+                    <div className="input-wrapper form-control chat-input d-flex align-items-center">
+                      <button
+                        onClick={handleRecord}
+                        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
+                          isRecording ? "bg-red-500" : "bg-gray-200"
+                        }`}
+                      >
+                        <Mic className="w-4 h-4 text-gray-700" />
+                      </button>
+                      <input
+                        type="text"
+                        placeholder="Enter a prompt here"
+                        className="typing-input"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        required
+                      />
+                      <a
+                        id="send-message-button"
+                        className="icon material-symbols-rounded send-button p-0"
+                        onClick={handleSendMessage}
+                      >
+                        <button className="p-1 mt- bg-black rounded-5 bg_pink text-dark">
+                          <Send className="w-2 h-2" />
+                        </button>
+                      </a>
+                    </div>
+                  </div>
+                  {/* <div className="action-buttons">
                         <span id="theme-toggle-button" className="icon material-symbols-rounded">light_mode</span>
                         <span id="delete-chat-button" className="icon material-symbols-rounded">delete</span>
                     </div>
                     <p className="disclaimer-text">
                     Gemini may display inaccurate info, including about people, so double-check its responses.
                     </p> */}
-        </div>
-            </>
-          )}
-        </>
-      )}
-      
-       
-      
-
-      
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
