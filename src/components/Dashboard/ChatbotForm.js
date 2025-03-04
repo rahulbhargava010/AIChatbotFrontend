@@ -117,19 +117,27 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
 
   useEffect(() => {
     const fetchChatbotData = async () => {
-      if (Object.keys(initialData?.chatbotDetails).length > 0)
-        console.log("Fetching chatbot data", initialData?.chatbotDetails);
+      if (
+        initialData?.chatbotDetails &&
+        Object.keys(initialData.chatbotDetails).length > 0
+      ) {
+        console.log("Fetching chatbot data", initialData.chatbotDetails);
+      }
+
       try {
-        if (mode === "update" && Object.keys(initialData).length > 0) {
-          setChatbotId(initialData?.chatbotDetails._id);
-          setName(initialData?.chatbotDetails.name);
-          setWebhook(initialData?.chatbotDetails.webhook);
-          const prevContent = initialData?.chatbotDetails.button_content;
-          setButtonContent(prevContent);
-          // setProjectImages(initialData?.chatbotDetails.projectImages);
-          // setProjectLogo(initialData?.chatbotDetails.projectLogo);
-          setProjectLogoURL(initialData?.chatbotDetails.projectLogo);
-          setProjectImagesURL(initialData?.chatbotDetails.projectImages);
+        if (
+          mode === "update" &&
+          initialData &&
+          initialData.chatbotDetails &&
+          Object.keys(initialData.chatbotDetails).length > 0
+        ) {
+          setChatbotId(initialData.chatbotDetails._id);
+          setName(initialData.chatbotDetails.name);
+          setWebhook(initialData.chatbotDetails.webhook);
+          const prevContent = initialData.chatbotDetails.button_content;
+          setButtonContent(prevContent || {}); // Provide default empty object
+          setProjectLogoURL(initialData.chatbotDetails.projectLogo);
+          setProjectImagesURL(initialData.chatbotDetails.projectImages);
         }
       } catch (err) {
         console.log("Fetching chatbot err", err);
