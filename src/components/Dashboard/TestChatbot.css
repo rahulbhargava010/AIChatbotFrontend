@@ -30,7 +30,7 @@
 
 .chat-window {
     flex: 1;
-    max-height: 400px   ;
+    max-height: 400px;
     overflow-x: hidden;
     overflow-y: auto;
     background: #f5f8fab8;
@@ -74,7 +74,7 @@
 .form-control {
     border-radius: 5px;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 17px;
 }
 
 .btn {
@@ -276,25 +276,28 @@
 
 .chatbot-form-container {
     width: 100%;
-    background: white;
-    padding: 20px;
+    height: 100vh;
+    background: linear-gradient(100deg, #F8DFE3, #E6D9F3, #FCF6F8, #F0CBD2, #E6D9F3);
+    padding: 20px 50px;
     border-radius: 0px;
     position: relative;
 }
-
+.chatbot-form-container .btn-primary{
+    background: linear-gradient(19deg, #6a11cb, #6a11cb, transparent);
+}
 .close-button {
     position: absolute;
-    top: -10px;
+    top: -15px;
     right: 10px;
     background: none;
     border: none;
-    font-size: 18px;
+    font-size: 24px;
     cursor: pointer;
     color: #333;
 }
 
 .close-button:hover {
-    color: red;
+    background: transparent !important;
 }
 
 .chatbot-form {
@@ -309,7 +312,7 @@
 }
 
 .chatbot-form input {
-    padding: 8px;
+    padding: 11px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;

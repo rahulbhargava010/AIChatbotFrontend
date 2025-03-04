@@ -123,7 +123,7 @@ body{
   margin-left: 1rem !important;
   cursor: pointer;
   display: inline-block;
-  font-family: ITCAvantGardeStd-Bk,Arial,sans-serif;
+  /* font-family: ITCAvantGardeStd-Bk,Arial,sans-serif; */
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
@@ -274,8 +274,10 @@ filter: invert();
   margin-left: 8px;
 }
 .close_button:hover{
-  background: transparent;
+  background: transparent !important;
 }
+
+
 .chatbot-wrapper {
   position: fixed;
   bottom: 0;
@@ -293,8 +295,16 @@ filter: invert();
   transform: translateY(100%);
   pointer-events: none;
 }
+.icondiv svg{
+  position: absolute;
+  width: 8%;
+  margin-top: 8px;
+  padding: 7px;
+}
 
-
+.icondiv input{
+  padding-left: 2.2rem;
+}
 @media (max-width: 768px) {
   .chatbot-wrapper {
     position: fixed;
