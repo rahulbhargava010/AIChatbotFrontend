@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import api from "../config/axios";
 import { FaToggleOn, FaToggleOff, FaTrashAlt } from "react-icons/fa";
-import DataTable from "./DataTable"; // Import the DataTable component
+import ReactPaginate from "react-paginate";
 import "./Dashboard.css";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const usersPerPage = 6;
 
   useEffect(() => {
     fetchUsers();
@@ -44,7 +46,7 @@ const UserList = () => {
           },
         }
       );
-      fetchUsers(); // Refresh the user list after toggling activation
+      fetchUsers();
     } catch (error) {
       console.error("Error updating user status:", error);
     }
@@ -71,60 +73,84 @@ const UserList = () => {
           },
         }
       );
-      setUsers(users.filter((user) => user._id !== userId)); // Update the user list after deletion
+      setUsers(users.filter((user) => user._id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  // Define columns for the DataTable
-  const columns = [
-    { key: "name", header: "Name" },
-    { key: "email", header: "Email" },
-    {
-      key: "isActive",
-      header: "Status",
-      render: (value) => (
-        <span className={value === "active" ? "text-success" : "text-danger"}>
-          {value === "active" ? "Active" : "Inactive"}
-        </span>
-      ),
-    },
-  ];
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
-  // Define actions for the DataTable
-  const actions = [
-    {
-      label: "Toggle Activation",
-      icon: (item) =>
-        item.isActive === "active" ? (
-          <FaToggleOn className="text-success" size={24} />
-        ) : (
-          <FaToggleOff className="text-danger" size={24} />
-        ),
-      onClick: (e, item) =>
-        toggleActivation(item._id, item.isActive === "active"),
-    },
-    {
-      label: "Delete",
-      icon: <FaTrashAlt />,
-      onClick: (e, item) => handleDelete(item._id),
-    },
-  ];
+  const offset = currentPage * usersPerPage;
+  const currentUsers = users.slice(offset, offset + usersPerPage);
 
   return (
     <div className="dashboard-container container">
       <div className="d-flex justify-content-between align-items-center mb-5">
         <h3 className="m-0">Users List</h3>
+        {/* <input
+          type="text"
+          className="form-control w-50"
+          placeholder="🔍 Search user..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        /> */}
       </div>
 
-      {/* Use the DataTable component */}
-      <DataTable
-        data={users}
-        columns={columns}
-        actions={actions}
-        searchTerm={searchTerm}
-        onSearchChange={(e) => setSearchTerm(e.target.value)}
+      <div className="d-flex flex-wrap gap-3">
+        {currentUsers.map((user) => (
+          <div key={user._id} className="chatbot-card p-3">
+            <h5 className="flex-grow-1">{user?.name}</h5>
+            <div className="chatbot-actions">
+              {user.isActive === "active" ? (
+                <FaToggleOn
+                  className="text-success btn"
+                  size={24}
+                  onClick={() => toggleActivation(user._id, true)}
+                />
+              ) : (
+                <FaToggleOff
+                  className="text-danger btn"
+                  size={24}
+                  onClick={() => toggleActivation(user._id, false)}
+                />
+              )}
+              <a
+                className="btn btn-danger"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete(user._id);
+                }}
+              >
+                <FaTrashAlt />
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <ReactPaginate
+        previousLabel={"<"}
+        nextLabel={">"}
+        breakLabel={"..."}
+        pageCount={Math.ceil(users.length / usersPerPage)}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center mt-4"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item disabled"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
       />
     </div>
   );
