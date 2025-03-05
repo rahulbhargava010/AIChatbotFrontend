@@ -27,6 +27,7 @@ import UserList from "../Dashboard/UserList";
 import { NewDash } from "../Dashboard/NewDash";
 import ChatbotCard from "../Dashboard/ChatbotCard";
 import LeadDetails from "../Dashboard/LeadDetails";
+import ChatbotList from "../Dashboard/ChatbotList";
 
 const AppRoutes = () => {
   return (
@@ -79,6 +80,7 @@ const AppRoutes = () => {
             <Route path="/dashboard/addCompany" element={<CompanyForm />} />
             <Route path="/dashboard/companyList" element={<CompaniesList />} />
             <Route path="/dashboard/userList" element={<UserList />} />
+            <Route path="/dashboard/chatbotList" element={<ChatbotList />} />
             <Route
               path="/dashboard/companyList/company/:id"
               element={<ViewCompany />}

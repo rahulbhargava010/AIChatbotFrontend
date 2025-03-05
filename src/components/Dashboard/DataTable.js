@@ -79,7 +79,9 @@ const DataTable = ({
               {columns.map((column) => (
                 <th key={column.key}>{column.header}</th>
               ))}
-              {actions && <th>Actions</th>}
+              {actions && (
+                <th className="d-flex justify-content-around">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody>
