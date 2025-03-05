@@ -290,10 +290,12 @@ filter: invert();
 .icondiv svg{
   position: absolute;
   width: 8%;
-  margin-top: 8px;
+  margin-top: 4px;
   padding: 7px;
 }
-
+button:hover{
+  background-color: transparent !important;
+}
 .icondiv input{
   padding-left: 2.2rem;
 }

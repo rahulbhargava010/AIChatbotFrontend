@@ -11,6 +11,7 @@ import chatbotThemes from "../config/chatbotThemes";
 
 const TestChatbot = () => {
   const { chatbotId } = useParams();
+  const [isVisible, setIsVisible] = useState(true);
   const [messages, setMessages] = useState([]);
   const [embedScript, setEmbedScript] = useState("");
   const [webhook, setWebhook] = useState("");
@@ -347,7 +348,15 @@ const TestChatbot = () => {
   };
 
   return (
-    <div className="chatbot-wrapper">
+    <div
+      className="chatbot-wrapper-test"
+      style={{
+        position: "fixed ",
+        bottom: "10px ",
+        right: "20px",
+        zIndex: 1000,
+      }}
+    >
       {/* <div className="color-picker-wrapper">
                 <button onClick={() => setShowColorPicker(!showColorPicker)}>Customize Theme</button>
                 {showColorPicker && (
@@ -372,6 +381,16 @@ const TestChatbot = () => {
           <div className="chatbot-form-overlay">
             <div className="chatbot-form-container mb-2">
               <button
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                }}
                 className="close-button"
                 onClick={() => {
                   setFormVisible(false);

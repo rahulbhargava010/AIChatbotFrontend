@@ -96,7 +96,7 @@ const TestChatbot = () => {
         setFormVisible(true);
         // setChatVisible(false);
       }
-    }, 10000); // Runs every 10 seconds
+    }, 200000); // Runs every 10 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [formVisible, isTyping]);
@@ -456,7 +456,7 @@ const TestChatbot = () => {
       >
       {formVisible && (
   <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
-    <div className="chatbot-form-container">
+    <div className="chatbot-form-container vh-100 window_bg_pink">
       <button
         className="close-button"
         onClick={() => {

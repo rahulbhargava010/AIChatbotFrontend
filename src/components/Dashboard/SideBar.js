@@ -8,6 +8,7 @@ import {
   FaBuilding,
   FaSignOutAlt,
   FaTachometerAlt,
+  FaComments,
 } from "react-icons/fa";
 import { useAuth } from "../Auth/AuthContext";
 import "./Sidebar.css";
@@ -48,6 +49,12 @@ const Sidebar = ({ onSidebarToggle }) => {
           <Link to="/dashboard" className="menu-item">
             <FaTachometerAlt className="icon" />
             {isOpen && <span>Dashboard</span>}
+          </Link>
+        </li>
+        <li onClick={handleItemClick}>
+          <Link to="/dashboard/chatbotList" className="menu-item">
+            <FaComments className="icon" />
+            {isOpen && <span>Chatbot List</span>}
           </Link>
         </li>
         {/* <li onClick={handleItemClick}>
