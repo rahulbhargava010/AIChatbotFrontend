@@ -349,8 +349,13 @@ const TestChatbot = () => {
 
   return (
     <div
-      className="chatbot-wrapper"
-      style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}
+      className="chatbot-wrapper-test"
+      style={{
+        position: "fixed ",
+        bottom: "10px ",
+        right: "20px",
+        zIndex: 1000,
+      }}
     >
       {/* <div className="color-picker-wrapper">
                 <button onClick={() => setShowColorPicker(!showColorPicker)}>Customize Theme</button>
