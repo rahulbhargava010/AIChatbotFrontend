@@ -189,7 +189,10 @@ const TestChatbot = () => {
     sessionStorage.setItem("chatbotSessionId", storedSessionId);
     // Auto-save conversation every 10 seconds
     const interval = setInterval(() => {
-      saveConversation(storedSessionId);
+      const hasUserMessage = messages.some(msg => msg.sender === "User")
+      if(hasUserMessage) {
+        saveConversation(storedSessionId);
+      }
     }, 10000);
     return () => clearInterval(interval);
   }, [messages]);
@@ -209,9 +212,21 @@ const TestChatbot = () => {
   };
 
 
-  const handleLeadSubmit = (e) => {
+  const callLeadSubmit = (e, leadData,
+    chatbotId,
+    conversation,
+    uniqueSessionId,
+    messages,
+    api) => {
     e.preventDefault();
   
+    console.log("leadData", leadData);
+    console.log("chatbotId", chatbotId);
+    console.log("conversation", conversation);
+    console.log("messages", messages);
+    console.log("api", api);
+    handleLeadSubmit();
+    // callLeadSubmit()
     // Simulate API call success
     setTimeout(() => {
       setFormSubmitted(true);
@@ -502,17 +517,20 @@ const TestChatbot = () => {
 
           <form
             className="chatbot-form my-4"
-            onSubmit={(e) =>
-              handleLeadSubmit(
+            onSubmit={async (e) =>
+             handleLeadSubmit(
                 e,
                 leadData,
                 chatbotId,
                 conversation,
                 setMessages,
                 setFormVisible,
+                setFormSubmitted,
+                setChatVisible,
                 uniqueSessionId,
                 messages,
-                api
+                api,
+                
               )
             }
             onFocus={() => setIsTyping(true)}
@@ -721,7 +739,7 @@ const TestChatbot = () => {
                       </div>
                     )}
                   </div>
-                  <div
+                  {/* <div
                     className="fw-bold close_button"
                     style={{ cursor: "pointer", color: "#000" }}
                     onClick={() => setChatVisible(false)}
@@ -741,7 +759,7 @@ const TestChatbot = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div
