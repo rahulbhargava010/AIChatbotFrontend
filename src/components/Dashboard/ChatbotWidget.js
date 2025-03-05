@@ -89,6 +89,7 @@ const TestChatbot = () => {
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
 
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!formVisible && !isTyping) {

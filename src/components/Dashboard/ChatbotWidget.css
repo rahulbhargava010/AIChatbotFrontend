@@ -37,6 +37,9 @@ body{
     border-radius: 100px;
     background: var(--secondary-color);
   }
+  .class_class{
+    color: #000;
+  }
   .typing-form .typing-input:focus {
     background: var(--secondary-hover-color);
   }

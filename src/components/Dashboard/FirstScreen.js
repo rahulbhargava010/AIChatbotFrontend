@@ -6,6 +6,7 @@ export const FirstScreen = ({ setShowFirstScreen }) => {
         alt="image"
         className="animated"
       />
+  
 
       <div className="mt-5 text-center">
         <h3 className="fw-normal">
