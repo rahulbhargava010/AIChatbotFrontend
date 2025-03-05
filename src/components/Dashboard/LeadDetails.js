@@ -82,7 +82,7 @@ const LeadDetails = () => {
                 className="list-group-item d-flex align-items-center"
               >
                 <FaHistory className="me-2 text-danger" /> {log?.timestamp} -{" "}
-                {log?.performedBy?.name || "Unknown"}
+                {log?.action || "Unknown"}
               </li>
             ))}
           </ul>

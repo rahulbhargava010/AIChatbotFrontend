@@ -212,44 +212,44 @@ const TestChatbot = () => {
   };
 
 
-  const callLeadSubmit = (e, leadData,
-    chatbotId,
-    conversation,
-    uniqueSessionId,
-    messages,
-    api) => {
-    e.preventDefault();
+  // const callLeadSubmit = (e, leadData,
+  //   chatbotId,
+  //   conversation,
+  //   uniqueSessionId,
+  //   messages,
+  //   api) => {
+  //   e.preventDefault();
   
-    console.log("leadData", leadData);
-    console.log("chatbotId", chatbotId);
-    console.log("conversation", conversation);
-    console.log("messages", messages);
-    console.log("api", api);
-    handleLeadSubmit();
-    // callLeadSubmit()
-    // Simulate API call success
-    setTimeout(() => {
-      setFormSubmitted(true);
+  //   console.log("leadData", leadData);
+  //   console.log("chatbotId", chatbotId);
+  //   console.log("conversation", conversation);
+  //   console.log("messages", messages);
+  //   console.log("api", api);
+  //   handleLeadSubmit();
+  //   // callLeadSubmit()
+  //   // Simulate API call success
+  //   setTimeout(() => {
+  //     setFormSubmitted(true);
   
-      setLeadData({
-        name: "",
-        phone: "",
-        email: "",
-      });
-      setCheckedItems({
-        option1: false,
-        option2: false,
-      });
+  //     setLeadData({
+  //       name: "",
+  //       phone: "",
+  //       email: "",
+  //     });
+  //     setCheckedItems({
+  //       option1: false,
+  //       option2: false,
+  //     });
       
       
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setFormSubmitted(false);
-        setFormVisible(false);
-        setChatVisible(true);
-      }, 3000);
-    }, 1000);
-  };
+  //     // Hide success message after 3 seconds
+  //     setTimeout(() => {
+  //       setFormSubmitted(false);
+  //       setFormVisible(false);
+  //       setChatVisible(true);
+  //     }, 3000);
+  //   }, 1000);
+  // };
   
 
   //   const handleLeadSubmit = async (e) => {
@@ -402,13 +402,14 @@ const TestChatbot = () => {
           webhook,
           projectImages,
           chatbotGreeting,
+          chatbotName
         } = response.data;
-        // console.log('Welcome in project greeting: ' + response.data)
+        console.log('Welcome in project greeting 12: ' + response)
         setWebhook(webhook);
         setProjectLogo(projectLogo);
         setProjectImages(projectImages);
         setChatbotData(response.data);
-        // setButtonContent(buttons || {});
+        setButtonContent(buttons || {});
         const buttonMap = {};
         // console.log('Welcome in project buttons: ', buttons);
         const buttonList = buttons.map((btn) => {
@@ -429,9 +430,9 @@ const TestChatbot = () => {
           { images: projectImages },
           {
             buttons: [
-              // { label: "Location", action: "location" },
-              // { label: "Amenities", action: "amenities" },
-              // { label: "Get a Call Back", action: "get_callback" },
+              { label: "Site Visit Schedule", action: "schedule_site_visit" },
+              { label: "Brochure", action: "brochure" },
+              { label: "Location Map", action: "get_callback" },
             ],
           },
         ]);
@@ -680,7 +681,7 @@ const TestChatbot = () => {
                   )}
                   <div className="py-2 text-left">
                     <h4 className="title">
-                      PropStory Help Desk {chatbotData?.name}
+                    {chatbotData?.chatbotName} Help Desk
                     </h4>
                     <small>
                       <span className="d-block pt-2">
@@ -732,9 +733,9 @@ const TestChatbot = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          <li>Site Visit</li>
-                          <li>Voice Call</li>
-                          <li>Video Call</li>
+                          <li>Talk to Human</li>
+                          <li>Rate this Chat</li>
+                          <li>Send details over WhatsApp</li>
                         </ul>
                       </div>
                     )}
@@ -802,7 +803,7 @@ const TestChatbot = () => {
                           </div>
                         )}
 
-                        {message.images && message.images.length > 0 && (
+                        {message?.images && message?.images?.length > 0 && (
                           <div className="image-container">
                             {message.images
                               .filter((img) => img) // Ensure image URL is valid
@@ -826,6 +827,20 @@ const TestChatbot = () => {
                               ))}
                           </div>
                         )}
+                        { message?.buttons &&
+                            message?.buttons?.map((button, idx) => (
+                              <div key={idx} className="mt-2 me-2">
+                              <a
+                                key={idx}
+                                onClick={() =>
+                                  handleButtonClick(button.action, button.label)
+                                }
+                                className="button-50"
+                              >
+                                {button.label}
+                              </a>
+                              </div>
+                        ))}
                       </div>
                     ) : null;
                   })}

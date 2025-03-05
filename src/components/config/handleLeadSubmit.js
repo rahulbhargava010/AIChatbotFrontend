@@ -84,7 +84,6 @@ const handleLeadSubmit = async (
     console.log("Analytics event saved!");
     setFormSubmitted(true);
     setTimeout(() => {
-      // setFormSubmitted(true);
       setFormVisible(false);
       setChatVisible(true);
     }, 3000);
