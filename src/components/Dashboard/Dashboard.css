@@ -3,7 +3,7 @@
 }
 
 .create-btn {
-  background-color: #007bff;
+  background-color: #222222;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -83,9 +83,9 @@
 }
 
 .page-item.active .page-link {
-  background-color: #007bff;
+  background-color: #222222;
   color: white;
-  border-color: #007bff;
+  border-color: #222222;
 }
 
 .page-item.disabled .page-link {
