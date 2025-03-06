@@ -12,6 +12,7 @@ import chatbotThemes from "../config/chatbotThemes";
 import { FirstScreen } from "./FirstScreen";
 // import { Send } from "lucide-react";
 import { Form } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -486,11 +487,13 @@ const TestChatbot = () => {
       {formSubmitted ? (
         <div className="text-center">
           <div className="chatbot_wrapper">
-          <p>Thanks! For your enquiry, we will contact you soon!</p>
-            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
               <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
               <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
             </svg>
+            <h4>THANK YOU!</h4>
+          <p>We've received your submission, and we'll be in touch soon!</p>
+            
           </div>
          
         </div>
@@ -616,7 +619,7 @@ const TestChatbot = () => {
                 type="checkbox"
                 id="checkbox1"
                 name="option1"
-                label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this \u00A0\u00A0number for sales and support activities`}
+                label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this number for  \u00A0\u00A0sales and support activities`}
                 checked={checkedItems.option1}
                 onChange={handleChange}
               />
@@ -775,6 +778,13 @@ const TestChatbot = () => {
                       message.buttons?.length;
 
                     return hasContent ? (
+                      <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }} // Start slightly below
+                      animate={{ opacity: 1, y: 0 }} // Move up and become visible
+                      transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
+                      className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
+                    >
                       <div
                         key={index}
                         className={`message ${
@@ -842,6 +852,8 @@ const TestChatbot = () => {
                               </div>
                         ))}
                       </div>
+                          </motion.div>
+
                     ) : null;
                   })}
 

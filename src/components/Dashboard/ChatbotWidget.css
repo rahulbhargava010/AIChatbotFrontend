@@ -267,14 +267,18 @@ filter: invert();
   position: relative;
   right: 0;
   border-radius: 0.5rem;
+  margin-top: 6px;
 }
 .menu_list li{
-  padding: 0.5rem 3rem;
+  padding: 0.5rem 1rem;
   width: auto;
   cursor: pointer;
   font-size: 13px;
 }
-
+.user-message {
+  width: 24rem;
+  margin-right: -1rem;
+}
 .close_button{
   position: relative;
  color: wheat;
@@ -293,7 +297,7 @@ filter: invert();
   margin-top: 4px;
   padding: 7px;
 }
-button:hover{
+.chatbot-form-container button:hover{
   background-color: transparent !important;
 }
 .icondiv input{
@@ -302,14 +306,14 @@ button:hover{
 
 .chatbot_wrapper {
   position: fixed;
-  top: 30%;
+  top: 17%;
   left: 0;
   margin: 1rem;
   width: fit-content;
   height: fit-content;
   padding: 1rem;
-  background: white;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  /* background: white; */
+  /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); */
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
 }
@@ -319,25 +323,61 @@ button:hover{
   transform: translateY(100%);
   pointer-events: none;
 }
-.chatbot_wrapper p {
+.chatbot_wrapper h4{
   font-weight: 600;
+  font-size: 2rem;
+  color: #007BFF;
+}
+.chatbot_wrapper p {
   margin-top: 1rem;
   font-size: 1.2rem;
 }
 @media (max-width: 768px) {
+  /* .test-chatbot-container{
+    height: 86vh;
+    width: 350px;
+  }
   .chatbot-wrapper {
     position: fixed;
-    bottom: 0 !important;
+    bottom: 6rem !important;
     left: 0;
-    width: fit-content;
+    width: 350px;
+    margin-left: 9px;
     height:auto;
     background: white;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     transition: all 0.3s ease-in-out;
   }
+  .get_started button {
+    background-color: #000;
+    color: #fff;
+    padding: 0.8rem 5rem;
+    bottom: 0;
+    position: relative;
+    border-radius: 2rem;
+  }
+  .chatbot-form-overlay .window_bg_pink{
+    height: 88vh !important;
+  }
+  .user-message {
+    width: 24rem;
+    margin-right: -7rem;
 }
-
+.user-message {
+    justify-content: center;
+} */
+}
+.chatbot-form-overlay .window_bg_pink {
+  background: linear-gradient(
+    100deg,
+    #f8dfe3,
+    #e6d9f3,
+    #fcf6f8,
+    #f0cbd2,
+    #e6d9f3
+  );
+}
 .checkmark__circle {
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
