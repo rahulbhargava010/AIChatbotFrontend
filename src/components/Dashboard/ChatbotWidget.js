@@ -39,6 +39,8 @@ const TestChatbot = () => {
     // { label: "Schedule Site Visit", action: "schedule_site_visit" },
     { label: "Get a Call Back", action: "get_callback" },
   ]);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [formVisible, setFormVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(true);
@@ -55,7 +57,22 @@ const TestChatbot = () => {
     option1: false,
     option2: false,
   });
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768); // Mobile if width ≤ 768px
+    };
 
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Toggle full-screen mode (only for mobile)
+  const toggleFullScreen = () => {
+    if (isMobile) {
+      setIsFullScreen(!isFullScreen);
+    }
+  };
   const storedSessionId =
     sessionStorage.getItem("chatbotSessionId") || uuidv4();
   const uniqueSessionId = localStorage.getItem("uniqueSessionId");
@@ -464,14 +481,15 @@ const TestChatbot = () => {
 
   return (
     <div className={`chatbot-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
-      <div
-        className="test-chatbot-container chatbot-container"
-        // style={{
-        //   backgroundColor: theme.backgroundColor,
-        //   color: theme.textColor,
-        // }}
-      >
-      {formVisible && (
+    <div
+      className={`test-chatbot-container chatbot-container ${
+        isFullScreen ? "full-screen" : ""
+      }`}
+    >
+      {/* Full-screen button (Visible only on mobile) */}
+     
+      
+            {formVisible && (
   <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
     <div className="chatbot-form-container vh-100 window_bg_pink">
       <button
@@ -499,7 +517,7 @@ const TestChatbot = () => {
         </div>
       ) : (
         <>
-          <div className="text-center mt-4">
+          <div className="text-center mt-4 mobile">
             <svg
               width="50"
               height="50"
@@ -531,6 +549,7 @@ const TestChatbot = () => {
                 setFormVisible,
                 setFormSubmitted,
                 setChatVisible,
+                setIsTyping,
                 uniqueSessionId,
                 messages,
                 api,
@@ -671,7 +690,7 @@ const TestChatbot = () => {
                     />
                 </div> */}
                   {chatbotData?.projectLogo && (
-                    <div className="chatbot-logo d-flex flex-column justify-content-center align-items-center">
+                    <div className="chatbot-logo d-flex justify-content-center align-items-center">
                       <img
                         className="chatbot-logo-img"
                         src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
@@ -680,9 +699,8 @@ const TestChatbot = () => {
                         height="50"
                         width="60"
                       />
-                    </div>
-                  )}
-                  <div className="py-2 text-left">
+
+<div className="py-2 text-left ms-2">
                     <h4 className="title">
                     {chatbotData?.chatbotName} Help Desk
                     </h4>
@@ -713,8 +731,31 @@ const TestChatbot = () => {
                     How can I help you today {chatbotData?.name}?
                   </p> */}
                   </div>
+                    </div>
+                  )}
+                
 
                   <div className="relative py-2">
+                  {isMobile && (
+        <button className="fullscreen-toggle" onClick={toggleFullScreen}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
+        </svg>
+      </button>
+        // <button className="fullscreen-toggle" onClick={toggleFullScreen}>
+        //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
+        // </button>
+      )}
                     {/* Menu Icon */}
                     <div
                       className="menu-toggle1 cursor-pointer rounded-md hover:bg-gray-200 transition align-items-center"
@@ -765,7 +806,7 @@ const TestChatbot = () => {
                     </svg>
                   </div> */}
                 </div>
-
+              
                 <div
                   className="chat-window p-4 mb-3 border rounded scrollbar"
                   id="style-8"
@@ -845,7 +886,7 @@ const TestChatbot = () => {
                                 onClick={() =>
                                   handleButtonClick(button.action, button.label)
                                 }
-                                className="button-50"
+                                className="button-52"
                               >
                                 {button.label}
                               </a>
