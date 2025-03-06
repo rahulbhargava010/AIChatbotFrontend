@@ -9,6 +9,7 @@ const handleLeadSubmit = async (
   setFormVisible,
   setFormSubmitted,
   setChatVisible,
+  setIsTyping,
   uniqueSessionId,
   messages,
   api
@@ -61,14 +62,19 @@ const handleLeadSubmit = async (
       leadData: updatedLeadData,
       conversation,
     });
-    console.log("Lead data saved successfully!");
+    // console.log("Lead data saved successfully!");
 
     alert("Lead saved successfully!");
     setMessages((prevMessages) => [
       ...prevMessages,
       {
         sender: "Bot",
-        text: `Thank you, ${leadData.name}, for submitting your enquiry!`,
+        text: (
+          <>
+            Thank you! <strong>{leadData.name.toUpperCase()}</strong>, for submitting your enquiry!
+          </>
+        )
+        
       },
     ]);
     // setFormVisible(false);
@@ -83,6 +89,7 @@ const handleLeadSubmit = async (
     });
     console.log("Analytics event saved!");
     setFormSubmitted(true);
+    setIsTyping(false);
     setTimeout(() => {
       setFormVisible(false);
       setChatVisible(true);
