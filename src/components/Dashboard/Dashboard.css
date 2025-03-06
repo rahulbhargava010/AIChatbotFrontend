@@ -1,56 +1,68 @@
+.dashboard-container {
+  padding: 20px;
+}
+
 .create-btn {
   background-color: #222222;
   color: white;
-  font-weight: bold;
   border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
-  transition: 0.3s;
-  margin-left: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .create-btn:hover {
-  background: #2e7d32;
-}
-.chatbot-card {
-  background: #fff;
-  border-radius: 7px;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
-    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-  /* box-shadow: 0 4px 10px rgba(128, 0, 128, 0.2); */
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  width: 100%; /* Ensure full width */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px;
+  background-color: #0056b3;
 }
 
-.chatbot-card:hover {
-  box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+.search-input {
+  width: 300px;
+  margin-right: 10px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f8f9fa;
 }
 
 .chatbot-actions {
   display: flex;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 20px; /* Adds space between buttons */
 }
 
 .chatbot-actions .btn {
-  background: #222;
-  color: white;
+  margin: 0;
+  padding: 5px;
   border: none;
-  padding: 8px;
+  background-color: transparent;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  transition: background 0.3s ease-in-out;
+}
+
+.chatbot-actions .btn-danger {
+  color: #dc3545;
 }
 
 .chatbot-actions .btn:hover {
-  background: linear-gradient(135deg, #4caf50, #388e3c);
+  opacity: 0.8;
 }
 
 .pagination {
