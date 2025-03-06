@@ -256,39 +256,32 @@ const LeadDetails = () => {
           </div>
         </div>
         {/* Conversation Card */}
-        <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Conversation</h6>
-            {conversationLogs &&
-            conversationLogs.messages &&
-            conversationLogs.messages.length > 0 ? (
-              <div
-                className="list-group"
-                style={{ maxHeight: "300px", overflowY: "auto" }}
-              >
-                {conversationLogs.messages.map((log, index) => (
-                  <div
-                    key={index}
-                    className="list-group-item d-flex flex-column align-items-start"
-                  >
-                    <div className="d-flex align-items-center">
-                      <FaComment className="me-2 text-primary" />
-                      <strong>{log.sender || "Unknown"}:</strong>
-                    </div>
-                    <div className="ms-4 mt-2">
-                      <p className="mb-1">{log.text || "No message content"}</p>
-                      <small className="text-muted">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </small>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center">No conversation logs available.</p>
-            )}
+<div className="col-md-6 col-lg-4 mb-4">
+  <div className="card h-100 p-3">
+    <h6 className="card-title text-center">Conversation</h6>
+    {conversationLogs && conversationLogs.messages && conversationLogs.messages.length > 0 ? (
+      <div className="list-group" style={{ maxHeight: "300px", overflowY: "auto" }}>
+        {conversationLogs.messages.map((log, index) => (
+          <div key={index} className="list-group-item d-flex flex-column align-items-start">
+            <div className="d-flex align-items-center">
+              <FaComment className="me-2 text-primary" />
+              <strong>{log.sender || "Unknown"}:</strong>
+            </div>
+            <div className="ms-4 mt-2">
+              <p className="mb-1">{log.text || "No message content"}</p>
+              <small className="text-muted">
+                {new Date(log.timestamp).toLocaleString()}
+              </small>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-center">No conversation logs available.</p>
+    )}
+  </div>
+</div>
+
 
         {/* Future Details Card */}
         {/* <div className="col-md-6 col-lg-4 mb-4">
@@ -303,6 +296,8 @@ const LeadDetails = () => {
                 <FaBuilding className="me-2 text-primary" />{" "}
                 <strong>Property Type:</strong>{" "}
                 {leadDetail.propertyType || "N/A"}
+                <FaHistory className="me-2 text-danger" /> {log?.timestamp} -{" "}
+                {log?.action || "Unknown"}
               </li>
               <li className="list-group-item d-flex align-items-center">
                 <FaMapMarker className="me-2 text-primary" />

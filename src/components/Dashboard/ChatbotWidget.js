@@ -12,6 +12,7 @@ import chatbotThemes from "../config/chatbotThemes";
 import { FirstScreen } from "./FirstScreen";
 // import { Send } from "lucide-react";
 import { Form } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -189,7 +190,10 @@ const TestChatbot = () => {
     sessionStorage.setItem("chatbotSessionId", storedSessionId);
     // Auto-save conversation every 10 seconds
     const interval = setInterval(() => {
-      saveConversation(storedSessionId);
+      const hasUserMessage = messages.some(msg => msg.sender === "User")
+      if(hasUserMessage) {
+        saveConversation(storedSessionId);
+      }
     }, 10000);
     return () => clearInterval(interval);
   }, [messages]);
@@ -209,32 +213,44 @@ const TestChatbot = () => {
   };
 
 
-  const handleLeadSubmit = (e) => {
-    e.preventDefault();
+  // const callLeadSubmit = (e, leadData,
+  //   chatbotId,
+  //   conversation,
+  //   uniqueSessionId,
+  //   messages,
+  //   api) => {
+  //   e.preventDefault();
   
-    // Simulate API call success
-    setTimeout(() => {
-      setFormSubmitted(true);
+  //   console.log("leadData", leadData);
+  //   console.log("chatbotId", chatbotId);
+  //   console.log("conversation", conversation);
+  //   console.log("messages", messages);
+  //   console.log("api", api);
+  //   handleLeadSubmit();
+  //   // callLeadSubmit()
+  //   // Simulate API call success
+  //   setTimeout(() => {
+  //     setFormSubmitted(true);
   
-      setLeadData({
-        name: "",
-        phone: "",
-        email: "",
-      });
-      setCheckedItems({
-        option1: false,
-        option2: false,
-      });
+  //     setLeadData({
+  //       name: "",
+  //       phone: "",
+  //       email: "",
+  //     });
+  //     setCheckedItems({
+  //       option1: false,
+  //       option2: false,
+  //     });
       
       
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setFormSubmitted(false);
-        setFormVisible(false);
-        setChatVisible(true);
-      }, 3000);
-    }, 1000);
-  };
+  //     // Hide success message after 3 seconds
+  //     setTimeout(() => {
+  //       setFormSubmitted(false);
+  //       setFormVisible(false);
+  //       setChatVisible(true);
+  //     }, 3000);
+  //   }, 1000);
+  // };
   
 
   //   const handleLeadSubmit = async (e) => {
@@ -387,13 +403,14 @@ const TestChatbot = () => {
           webhook,
           projectImages,
           chatbotGreeting,
+          chatbotName
         } = response.data;
-        // console.log('Welcome in project greeting: ' + response.data)
+        console.log('Welcome in project greeting 12: ' + response)
         setWebhook(webhook);
         setProjectLogo(projectLogo);
         setProjectImages(projectImages);
         setChatbotData(response.data);
-        // setButtonContent(buttons || {});
+        setButtonContent(buttons || {});
         const buttonMap = {};
         // console.log('Welcome in project buttons: ', buttons);
         const buttonList = buttons.map((btn) => {
@@ -414,9 +431,9 @@ const TestChatbot = () => {
           { images: projectImages },
           {
             buttons: [
-              // { label: "Location", action: "location" },
-              // { label: "Amenities", action: "amenities" },
-              // { label: "Get a Call Back", action: "get_callback" },
+              { label: "Site Visit Schedule", action: "schedule_site_visit" },
+              { label: "Brochure", action: "brochure" },
+              { label: "Location Map", action: "get_callback" },
             ],
           },
         ]);
@@ -470,11 +487,13 @@ const TestChatbot = () => {
       {formSubmitted ? (
         <div className="text-center">
           <div className="chatbot_wrapper">
-          <p>Thanks! For your enquiry, we will contact you soon!</p>
-            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
               <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
               <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
             </svg>
+            <h4>THANK YOU!</h4>
+          <p>We've received your submission, and we'll be in touch soon!</p>
+            
           </div>
          
         </div>
@@ -502,17 +521,20 @@ const TestChatbot = () => {
 
           <form
             className="chatbot-form my-4"
-            onSubmit={(e) =>
-              handleLeadSubmit(
+            onSubmit={async (e) =>
+             handleLeadSubmit(
                 e,
                 leadData,
                 chatbotId,
                 conversation,
                 setMessages,
                 setFormVisible,
+                setFormSubmitted,
+                setChatVisible,
                 uniqueSessionId,
                 messages,
-                api
+                api,
+                
               )
             }
             onFocus={() => setIsTyping(true)}
@@ -597,7 +619,7 @@ const TestChatbot = () => {
                 type="checkbox"
                 id="checkbox1"
                 name="option1"
-                label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this \u00A0\u00A0number for sales and support activities`}
+                label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this number for  \u00A0\u00A0sales and support activities`}
                 checked={checkedItems.option1}
                 onChange={handleChange}
               />
@@ -662,7 +684,7 @@ const TestChatbot = () => {
                   )}
                   <div className="py-2 text-left">
                     <h4 className="title">
-                      PropStory Help Desk {chatbotData?.name}
+                    {chatbotData?.chatbotName} Help Desk
                     </h4>
                     <small>
                       <span className="d-block pt-2">
@@ -714,14 +736,14 @@ const TestChatbot = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          <li>Site Visit</li>
-                          <li>Voice Call</li>
-                          <li>Video Call</li>
+                          <li>Talk to Human</li>
+                          <li>Rate this Chat</li>
+                          <li>Send details over WhatsApp</li>
                         </ul>
                       </div>
                     )}
                   </div>
-                  <div
+                  {/* <div
                     className="fw-bold close_button"
                     style={{ cursor: "pointer", color: "#000" }}
                     onClick={() => setChatVisible(false)}
@@ -741,7 +763,7 @@ const TestChatbot = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div
@@ -756,6 +778,13 @@ const TestChatbot = () => {
                       message.buttons?.length;
 
                     return hasContent ? (
+                      <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }} // Start slightly below
+                      animate={{ opacity: 1, y: 0 }} // Move up and become visible
+                      transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
+                      className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
+                    >
                       <div
                         key={index}
                         className={`message ${
@@ -784,7 +813,7 @@ const TestChatbot = () => {
                           </div>
                         )}
 
-                        {message.images && message.images.length > 0 && (
+                        {message?.images && message?.images?.length > 0 && (
                           <div className="image-container">
                             {message.images
                               .filter((img) => img) // Ensure image URL is valid
@@ -808,7 +837,23 @@ const TestChatbot = () => {
                               ))}
                           </div>
                         )}
+                        { message?.buttons &&
+                            message?.buttons?.map((button, idx) => (
+                              <div key={idx} className="mt-2 me-2">
+                              <a
+                                key={idx}
+                                onClick={() =>
+                                  handleButtonClick(button.action, button.label)
+                                }
+                                className="button-50"
+                              >
+                                {button.label}
+                              </a>
+                              </div>
+                        ))}
                       </div>
+                          </motion.div>
+
                     ) : null;
                   })}
 

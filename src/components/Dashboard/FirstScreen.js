@@ -1,6 +1,11 @@
+import { motion } from "framer-motion";
+
+
 export const FirstScreen = ({ setShowFirstScreen }) => {
   return (
-    <div className="text-center first_screen">
+    <div
+    className="text-center first_screen"
+  > 
       <img
         src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx534j6m7oc5zo9.webp"
         alt="image"
@@ -8,16 +13,23 @@ export const FirstScreen = ({ setShowFirstScreen }) => {
       />
   
 
-      <div className="mt-5 text-center">
+      <motion.div className="mt-5 text-center" 
+      initial={{ opacity: 0, y: 20 }} // Start slightly below
+      animate={{ opacity: 1, y: 0 }} // Move up and become visible
+      transition={{ duration: 0.5, delay: 0.1 }} // Stagger effect>
+      >
         <h3 className="fw-normal">
           How May <span className="fw-bold">I Assist <span className="d-block">You Today</span></span>
         </h3>
         <p className="pt-2">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quos doloremque repellendus explicabo.?
         </p>
-      </div>
+      </motion.div>
 
-      <div className="text-center get_started">
+      <motion.div className="text-center get_started"
+     initial={{ opacity: 0, y: 20 }} // Start slightly below
+     animate={{ opacity: 1, y: 0 }} // Move up and become visible
+     transition={{ duration: 0.5, delay: 0.1 }}   >
         <button onClick={() => setShowFirstScreen(false)}>
           Get Started
           <div className="scroll-prompt">
@@ -28,7 +40,7 @@ export const FirstScreen = ({ setShowFirstScreen }) => {
             </div>
           </div>
         </button>
+      </motion.div>
       </div>
-    </div>
   );
 };
