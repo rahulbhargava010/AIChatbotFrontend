@@ -117,7 +117,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
 
   useEffect(() => {
     const fetchChatbotData = async () => {
-      if (Object.keys(initialData?.chatbotDetails).length > 0)
+      if (
+        initialData?.chatbotDetails &&
+        Object.keys(initialData.chatbotDetails).length > 0
+      )
         console.log("Fetching chatbot data", initialData?.chatbotDetails);
       try {
         if (mode === "update" && Object.keys(initialData).length > 0) {
