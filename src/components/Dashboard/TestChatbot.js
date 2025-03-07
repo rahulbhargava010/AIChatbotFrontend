@@ -464,13 +464,12 @@ const TestChatbot = () => {
       { label: "Brochure", action: "brochure" },
       { label: "Location Map", action: "get_callback" },
     ],
-  };
-  
-  useEffect(() => {
+};
+
+useEffect(() => {
     const fetchWelcomeData = async () => {
       try {
         const token = localStorage.getItem("token");
-  
         const response = await api.post(
           "/aichatbots/welcome",
           { chatbotId },
@@ -480,43 +479,37 @@ const TestChatbot = () => {
             },
           }
         );
-  
-        // ✅ If API response is empty or missing, use dummyData
+
         const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
-  
+
         console.log("Welcome in project greeting 12: ", response);
-  
-        setWebhook(data.webhook);
-        setProjectLogo(data.projectLogo);
-        setProjectImages(data.projectImages);
+
+        setWebhook(data.webhook || dummyData.webhook);
+        setProjectLogo(data.projectLogo || dummyData.projectLogo);
+        setProjectImages(data.projectImages?.length ? data.projectImages : dummyData.projectImages);
         setChatbotData(data);
-        setButtonContent(data.buttons || {});
-  
+
         const buttonMap = {};
         (data.buttons || []).forEach((btn) => {
           buttonMap[btn.action] = btn.data || {};
         });
-  
-        setButtonContent(buttonMap);
-  
+
+        setButtonContent(Object.keys(buttonMap).length > 0 ? buttonMap : dummyData.buttons);
+
         setMessages([
-          { sender: "Bot", text: data.greeting?.trim() || "" },
-          { sender: "Bot", text: data.chatbotGreeting?.trim() || "" },
-          { sender: "Bot", text: data.projectHighlights?.trim() || "" },
-          { images: data.projectImages || [] },
-          { buttons: data.buttons || [] },
+          { sender: "Bot", text: data.greeting?.trim() || dummyData.greeting },
+          { sender: "Bot", text: data.chatbotGreeting?.trim() || dummyData.chatbotGreeting },
+          { sender: "Bot", text: data.projectHighlights?.trim() || dummyData.projectHighlights },
+          { images: data.projectImages?.length ? data.projectImages : dummyData.projectImages },
+          { buttons: data.buttons?.length ? data.buttons : dummyData.buttons },
         ]);
-        
       } catch (err) {
         console.error("Error fetching welcome data:", err);
-  
-        // ✅ If API fails, set dummy data
         setWebhook(dummyData.webhook);
         setProjectLogo(dummyData.projectLogo);
         setProjectImages(dummyData.projectImages);
         setChatbotData(dummyData);
-        setButtonContent(dummyData.buttons || {});
-  
+        setButtonContent(dummyData.buttons);
         setMessages([
           { sender: "Bot", text: dummyData.greeting },
           { sender: "Bot", text: dummyData.chatbotGreeting },
@@ -526,9 +519,8 @@ const TestChatbot = () => {
         ]);
       }
     };
-  
     fetchWelcomeData();
-  }, [chatbotId]);
+}, [chatbotId]);
   
   
   useEffect(() => {
