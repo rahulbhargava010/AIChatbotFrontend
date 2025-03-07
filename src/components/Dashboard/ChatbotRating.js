@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./ChatbotWidget.css"
+import "./ChatbotWidget.css";
 
 const ChatbotRating = ({ onClose, onSubmit }) => {
   const [rating, setRating] = useState(null);
@@ -17,31 +17,30 @@ const ChatbotRating = ({ onClose, onSubmit }) => {
 
   const handleSubmit = () => {
     if (!rating) {
-      alert("Please select a rating!");
+      alert("⚠️ Please select a rating!");
       return;
     }
-  
+
     if (!review.trim()) {
-      alert("Please enter a comment before submitting!"); // Ensure review is not empty
+      alert("⚠️ Please enter a comment before submitting!");
       return;
     }
-  
+
+    // Send rating data to parent component
     onSubmit({ rating, review });
-    onClose(); // Close modal after submitting
+
+    // Smoothly close the modal after submitting
+    setTimeout(() => {
+      onClose();
+    }, 500);
   };
-  
-  
 
   return (
-    <div
-      className="modal fade show d-block"
-      tabIndex="-1"
-      role="dialog"
-    >
+    <div className="modal fade show d-block" tabIndex="-1" role="dialog">
       <div className="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center">
         <div className="modal-content p-4 window_bg_pink">
           {/* Modal Header */}
-          <div className="modal-header border-0">
+          <div className="modal-header border-0 text-center">
             <h5 className="modal-title">Rate This Chat</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
@@ -55,12 +54,15 @@ const ChatbotRating = ({ onClose, onSubmit }) => {
               {emojis.map((item) => (
                 <div
                   key={item.value}
-                  className="d-flex flex-column align-items-center"
-                  style={{ cursor: "pointer" }}
+                  className={`d-flex flex-column align-items-center rating-emoji ${
+                    rating === item.value ? "selected" : ""
+                  }`}
                   onClick={() => setRating(item.value)}
                 >
                   <span
-                    className={`fs-1 ${rating === item.value ? "border border-primary rounded-circle p-2" : ""}`}
+                    className={`fs-1 p-2 ${
+                      rating === item.value ? "border border-primary rounded-circle bg-light" : ""
+                    }`}
                     title={item.label}
                   >
                     {item.icon}
@@ -72,18 +74,18 @@ const ChatbotRating = ({ onClose, onSubmit }) => {
 
             {/* Review Textarea */}
             <textarea
-              className="form-control border-0"
+              className="form-control border rounded p-2"
               rows="2"
-              placeholder="Leave a comment (optional)"
+              placeholder="Leave a comment (required)"
               value={review}
-              required
               onChange={(e) => setReview(e.target.value)}
             />
 
             {/* Buttons */}
-            <div className="mt-4">
-              {/* <button className="btn btn-secondary" onClick={onClose}>Cancel</button> */}
-              <button className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+            <div className="mt-2">
+              <button className="btn btn-primary w-100" onClick={handleSubmit}>
+                Submit
+              </button>
             </div>
           </div>
         </div>

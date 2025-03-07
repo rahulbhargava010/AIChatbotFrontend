@@ -322,9 +322,9 @@ filter: invert();
   margin-top: 4px;
   padding: 7px;
 }
-.chatbot-form-container button:hover{
+/* .chatbot-form-container button:hover{
   background-color: transparent !important;
-}
+} */
 .icondiv input{
   padding-left: 2.2rem;
 }
@@ -426,9 +426,12 @@ filter: invert();
   display: block;
 }
 .close-button {
-  top: -30px;
+  background: no-repeat;
   right: 0;
-  font-size: 38px;
+  position: absolute;
+  font-size: 35px;
+  top: -2rem;
+  filter: invert();
 }
 
 @media (max-width: 390px) and (max-width:490px) {
@@ -469,7 +472,7 @@ button{
 /* Fullscreen button styling */
 .fullscreen-toggle {
   position: absolute;
-  top: 7px;
+  top: -13px;
   display: block;
   right: 20px;
   color: white;
@@ -527,5 +530,8 @@ button{
 
 .user-message {
     justify-content: center;
+}
+.sidebar {
+  z-index: -1 !important;
 }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import "./ChatbotWidget.css";
-import "./TestChatbot.css";
+// import "./TestChatbot.css";
 import ChatbotRating from "./ChatbotRating";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
@@ -19,13 +19,14 @@ const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
-const TestChatbot = () => {
+const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const { chatbotId } = useParams();
   const [messages, setMessages] = useState([]);
   // const [embedScript, setEmbedScript] = useState('');
+  
   const [webhook, setWebhook] = useState("");
   const [projectLogo, setProjectLogo] = useState([]);
   const [projectImages, setProjectImages] = useState([]);
@@ -103,7 +104,7 @@ const TestChatbot = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 10000); // 5 seconds
+    }, 80000); // 5 seconds
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -148,42 +149,89 @@ const TestChatbot = () => {
     setShowRating(false); // Hide rating after submission
   };
 
+  // const handleSendMessage = async () => {
+  //   if (!input.trim()) return;
+  
+  //   setMessages((prevMessages) => [
+  //     ...prevMessages,
+  //     { sender: "User", text: input },
+  //   ]);
+  
+  //   try {
+  //     setIsTyping(true);
+  //     const response = await api.post("/aichatbots/respond", {
+  //       chatbotId,
+  //       message: input,
+  //     });
+  
+  //     console.log("chatbot response from Test Chatbot", response);
+  //     const { reply, score } = response.data;
+  
+  //     // Format reply by adding a newline after every period
+  //     const formattedReply = reply.replace(/\. /g, ".\n");
+  
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: formattedReply, score },
+  //     ]);
+  
+  //     setIsTyping(false);
+      
+  //     await api.post("analytics/saveEvent", {
+  //       eventType: "chat_message",
+  //       sessionId: uniqueSessionId,
+  //       messages,
+  //       chatbotId,
+  //     });
+  
+  //   } catch (err) {
+  //     console.error("Failed to send message:", err);
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: "Sorry, something went wrong." },
+  //     ]);
+  //   }
+  
+  //   saveConversation(sessionId);
+  //   setInput("");
+  // };
+  
+  
   const handleSendMessage = async () => {
-    // console.log('Send Message check check', chatbotId);
     if (!input.trim()) return;
-    // console.log('Send Message check check', input);
-
+  
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-
+  
     try {
       setIsTyping(true);
-      const token = localStorage.getItem("token");
-      const response = await api.post(
-        "/aichatbots/respond",
-        { chatbotId, message: input }
-        // {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`,
-        //     },
-        // }
-      );
+      const response = await api.post("/aichatbots/respond", {
+        chatbotId,
+        message: input,
+      });
+  
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-      // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
+  
+      // Ensure period stays on the same line
+      const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
+  
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: "Bot", text: reply, score },
+        { sender: "Bot", text: formattedReply, score },
       ]);
+  
       setIsTyping(false);
+  
       await api.post("analytics/saveEvent", {
         eventType: "chat_message",
         sessionId: uniqueSessionId,
         messages,
         chatbotId,
       });
+  
     } catch (err) {
       console.error("Failed to send message:", err);
       setMessages((prevMessages) => [
@@ -191,9 +239,11 @@ const TestChatbot = () => {
         { sender: "Bot", text: "Sorry, something went wrong." },
       ]);
     }
+  
     saveConversation(sessionId);
     setInput("");
   };
+  
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -288,7 +338,7 @@ const TestChatbot = () => {
     chatbotGreeting: "How can I assist you today?",
     projectHighlights: "We offer the best real estate solutions.",
     webhook: "",
-    projectImages: ["/default-image.jpg"],
+    projectImages: ["https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53wlrm7yizlva.jpg"],
     chatbotName: "PropBot",
     projectLogo: "/default-logo.png",
     buttons: [
@@ -298,6 +348,68 @@ const TestChatbot = () => {
     ],
   };
   
+  useEffect(() => {
+    const fetchWelcomeData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+  
+        const response = await api.post(
+          "/aichatbots/welcome",
+          { chatbotId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // ✅ If API response is empty or missing, use dummyData
+        const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
+  
+        console.log("Welcome in project greeting 12: ", response);
+  
+        setWebhook(data.webhook);
+        setProjectLogo(data.projectLogo);
+        setProjectImages(data.projectImages);
+        setChatbotData(data);
+        setButtonContent(data.buttons || {});
+  
+        const buttonMap = {};
+        (data.buttons || []).forEach((btn) => {
+          buttonMap[btn.action] = btn.data || {};
+        });
+  
+        setButtonContent(buttonMap);
+  
+        setMessages([
+          { sender: "Bot", text: data.greeting },
+          { sender: "Bot", text: data.chatbotGreeting },
+          { sender: "Bot", text: data.projectHighlights },
+          { images: data.projectImages },
+          { buttons: data.buttons },
+        ]);
+      } catch (err) {
+        console.error("Error fetching welcome data:", err);
+  
+        // ✅ If API fails, set dummy data
+        setWebhook(dummyData.webhook);
+        setProjectLogo(dummyData.projectLogo);
+        setProjectImages(dummyData.projectImages);
+        setChatbotData(dummyData);
+        setButtonContent(dummyData.buttons || {});
+  
+        setMessages([
+          { sender: "Bot", text: dummyData.greeting },
+          { sender: "Bot", text: dummyData.chatbotGreeting },
+          { sender: "Bot", text: dummyData.projectHighlights },
+          { images: dummyData.projectImages },
+          { buttons: dummyData.buttons },
+        ]);
+      }
+    };
+  
+    fetchWelcomeData();
+  }, [chatbotId]);
   
 
   
@@ -324,39 +436,66 @@ const TestChatbot = () => {
           }
         );
   
-        // ✅ Use dummy data if API response is empty or missing
-        const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
+        const {
+          greeting,
+          projectHighlights,
+          buttons,
+          webhook,
+          projectImages,
+          chatbotGreeting,
+          chatbotName
+        } = response.data;
   
-        setWebhook(data.webhook);
-        setProjectLogo(data.projectLogo);
-        setProjectImages(data.projectImages);
-        setChatbotData(data);
+        console.log("Welcome in project greeting 12: ", response);
+  
+        setWebhook(webhook);
+        setProjectLogo(projectLogo);
+        setProjectImages(projectImages);
+        setChatbotData(response.data);
+        setButtonContent(buttons || {});
   
         const buttonMap = {};
-        (data.buttons || []).forEach((btn) => {
-          buttonMap[btn.action] = btn.data || {};
+        buttons.forEach((btn) => {
+          buttonMap[btn.action] = btn.data;
         });
   
         setButtonContent(buttonMap);
   
         setMessages([
-          { sender: "Bot", text: data.greeting },
-          { sender: "Bot", text: data.chatbotGreeting },
-          { sender: "Bot", text: data.projectHighlights },
-          { images: data.projectImages },
-          { buttons: data.buttons },
+          { sender: "Bot", text: greeting },
+          { sender: "Bot", text: chatbotGreeting },
+          { sender: "Bot", text: projectHighlights },
+          { images: projectImages },
+          {
+            buttons: [
+              { label: "Site Visit Schedule", action: "schedule_site_visit" },
+              { label: "Brochure", action: "brochure" },
+              { label: "Location Map", action: "get_callback" },
+            ],
+          },
         ]);
       } catch (err) {
         console.error("Error fetching welcome data:", err);
   
-        // ✅ If API fails, set dummy data
-        setWebhook(dummyData.webhook);
-        setProjectLogo(dummyData.projectLogo);
+        // ✅ Dummy data if API fails
+        const dummyData = {
+          greeting: "Welcome! How can I assist you?",
+          chatbotGreeting: "Hello! I’m here to help with your queries.",
+          projectHighlights: "Key highlights of the project include XYZ.",
+          projectImages: ["https://via.placeholder.com/150"],
+          buttons: [
+            { label: "Site Visit Schedule", action: "schedule_site_visit" },
+            { label: "Brochure", action: "brochure" },
+            { label: "Location Map", action: "get_callback" },
+          ],
+        };
+  
+        setWebhook(null);
+        setProjectLogo(null);
         setProjectImages(dummyData.projectImages);
         setChatbotData(dummyData);
-  
         setButtonContent({});
-        
+  
         setMessages([
           { sender: "Bot", text: dummyData.greeting },
           { sender: "Bot", text: dummyData.chatbotGreeting },
@@ -463,7 +602,7 @@ const TestChatbot = () => {
       
             {formVisible && (
   <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
-    <div className="chatbot-form-container vh-100 window_bg_pink">
+    <div className="chatbot-form-container vh-100 window_bg_pink p-3">
       <button
         className="close-button"
         onClick={() => {
@@ -800,22 +939,24 @@ const TestChatbot = () => {
               
               {/* ✅ Text Message */}
               {message.text && (
-                <div className="message-bubble"
-                  style={{
-                    backgroundColor: "rgb(231 218 243 / 51%)",
-                    boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                    borderRadius: "10px",
-                    padding: "10px",
-                    maxWidth: "80%",
-                    width: "100%",
-                    margin: "5px 0",
-                    border: "2px solid rgb(255, 255, 255)",
-                    fontSize: "14px",
-                    textAlign: "left",
-                  }}>
-                   {message.text}
-                </div>
-              )}
+  <div className="message-bubble"
+    style={{
+      backgroundColor: "rgb(231 218 243 / 51%)",
+      boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+      borderRadius: "10px",
+      padding: "10px",
+      maxWidth: "80%",
+      width: "100%",
+      lineHeight: "21px",
+      margin: "5px 0",
+      border: "2px solid rgb(255, 255, 255)",
+      fontSize: "14px",
+      textAlign: "left",
+      whiteSpace: "pre-line",
+    }}>
+    {message.text} 
+  </div>
+)}
 
               {/* ✅ Image Message */}
               {message?.images && message?.images?.length > 0 && (
@@ -943,4 +1084,4 @@ const TestChatbot = () => {
   );
 };
 
-export default TestChatbot;
+export default ChatbotWidget;
