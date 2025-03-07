@@ -54,6 +54,7 @@ const ChatbotWidget = () => {
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
+  const [msgFromResponse, setMsgFromResponse] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);  // Add this state
   const [checkedItems, setCheckedItems] = useState({
     option1: false,
@@ -204,20 +205,28 @@ const ChatbotWidget = () => {
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-  
+
+    const userSenderCount = messages.filter((message) => message.sender === "User").length;
+    if(userSenderCount >= 10){
+        setFormVisible(true);
+        return;
+    }
     try {
       setIsTyping(true);
-      const response = await api.post("/aichatbots/respond", {
-        chatbotId,
-        message: input,
-      });
-  
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/aichatbots/respond",
+        { chatbotId, message: input }
+      );
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-  
-      // Ensure period stays on the same line
+      if(reply == 'form'){
+          setFormVisible(true);
+          setMsgFromResponse("We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you.")
+          return;
+      }
+      // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
-  
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: formattedReply, score },
@@ -645,7 +654,10 @@ const ChatbotWidget = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            <h3 className="text-center mt-4">Please Introduce Yourself:</h3>
+            { msgFromResponse ? (<h3 className="text-center mt-4">{msgFromResponse}</h3>) : 
+              (<h3 className="text-center mt-4">Please Introduce Yourself:</h3>)
+            }
+            
           </div>
 
           <form

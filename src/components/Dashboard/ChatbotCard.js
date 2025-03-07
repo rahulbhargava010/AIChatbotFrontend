@@ -142,22 +142,29 @@ const ChatbotCard = () => {
           </div>
         </div>
         <div className="col-md-2">
-          <div className="card p-2">
-            <div className="card-body text-center p-0">
-              <FaChartLine size={20} className="text-success" />
-              <h5 className="mt-1">Total Leads</h5>
-              <p className="mb-0">{data.leads.length || 0}</p>
-            </div>
-          </div>
+          <Link className="btn" to={`/dashboard/leads/${chatbotId}`}>
+              <div className="card p-2">
+                <div className="card-body text-center p-0">
+                  <FaChartLine size={20} className="text-success" />
+                  <h5 className="mt-1">Total Leads</h5>
+                  <p className="mb-0">{data.leads.length || 0}</p>
+                </div>
+              </div>
+            </Link>
         </div>
         <div className="col-md-2">
-          <div className="card p-2">
-            <div className="card-body text-center p-0">
-              <FaComments size={20} className="text-info" />
-              <h5 className="mt-1">Conversations</h5>
-              <p className="mb-0">{data.conversations.length || 0}</p>
-            </div>
-          </div>
+            <Link
+                className="btn"
+                to={`/dashboard/conversations/${chatbotId}`}
+              >
+                <div className="card p-2">
+                  <div className="card-body text-center p-0">
+                    <FaComments size={20} className="text-info" />
+                    <h5 className="mt-1">Conversations</h5>
+                    <p className="mb-0">{data.conversations.length || 0}</p>
+                  </div>
+                </div>
+          </Link>
         </div>
 
         <div className="col-md-6 ">
@@ -169,7 +176,7 @@ const ChatbotCard = () => {
               <Link className="btn" to={`/dashboard/update/${chatbotId}`}>
                 <FaEdit />
               </Link>
-              <Link className="btn" to={`/dashboard/leads/${chatbotId}`}>
+              {/* <Link className="btn" to={`/dashboard/leads/${chatbotId}`}>
                 <FaUsers />
               </Link>
               <Link
@@ -177,7 +184,7 @@ const ChatbotCard = () => {
                 to={`/dashboard/conversations/${chatbotId}`}
               >
                 <FaComments />
-              </Link>
+              </Link> */}
               <Link className="btn" to={`/dashboard/stats/${chatbotId}`}>
                 <FaChartLine />
               </Link>

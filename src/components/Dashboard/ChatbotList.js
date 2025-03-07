@@ -73,11 +73,18 @@ const ChatbotList = () => {
   const columns = [
     { key: "name", header: "Name" },
     {
-      key: "createdAt",
+      key: "created_at",
       header: "Created At",
       render: (value) => new Date(value).toLocaleString(),
     },
-    { key: "size", header: "Size" },
+    { 
+      key: "isActive", 
+      header: "Status",
+      render : (value) => (
+      <span className={value === "active" ? "text-success" : "text-danger"}>
+        {value === "active" ? "Active" : "Inactive"}
+      </span>
+    )},
   ];
 
   const actions = [
