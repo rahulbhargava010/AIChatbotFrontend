@@ -8,6 +8,7 @@ const handleLeadSubmit = async (
   setMessages,
   setFormVisible,
   setFormSubmitted,
+  setShowRating,
   setChatVisible,
   setIsTyping,
   uniqueSessionId,
@@ -93,6 +94,8 @@ const handleLeadSubmit = async (
     setTimeout(() => {
       setFormVisible(false);
       setChatVisible(true);
+      setShowRating(true);
+
     }, 3000);
   } catch (error) {
     console.error("Error in handleLeadSubmit:", error);

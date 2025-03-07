@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
-import "./TestChatbot.css";
 import "./ChatbotWidget.css";
+import "./TestChatbot.css";
 import ChatbotRating from "./ChatbotRating";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
@@ -202,17 +202,6 @@ const TestChatbot = () => {
     }
   };
 
-  // const handleColorChange = (color) => {
-  //     setSelectedColor(color.hex);
-  // };
-
-  // const handleTextColorChange = (color) => {
-  //     setSelectedTextColor(color.hex);
-  // };
-
-  // const handleBubbleColorChange = (color) => {
-  //     setSelectedBubbleColor(color.hex);
-  // };
 
   useEffect(() => {
     // Assign a unique session ID per user/session
@@ -243,119 +232,7 @@ const TestChatbot = () => {
   };
 
 
-  // const callLeadSubmit = (e, leadData,
-  //   chatbotId,
-  //   conversation,
-  //   uniqueSessionId,
-  //   messages,
-  //   api) => {
-  //   e.preventDefault();
-  
-  //   console.log("leadData", leadData);
-  //   console.log("chatbotId", chatbotId);
-  //   console.log("conversation", conversation);
-  //   console.log("messages", messages);
-  //   console.log("api", api);
-  //   handleLeadSubmit();
-  //   // callLeadSubmit()
-  //   // Simulate API call success
-  //   setTimeout(() => {
-  //     setFormSubmitted(true);
-  
-  //     setLeadData({
-  //       name: "",
-  //       phone: "",
-  //       email: "",
-  //     });
-  //     setCheckedItems({
-  //       option1: false,
-  //       option2: false,
-  //     });
-      
-      
-  //     // Hide success message after 3 seconds
-  //     setTimeout(() => {
-  //       setFormSubmitted(false);
-  //       setFormVisible(false);
-  //       setChatVisible(true);
-  //     }, 3000);
-  //   }, 1000);
-  // };
-  
-
-  //   const handleLeadSubmit = async (e) => {
-  //     e.preventDefault();
-  //     console.log("handleLeadSubmit function called");
-
-  //     try {
-  //       const userAgent = navigator.userAgent;
-  //       const device = /mobile/i.test(userAgent) ? "Mobile" : "Desktop";
-
-  //       console.log("Fetching IP address...");
-  //       const ipResponse = await axios.get("https://api.ipify.org?format=json");
-  //       console.log("IP Response:", ipResponse.data);
-
-  //       const ipAddress = ipResponse.data.ip;
-
-  //       let locationData = {};
-  //       try {
-  //         console.log("Fetching Geolocation...");
-  //         const geoResponse = await axios.get(
-  //           `https://ipapi.co/${ipAddress}/json/`
-  //         );
-  //         console.log("Geolocation Response:", geoResponse.data);
-
-  //         locationData = {
-  //           country: geoResponse.data.country_name,
-  //           region: geoResponse.data.region,
-  //           city: geoResponse.data.city,
-  //         };
-  //       } catch (error) {
-  //         console.error("Error fetching geolocation data:", error);
-  //       }
-
-  //       const updatedLeadData = {
-  //         ...leadData,
-  //         ipAddress,
-  //         userAgent,
-  //         device,
-  //         locationData,
-  //       };
-
-  //       console.log("LeadData before API call:", updatedLeadData); // Check lead data before API call
-
-  //       console.log("Saving lead data...");
-  //       await api.post("/leads/save", {
-  //         chatbotId,
-  //         leadData: updatedLeadData,
-  //         conversation,
-  //       });
-  //       console.log("Lead data saved successfully!");
-
-  //       alert("Lead saved successfully!");
-  //       setMessages((prevMessages) => [
-  //         ...prevMessages,
-  //         {
-  //           sender: "Bot",
-  //           text: `Thank you, ${leadData.name}, for submitting your enquiry!`,
-  //         },
-  //       ]);
-  //       setFormVisible(false);
-
-  //       console.log("Saving analytics event...");
-  //       await api.post("analytics/saveEvent", {
-  //         eventType: "form_submission",
-  //         sessionId: uniqueSessionId,
-  //         messages,
-  //         chatbotId,
-  //         leadData: updatedLeadData,
-  //       });
-  //       console.log("Analytics event saved!");
-  //     } catch (error) {
-  //       console.error("Error in handleLeadSubmit:", error);
-  //       alert("Failed to save lead.");
-  //     }
-  //   };
+ 
 
   useEffect(() => {
       const timer = setTimeout(() => {
@@ -406,7 +283,21 @@ const TestChatbot = () => {
     }
   };
 
- 
+  const dummyData = {
+    greeting: "Hello! Welcome to our chatbot.",
+    chatbotGreeting: "How can I assist you today?",
+    projectHighlights: "We offer the best real estate solutions.",
+    webhook: "",
+    projectImages: ["/default-image.jpg"],
+    chatbotName: "PropBot",
+    projectLogo: "/default-logo.png",
+    buttons: [
+      { label: "Site Visit Schedule", action: "schedule_site_visit" },
+      { label: "Brochure", action: "brochure" },
+      { label: "Location Map", action: "get_callback" },
+    ],
+  };
+  
   
 
   
@@ -416,11 +307,13 @@ const TestChatbot = () => {
     }
   }, [messages]);
 
+  
+
   useEffect(() => {
     const fetchWelcomeData = async () => {
       try {
         const token = localStorage.getItem("token");
-
+  
         const response = await api.post(
           "/aichatbots/welcome",
           { chatbotId },
@@ -430,54 +323,116 @@ const TestChatbot = () => {
             },
           }
         );
-        const {
-          greeting,
-          projectHighlights,
-          buttons,
-          webhook,
-          projectImages,
-          chatbotGreeting,
-          chatbotName
-        } = response.data;
-        console.log('Welcome in project greeting 12: ' + response)
-        setWebhook(webhook);
-        setProjectLogo(projectLogo);
-        setProjectImages(projectImages);
-        setChatbotData(response.data);
-        setButtonContent(buttons || {});
+  
+        // ✅ Use dummy data if API response is empty or missing
+        const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
+  
+        setWebhook(data.webhook);
+        setProjectLogo(data.projectLogo);
+        setProjectImages(data.projectImages);
+        setChatbotData(data);
+  
         const buttonMap = {};
-        // console.log('Welcome in project buttons: ', buttons);
-        const buttonList = buttons.map((btn) => {
-          buttonMap[btn.action] = btn.data;
-          // return { label: btn.label, action: btn.action };
+        (data.buttons || []).forEach((btn) => {
+          buttonMap[btn.action] = btn.data || {};
         });
-
-        // setButtons(buttonList);
-
+  
         setButtonContent(buttonMap);
-        // console.log('Welcome in project buttons: buttonMap', buttonMap);
-        // console.log('Welcome in project buttons: buttonList', buttonList);
-        // Set initial messages and buttons chatbotGreeting
+  
         setMessages([
-          { sender: "Bot", text: greeting },
-          { sender: "Bot", text: chatbotGreeting },
-          { sender: "Bot", text: projectHighlights },
-          { images: projectImages },
-          {
-            buttons: [
-              { label: "Site Visit Schedule", action: "schedule_site_visit" },
-              { label: "Brochure", action: "brochure" },
-              { label: "Location Map", action: "get_callback" },
-            ],
-          },
+          { sender: "Bot", text: data.greeting },
+          { sender: "Bot", text: data.chatbotGreeting },
+          { sender: "Bot", text: data.projectHighlights },
+          { images: data.projectImages },
+          { buttons: data.buttons },
         ]);
-        // setButtons(buttons);
       } catch (err) {
         console.error("Error fetching welcome data:", err);
+  
+        // ✅ If API fails, set dummy data
+        setWebhook(dummyData.webhook);
+        setProjectLogo(dummyData.projectLogo);
+        setProjectImages(dummyData.projectImages);
+        setChatbotData(dummyData);
+  
+        setButtonContent({});
+        
+        setMessages([
+          { sender: "Bot", text: dummyData.greeting },
+          { sender: "Bot", text: dummyData.chatbotGreeting },
+          { sender: "Bot", text: dummyData.projectHighlights },
+          { images: dummyData.projectImages },
+          { buttons: dummyData.buttons },
+        ]);
       }
     };
+  
     fetchWelcomeData();
   }, [chatbotId]);
+  
+
+  // useEffect(() => {
+  //   const fetchWelcomeData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+
+  //       const response = await api.post(
+  //         "/aichatbots/welcome",
+  //         { chatbotId },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       const {
+  //         greeting,
+  //         projectHighlights,
+  //         buttons,
+  //         webhook,
+  //         projectImages,
+  //         chatbotGreeting,
+  //         chatbotName
+  //       } = response.data;
+  //       console.log('Welcome in project greeting 12: ' + response)
+  //       setWebhook(webhook);
+  //       setProjectLogo(projectLogo);
+  //       setProjectImages(projectImages);
+  //       setChatbotData(response.data);
+  //       setButtonContent(buttons || {});
+  //       const buttonMap = {};
+  //       // console.log('Welcome in project buttons: ', buttons);
+  //       const buttonList = buttons.map((btn) => {
+  //         buttonMap[btn.action] = btn.data;
+  //         // return { label: btn.label, action: btn.action };
+  //       });
+
+  //       // setButtons(buttonList);
+
+  //       setButtonContent(buttonMap);
+  //       // console.log('Welcome in project buttons: buttonMap', buttonMap);
+  //       // console.log('Welcome in project buttons: buttonList', buttonList);
+  //       // Set initial messages and buttons chatbotGreeting
+  //       setMessages([
+  //         { sender: "Bot", text: greeting },
+  //         { sender: "Bot", text: chatbotGreeting },
+  //         { sender: "Bot", text: projectHighlights },
+  //         { images: projectImages },
+  //         {
+  //           buttons: [
+  //             { label: "Site Visit Schedule", action: "schedule_site_visit" },
+  //             { label: "Brochure", action: "brochure" },
+  //             { label: "Location Map", action: "get_callback" },
+  //           ],
+  //         },
+  //       ]);
+  //       // setButtons(buttons);
+  //     } catch (err) {
+  //       console.error("Error fetching welcome data:", err);
+  //     }
+  //   };
+  //   fetchWelcomeData();
+  // }, [chatbotId]);
 
   const formatTimestamp = (timestamp) => {
     const now = new Date();
@@ -566,6 +521,7 @@ const TestChatbot = () => {
                 setFormVisible,
                 setFormSubmitted,
                 setChatVisible,
+                setShowRating,
                 setIsTyping,
                 uniqueSessionId,
                 messages,
@@ -857,9 +813,7 @@ const TestChatbot = () => {
                     fontSize: "14px",
                     textAlign: "left",
                   }}>
-                   {message.text.split('.').map((sentence, idx) => (
-        <p key={idx}>{sentence}.</p>
-      ))}
+                   {message.text}
                 </div>
               )}
 
@@ -910,74 +864,7 @@ const TestChatbot = () => {
       )}
     </div>
 
-                {/* <div
-                className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8"
-                ref={chatWindowRef}
-              >
                
-                {messages?.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`message ${
-                      message.sender === "User" ? "user-message" : "bot-message"
-                    }`}
-                  >
-                    {message.sender && (
-  <div
-    className="message-bubble"
-    style={{
-      backgroundColor: "rgba(252, 247, 251, 0.64)",
-      boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.2)",
-      borderRadius: "10px",
-      padding: "10px",
-      maxWidth: "80%",
-      width: "100%",
-      margin: "5px 0",
-      border: "2px solid rgb(255, 255, 255)",
-      fontSize: "13px",
-      textAlign: "left", // ✅ This will now apply correctly
-    }}
-  >
-    {message.text}
-  </div>
-)}
-
-                    {message.images &&
-                      message.images.map((img, idx) => (
-                        <img
-                          key={idx}
-                          className="chatbot-logo-img"
-                          src={`https://assist-ai.propstory.com/${img}`}
-                          alt="Project Logo"
-                          height="200"
-                          width="200"
-                          style={{ borderRadius: "10%", marginRight: "10px", marginBottom:"2rem" }}
-                        />
-                      ))}
-                    {message.buttons &&
-                      message.buttons.map((button, idx) => (
-                        <a
-                          key={idx}
-                          onClick={() =>
-                            handleButtonClick(button.action, button.label)
-                          }
-                          className="button-52"
-                        >
-                          {button.label}
-                        </a>
-                      ))}
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="message bot-message">
-                    <div className="message-bubble typing-animation">
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                    </div>
-                  </div>
-                )}
-              </div> */}
 
                 <div className="chatbot-footer d-flex justify-content-around">
                   <div className="button-container">
@@ -1001,37 +888,7 @@ const TestChatbot = () => {
                   </div>
                 </div>
 
-                {/* <div className="flex items-center p-2 rounded-full shadow-md w-96 justify-content-between">
-     <div className="mic_div d-flex justify-content-around">
-     <button
-        onClick={handleRecord}
-        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${isRecording ? "bg-red-500" : "bg-gray-200"}`}
-      >
-        <Mic className="w-4 h-4 text-gray-700" />
-      </button>
-      <input
-                type="text"
-                placeholder="Enter a prompt here"
-               className="flex-1 p-1 text-sm w-90 border-0 outline-none bg-transparent"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                required
-                style={{marginLeft:"-2.5rem"}}
-              />
-              <a
-                id="send-message-button"
-                className="icon material-symbols-rounded"
                 
-              >
-                <button
-        className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
-      >
-        <Send className="w-2 h-2" />
-      </button>
-              </a>
-     </div>
-    </div> */}
 
                 <div className="typing-area window_bg_pink">
                   <div className="typing-form">
@@ -1076,13 +933,6 @@ const TestChatbot = () => {
                       </Link>
                     </small>
                   </div>
-                  {/* <div className="action-buttons">
-                        <span id="theme-toggle-button" className="icon material-symbols-rounded">light_mode</span>
-                        <span id="delete-chat-button" className="icon material-symbols-rounded">delete</span>
-                    </div>
-                    <p className="disclaimer-text">
-                    Gemini may display inaccurate info, including about people, so double-check its responses.
-                    </p> */}
                 </div>
               </>
             )}
