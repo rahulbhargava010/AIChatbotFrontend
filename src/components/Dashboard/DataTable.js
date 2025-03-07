@@ -8,6 +8,7 @@ const DataTable = ({
   data,
   columns,
   actions,
+  onRowClick,
   searchTerm = "",
   onSearchChange,
   itemsPerPageOptions = [6, 10, 20, 50],
@@ -88,7 +89,11 @@ const DataTable = ({
             {currentItems.map((item, index) => (
               <tr key={index}>
                 {columns.map((column) => (
-                  <td key={column.key}>
+                  <td
+                    key={column.key}
+                    onClick={() => onRowClick(item)}
+                    style={{ cursor: "pointer" }}
+                  >
                     {column.render
                       ? column.render(item[column.key])
                       : item[column.key]}
