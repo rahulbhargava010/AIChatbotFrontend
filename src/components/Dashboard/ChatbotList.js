@@ -17,7 +17,7 @@ import TestChatbot from "./TestChatbot"; // Import the TestChatbot component
 const ChatbotList = () => {
   const [chatbots, setChatbots] = useState([]);
   const [error, setError] = useState("");
-  const [activeChatbotId, setActiveChatbotId] = useState(null); // State to track the active chatbot
+  const [activeChatbotId, setActiveChatbotId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,7 +63,11 @@ const ChatbotList = () => {
   };
 
   const handleTestChatbot = (chatbotId) => {
-    setActiveChatbotId(chatbotId); // Set the active chatbot ID
+    setActiveChatbotId(chatbotId);
+  };
+
+  const handleRowClick = (item) => {
+    navigate(`/dashboard/chatbot/${item._id}`);
   };
 
   const columns = [
@@ -80,7 +84,7 @@ const ChatbotList = () => {
     {
       label: "Test",
       icon: <FaPlay />,
-      onClick: (e, item) => handleTestChatbot(item._id), // Use onClick instead of to
+      onClick: (e, item) => handleTestChatbot(item._id),
     },
     {
       label: "Edit",
@@ -117,9 +121,13 @@ const ChatbotList = () => {
   return (
     <div>
       {error && <p className="text-danger">{error}</p>}
-      <DataTable data={chatbots} columns={columns} actions={actions} />
+      <DataTable
+        data={chatbots}
+        columns={columns}
+        actions={actions}
+        onRowClick={handleRowClick}
+      />
 
-      {/* Conditionally render the TestChatbot component */}
       {activeChatbotId && (
         <div
           style={{
