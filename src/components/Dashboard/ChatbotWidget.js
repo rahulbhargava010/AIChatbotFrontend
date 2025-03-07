@@ -3,6 +3,7 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import "./TestChatbot.css";
 import "./ChatbotWidget.css";
+import ChatbotRating from "./ChatbotRating";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
 import { Mic, Send } from "lucide-react";
@@ -37,7 +38,7 @@ const TestChatbot = () => {
 
     // { label: "Brochure", action: "brochure" },
     // { label: "Schedule Site Visit", action: "schedule_site_visit" },
-    { label: "Get a Call Back", action: "get_callback" },
+    { label: "Get a Call Back", action: "schedule_site_visit" },
   ]);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -134,6 +135,18 @@ const TestChatbot = () => {
     console.log("Current URL Path:", window.location.href);
     console.log("UTM Parameters:", newUtmParams); // Use the newUtmParams object here
   }, []);
+
+
+  const [showRating, setShowRating] = useState(false);
+
+  const handleRateChat = () => {
+    setShowRating(true); // Show full-height rating component
+  };
+
+  const handleFeedbackSubmit = (feedback) => {
+    console.log("User Feedback:", feedback);
+    setShowRating(false); // Hide rating after submission
+  };
 
   const handleSendMessage = async () => {
     // console.log('Send Message check check', chatbotId);
@@ -393,6 +406,10 @@ const TestChatbot = () => {
     }
   };
 
+ 
+  
+
+  
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
@@ -678,6 +695,7 @@ const TestChatbot = () => {
 >
   ×
 </button> */}
+ {showRating && <ChatbotRating onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
                 <div className="d-flex header p-2 justify-content-between align-items-center">
                   {/* <div>
                 <img
@@ -777,9 +795,9 @@ const TestChatbot = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          <li>Talk to Human</li>
-                          <li>Rate this Chat</li>
-                          <li>Send details over WhatsApp</li>
+                          <li onClick={() => setIsOpen(false)}>Talk to Human</li>
+                          <li onClick={() => { handleRateChat(); setIsOpen(false); }}>Rate this Chat</li>
+                          <li onClick={() => setIsOpen(false)}>Send details over WhatsApp</li>
                         </ul>
                       </div>
                     )}
@@ -807,107 +825,90 @@ const TestChatbot = () => {
                   </div> */}
                 </div>
               
-                <div
-                  className="chat-window p-4 mb-3 border rounded scrollbar"
-                  id="style-8"
-                  ref={chatWindowRef}
-                >
-                  {messages?.map((message, index) => {
-                    const hasContent =
-                      message.text ||
-                      message.images?.length ||
-                      message.buttons?.length;
+                <div className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8" ref={chatWindowRef}>
+      {messages?.map((message, index) => {
+        const hasContent =
+          message.text ||
+          message.images?.length ||
+          message.buttons?.length; 
 
-                    return hasContent ? (
-                      <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }} // Start slightly below
-                      animate={{ opacity: 1, y: 0 }} // Move up and become visible
-                      transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
-                      className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
-                    >
-                      <div
-                        key={index}
-                        className={`message ${
-                          message.sender === "User"
-                            ? "user-message"
-                            : "bot-message"
-                        }`}
-                      >
-                        {message.text && (
-                          <div
-                            className="message-bubble"
-                            style={{
-                              backgroundColor: "rgb(231 218 243 / 51%)",
-                              boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                              borderRadius: "10px",
-                              padding: "10px",
-                              maxWidth: "80%",
-                              width: "100%",
-                              margin: "5px 0",
-                              border: "2px solid rgb(255, 255, 255)",
-                              fontSize: "14px",
-                              textAlign: "left",
-                            }}
-                          >
-                            {message.text}
-                          </div>
-                        )}
-
-                        {message?.images && message?.images?.length > 0 && (
-                          <div className="image-container">
-                            {message.images
-                              .filter((img) => img) // Ensure image URL is valid
-                              .map((img, idx) => (
-                                <img
-                                  key={idx}
-                                  className="chatbot-logo-img"
-                                  src={`https://assist-ai.propstory.com/${img}`}
-                                  alt="Project Logo"
-                                  height="200"
-                                  width="200"
-                                  style={{
-                                    borderRadius: "10%",
-                                    marginRight: "10px",
-                                    marginBottom: "2rem",
-                                  }}
-                                  onError={(e) =>
-                                    (e.target.style.display = "none")
-                                  } // Hide broken images
-                                />
-                              ))}
-                          </div>
-                        )}
-                        { message?.buttons &&
-                            message?.buttons?.map((button, idx) => (
-                              <div key={idx} className="mt-2 me-2">
-                              <a
-                                key={idx}
-                                onClick={() =>
-                                  handleButtonClick(button.action, button.label)
-                                }
-                                className="button-52"
-                              >
-                                {button.label}
-                              </a>
-                              </div>
-                        ))}
-                      </div>
-                          </motion.div>
-
-                    ) : null;
-                  })}
-
-                  {isTyping && (
-                    <div className="message bot-message">
-                      <div className="message-bubble typing-animation">
-                        <span className="dot"></span>
-                        <span className="dot"></span>
-                        <span className="dot"></span>
-                      </div>
-                    </div>
-                  )}
+        return hasContent ? (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }} // Start slightly below
+            animate={{ opacity: 1, y: 0 }} // Move up and become visible
+            transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
+            className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
+          >
+            <div className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}>
+              
+              {/* ✅ Text Message */}
+              {message.text && (
+                <div className="message-bubble"
+                  style={{
+                    backgroundColor: "rgb(231 218 243 / 51%)",
+                    boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                    borderRadius: "10px",
+                    padding: "10px",
+                    maxWidth: "80%",
+                    width: "100%",
+                    margin: "5px 0",
+                    border: "2px solid rgb(255, 255, 255)",
+                    fontSize: "14px",
+                    textAlign: "left",
+                  }}>
+                   {message.text.split('.').map((sentence, idx) => (
+        <p key={idx}>{sentence}.</p>
+      ))}
                 </div>
+              )}
+
+              {/* ✅ Image Message */}
+              {message?.images && message?.images?.length > 0 && (
+                <div className="image-container">
+                  {message.images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      className="chatbot-logo-img"
+                      src={`https://assist-ai.propstory.com/${img}`}
+                      alt="Project Image"
+                      height="200"
+                      width="200"
+                      style={{
+                        borderRadius: "10%",
+                        marginRight: "10px",
+                        marginBottom: "2rem",
+                      }}
+                      onError={(e) => (e.target.style.display = "none")} // Hide broken images
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* ✅ Buttons */}
+              {message?.buttons && message?.buttons?.map((button, idx) => (
+                <div key={idx} className="mt-4 me-2">
+                  <a onClick={() => handleButtonClick(button.action, button.label)} className="button-52">
+                    {button.label}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        ) : null;
+      })}
+
+      {/* ✅ Typing Animation */}
+      {isTyping && (
+        <div className="message bot-message">
+          <div className="message-bubble typing-animation">
+            <span className="dot"></span>
+            <span className="dot"></span>
+            <span className="dot"></span>
+          </div>
+        </div>
+      )}
+    </div>
 
                 {/* <div
                 className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8"
