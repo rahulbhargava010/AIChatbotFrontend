@@ -15,8 +15,32 @@
   box-sizing: border-box;
   font-family: "Maven Pro", sans-serif;
 } */
-.button-52{
-  font-size: 10px !important;
+.button-53 {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 4px 7px;
+  border-radius: 1rem;
+  color: #000000;
+  outline: 0;
+  border: 1px solid #000 ;
+  cursor: pointer;
+  position: relative;
+  background: linear-gradient(
+    100deg,
+    #f8dfe3,
+    #e6d9f3,
+    #fcf6f8,
+    #f0cbd2,
+    #e6d9f3
+  );
+  /* background-color: #007BFF; */
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-top: 10px;
+  margin-right: 5px;
+  text-decoration: none;
 }
 .test-chatbot-container1 {
   display: flex;
@@ -553,10 +577,27 @@ body {
   justify-content: center;
   align-items: center;
 }
+.chatbot-form-container1{
+  width: fit-content;
+}
+.btn-primary {
+  background: #6a11cb;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
 
 @media (max-width: 390px) and (max-width:490px) {
   .header .title{
     font-size: 1rem;
+  }
+  .chatbot-form-container1{
+    width: fit-content;
   }
   .d_flex{
     display: flex;

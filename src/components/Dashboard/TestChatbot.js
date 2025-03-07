@@ -98,7 +98,7 @@ const TestChatbot = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 8000000); // 5 seconds
+    }, 40000); // 5 seconds
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -456,7 +456,7 @@ const TestChatbot = () => {
     chatbotGreeting: "How can I assist you today?",
     projectHighlights: "We offer the best real estate solutions.",
     webhook: "",
-    projectImages: ["/default-image.jpg"],
+    projectImages: ["https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53wlrm7yizlva.jpg"],
     chatbotName: "PropBot",
     projectLogo: "/default-logo.png",
     buttons: [
@@ -466,14 +466,6 @@ const TestChatbot = () => {
     ],
   };
   
-
-  
-  useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   useEffect(() => {
     const fetchWelcomeData = async () => {
       try {
@@ -489,13 +481,16 @@ const TestChatbot = () => {
           }
         );
   
-        // ✅ Use dummy data if API response is empty or missing
+        // ✅ If API response is empty or missing, use dummyData
         const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
+  
+        console.log("Welcome in project greeting 12: ", response);
   
         setWebhook(data.webhook);
         setProjectLogo(data.projectLogo);
         setProjectImages(data.projectImages);
         setChatbotData(data);
+        setButtonContent(data.buttons || {});
   
         const buttonMap = {};
         (data.buttons || []).forEach((btn) => {
@@ -505,12 +500,13 @@ const TestChatbot = () => {
         setButtonContent(buttonMap);
   
         setMessages([
-          { sender: "Bot", text: data.greeting },
-          { sender: "Bot", text: data.chatbotGreeting },
-          { sender: "Bot", text: data.projectHighlights },
-          { images: data.projectImages },
-          { buttons: data.buttons },
+          { sender: "Bot", text: data.greeting?.trim() || "" },
+          { sender: "Bot", text: data.chatbotGreeting?.trim() || "" },
+          { sender: "Bot", text: data.projectHighlights?.trim() || "" },
+          { images: data.projectImages || [] },
+          { buttons: data.buttons || [] },
         ]);
+        
       } catch (err) {
         console.error("Error fetching welcome data:", err);
   
@@ -519,9 +515,8 @@ const TestChatbot = () => {
         setProjectLogo(dummyData.projectLogo);
         setProjectImages(dummyData.projectImages);
         setChatbotData(dummyData);
+        setButtonContent(dummyData.buttons || {});
   
-        setButtonContent({});
-        
         setMessages([
           { sender: "Bot", text: dummyData.greeting },
           { sender: "Bot", text: dummyData.chatbotGreeting },
@@ -534,6 +529,14 @@ const TestChatbot = () => {
   
     fetchWelcomeData();
   }, [chatbotId]);
+  
+  
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages]);
+
 
   const formatTimestamp = (timestamp) => {
     const now = new Date();
@@ -640,7 +643,7 @@ const TestChatbot = () => {
       
             {formVisible && (
   <div className="chatbot-form-overlay1" style={{ zIndex: "10" , width: "fit-content"}}>
-    <div className="chatbot-form-container1 vh-100 window_bg_pink" style={{width:"400px"}}>
+    <div className="chatbot-form-container1 vh-100 window_bg_pink">
       <button
         className="close-button1"
         onClick={() => {
@@ -989,9 +992,10 @@ const TestChatbot = () => {
                     fontSize: "14px",
                     textAlign: "left",
                   }}>
-                   {message.text.split('.').map((sentence, idx) => (
-        <p key={idx}>{sentence}.</p>
-      ))}
+                  {message.text.split('.').filter(sentence => sentence.trim() !== "").map((sentence, idx) => (
+  <p key={idx}>{sentence.trim()}.</p>
+))}
+
                 </div>
               )}
 
@@ -1018,13 +1022,22 @@ const TestChatbot = () => {
               )}
 
               {/* ✅ Buttons */}
-              {message?.buttons && message?.buttons?.map((button, idx) => (
-                <div className="mb-2" key={idx}>
-                  <a onClick={() => handleButtonClick(button.action, button.label)} className="button-52">
-                    {button.label}
-                  </a>
-                </div>
-              ))}
+              {/* ✅ Buttons */}
+{message?.buttons && (
+  <div className="d-flex flex-wrap justify-content-evenly text-center gap-2">
+    {message.buttons.map((button, idx) => (
+      <a
+        key={idx}
+        onClick={() => handleButtonClick(button.action, button.label)}
+        className="button-53"
+        style={{ minWidth: "150px" }} // Ensures buttons don’t shrink too much
+      >
+        {button.label}
+      </a>
+    ))}
+  </div>
+)}
+
             </div>
           </motion.div>
         ) : null;
