@@ -148,12 +148,22 @@ body{
   text-decoration: none;
   letter-spacing: 1px;
   }  */
-
+  .btn-primary {
+    background: #6a11cb !important;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
   .button-52 {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 1px;
-    padding: 7px 10px;
+    padding: 4px 7px;
     border-radius: 1rem;
     color: #000000;
     outline: 0;
@@ -306,7 +316,7 @@ filter: invert();
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
-  width: fit-content;
+  width: 100%;
   position: relative;
   /* margin: 10px auto; */
   border: 1px solid #ddd;
@@ -358,7 +368,7 @@ filter: invert();
   font-size: 1.2rem;
 }
 
-.chatbot-form-overlay .window_bg_pink {
+.chatbot-form-overlay {
   background: linear-gradient(
     100deg,
     #f8dfe3,
@@ -367,6 +377,7 @@ filter: invert();
     #f0cbd2,
     #e6d9f3
   );
+  height: 100vh;
 }
 .checkmark__circle {
   stroke-dasharray: 166;
@@ -435,7 +446,9 @@ filter: invert();
 }
 
 @media (max-width: 390px) and (max-width:490px) {
-  /* Full-screen mode - takes up the whole device screen */
+  .icondiv svg {
+    width: 11%;
+}
 .full-screen {
   position: fixed;
   top: 0;
@@ -472,9 +485,9 @@ button{
 /* Fullscreen button styling */
 .fullscreen-toggle {
   position: absolute;
-  top: -13px;
+  top: -22px;
   display: block;
-  right: 20px;
+  right: 30px;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -513,7 +526,7 @@ button{
     position: relative;
     border-radius: 2rem;
   }
-  .chatbot-form-overlay .window_bg_pink{
+  .chatbot-form-overlay{
     height: 64vh !important;
   }
   .user-message {
@@ -524,7 +537,7 @@ button{
   display: none;
 }
 .close-button {
-  top: -24px;
+  top: -30px;
   font-size: 24px;
 }
 

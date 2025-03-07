@@ -768,9 +768,7 @@ const ChatbotWidget = () => {
             </div>
 
             {/* Submit Button */}
-            <button type="submit" className="btn btn-primary w-100">
-              SUBMIT
-            </button>
+            <button type="submit" class="btn btn-primary w-100">SUBMIT</button>
           </form>
         </>
       )}
@@ -982,11 +980,11 @@ const ChatbotWidget = () => {
 
               {/* ✅ Buttons */}
               {message?.buttons && message?.buttons?.map((button, idx) => (
-                <div key={idx} className="mt-4 me-2">
-                  <a onClick={() => handleButtonClick(button.action, button.label)} className="button-52">
-                    {button.label}
-                  </a>
-                </div>
+                <div className="d-flex flex-wrap justify-content-evenly text-center gap-2" key={idx}>
+                <a onClick={() => handleButtonClick(button.action, button.label)} className="button-52">
+                  {button.label}
+                </a>
+              </div>
               ))}
             </div>
           </motion.div>
