@@ -98,7 +98,7 @@ const TestChatbot = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 10000); // 5 seconds
+    }, 8000000); // 5 seconds
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -143,42 +143,89 @@ const TestChatbot = () => {
     setShowRating(false); // Hide rating after submission
   };
 
-  const handleSendMessage = async () => {
-    // console.log('Send Message check check', chatbotId);
-    if (!input.trim()) return;
-    // console.log('Send Message check check', input);
+  // const handleSendMessage = async () => {
+  //   // console.log('Send Message check check', chatbotId);
+  //   if (!input.trim()) return;
+  //   // console.log('Send Message check check', input);
 
+  //   setMessages((prevMessages) => [
+  //     ...prevMessages,
+  //     { sender: "User", text: input },
+  //   ]);
+
+  //   try {
+  //     setIsTyping(true);
+  //     const token = localStorage.getItem("token");
+  //     const response = await api.post(
+  //       "/aichatbots/respond",
+  //       { chatbotId, message: input }
+  //       // {
+  //       //     headers: {
+  //       //         Authorization: `Bearer ${token}`,
+  //       //     },
+  //       // }
+  //     );
+  //     console.log("chatbot response from Test Chatbot", response);
+  //     const { reply, score } = response.data;
+  //     // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: reply, score },
+  //     ]);
+  //     setIsTyping(false);
+  //     await api.post("analytics/saveEvent", {
+  //       eventType: "chat_message",
+  //       sessionId: uniqueSessionId,
+  //       messages,
+  //       chatbotId,
+  //     });
+  //   } catch (err) {
+  //     console.error("Failed to send message:", err);
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: "Sorry, something went wrong." },
+  //     ]);
+  //   }
+  //   saveConversation(sessionId);
+  //   setInput("");
+  // };
+
+
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
+  
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-
+  
     try {
       setIsTyping(true);
-      const token = localStorage.getItem("token");
-      const response = await api.post(
-        "/aichatbots/respond",
-        { chatbotId, message: input }
-        // {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`,
-        //     },
-        // }
-      );
+      const response = await api.post("/aichatbots/respond", {
+        chatbotId,
+        message: input,
+      });
+  
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-      // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
+  
+      // Ensure period stays on the same line
+      const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
+  
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: "Bot", text: reply, score },
+        { sender: "Bot", text: formattedReply, score },
       ]);
+  
       setIsTyping(false);
+  
       await api.post("analytics/saveEvent", {
         eventType: "chat_message",
         sessionId: uniqueSessionId,
         messages,
         chatbotId,
       });
+  
     } catch (err) {
       console.error("Failed to send message:", err);
       setMessages((prevMessages) => [
@@ -186,10 +233,12 @@ const TestChatbot = () => {
         { sender: "Bot", text: "Sorry, something went wrong." },
       ]);
     }
+  
     saveConversation(sessionId);
     setInput("");
   };
 
+  
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default form submission behavior
@@ -564,8 +613,8 @@ const TestChatbot = () => {
       style={{
         position: "fixed ",
         bottom: "10px ",
-        right: "20px",
-        zIndex: 1000,
+        right: "10px",
+        zIndex: 100000,
       }}
     >
       {/* <div className="color-picker-wrapper">
@@ -582,7 +631,7 @@ const TestChatbot = () => {
                 )}
             </div> */}
      <div
-      className={`test-chatbot-container chatbot-container ${
+      className={`test-chatbot-container1 chatbot-container ${
         isFullScreen ? "full-screen" : ""
       }`}
     >
@@ -590,10 +639,10 @@ const TestChatbot = () => {
      
       
             {formVisible && (
-  <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
-    <div className="chatbot-form-container vh-100 window_bg_pink">
+  <div className="chatbot-form-overlay1" style={{ zIndex: "10" , width: "fit-content"}}>
+    <div className="chatbot-form-container1 vh-100 window_bg_pink" style={{width:"400px"}}>
       <button
-        className="close-button"
+        className="close-button1"
         onClick={() => {
           setFormVisible(false);
           setChatVisible(true);
@@ -791,7 +840,7 @@ const TestChatbot = () => {
                     />
                 </div> */}
                   {chatbotData?.projectLogo && (
-                    <div className="chatbot-logo d-flex justify-content-center align-items-center">
+                    <div className="chatbot-logo d_flex">
                       <img
                         className="chatbot-logo-img"
                         src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
@@ -838,7 +887,7 @@ const TestChatbot = () => {
 
                   <div className="relative py-2">
                   {isMobile && (
-        <button className="fullscreen-toggle" onClick={toggleFullScreen}>
+        <button className="fullscreen-toggle1" onClick={toggleFullScreen}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -853,7 +902,7 @@ const TestChatbot = () => {
           <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
         </svg>
       </button>
-        // <button className="fullscreen-toggle" onClick={toggleFullScreen}>
+        // <button className="fullscreen-toggle1" onClick={toggleFullScreen}>
         //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
         // </button>
       )}
@@ -970,7 +1019,7 @@ const TestChatbot = () => {
 
               {/* ✅ Buttons */}
               {message?.buttons && message?.buttons?.map((button, idx) => (
-                <div key={idx} className="mt-4 me-2">
+                <div className="mb-2" key={idx}>
                   <a onClick={() => handleButtonClick(button.action, button.label)} className="button-52">
                     {button.label}
                   </a>
