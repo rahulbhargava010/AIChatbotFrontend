@@ -299,7 +299,7 @@ filter: invert();
 }
 .user-message {
   width: 24rem;
-  margin-right: -1rem;
+  margin-right: rem;
 }
 .close_button{
   position: relative;
@@ -531,7 +531,7 @@ button{
   }
   .user-message {
     width: 24rem;
-    margin-right: -6rem;
+    margin-right: 1rem;
 }
 .mobile{
   display: none;

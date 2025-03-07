@@ -98,7 +98,7 @@ const TestChatbot = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 40000); // 5 seconds
+    }, 5000); // 5 seconds
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -993,7 +993,7 @@ const TestChatbot = () => {
                     textAlign: "left",
                   }}>
                   {message.text.split('.').filter(sentence => sentence.trim() !== "").map((sentence, idx) => (
-  <p key={idx}>{sentence.trim()}.</p>
+  <p key={idx}>{sentence.trim()}</p>
 ))}
 
                 </div>

@@ -47,7 +47,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 79vh;
-  width: 400px;
+  width: 425px;
   position: relative;
   /* margin: 10px auto; */
   border: 1px solid #ddd;
@@ -130,6 +130,7 @@
   background-color: #f8d7da;
   color: #721c24;
 }
+
 .message {
   display: flex;
   /* margin-bottom: 7px; */
@@ -138,6 +139,8 @@
 
 .user-message {
   justify-content: flex-end;
+  margin-right: 0rem;
+  width: 100%;
 }
 
 .bot-message {
@@ -692,7 +695,7 @@ button{
   }
   .user-message {
     width: 24rem;
-    margin-right: -6rem;
+    margin-right: 2rem ;
 }
 .mobile{
   display: none;

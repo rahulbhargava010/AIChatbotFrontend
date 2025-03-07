@@ -104,7 +104,7 @@ const ChatbotWidget = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 80000); // 5 seconds
+    }, 40000); // 5 seconds
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -263,7 +263,7 @@ const ChatbotWidget = () => {
       if(hasUserMessage) {
         saveConversation(storedSessionId);
       }
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [messages]);
 
