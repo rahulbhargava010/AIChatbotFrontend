@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 
-export const FirstScreen = ({ setShowFirstScreen }) => {
+export const FirstScreen = ({ setShowFirstScreen, chatbotData }) => {
   return (
     <div
     className="text-center first_screen"
@@ -19,10 +19,10 @@ export const FirstScreen = ({ setShowFirstScreen }) => {
       transition={{ duration: 0.5, delay: 0.1 }} // Stagger effect>
       >
         <h3 className="fw-normal">
-          How May <span className="fw-bold">I Assist <span className="d-block">You Today</span></span>
+          Welcome! to AI {chatbotData?.chatbotName} Chatbot, How May <span className="fw-bold">I Assist <span className="d-block">You Today</span></span>
         </h3>
         <p className="pt-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quos doloremque repellendus explicabo.?
+          {chatbotData?.projectHighlights}
         </p>
       </motion.div>
 

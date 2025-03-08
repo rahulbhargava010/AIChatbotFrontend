@@ -6,6 +6,11 @@ import api from "../config/axios";
 
 const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [name, setName] = useState("");
+  const [map, setMap] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [gtm, setGTM] = useState("");
+  const [conversation, setConversation] = useState("");
   const [chatbotId, setChatbotId] = useState("");
   const [webhook, setWebhook] = useState("");
   const [message, setMessage] = useState("");
@@ -165,6 +170,18 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 className="form-control"
               />
               <label htmlFor="chatbot-name" className="form-label">
+                Phone
+              </label>
+              <input
+                id="chatbot-phone"
+                type="text"
+                placeholder="Enter Phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="form-control"
+              />
+              
+              <label htmlFor="chatbot-name" className="form-label">
                 Webhook
               </label>
               <input
@@ -187,6 +204,23 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
           {step === 2 && (
             <div className="multi-step-form">
               <div className="mb-3">
+                <label>Map:</label>
+                <input
+                  id="chatbot-map"
+                  type="text"
+                  placeholder="Enter Map Location"
+                  value={map}
+                  onChange={(e) => setMap(e.target.value)}
+                  className="form-control"
+                />
+                <textarea
+                  type="text"
+                  name="map"
+                  value={map}
+                  onChange={(e) => setMap(e.target.value)}
+                  className="form-control"
+                />
+
                 <label>Project Highlight:</label>
                 <textarea
                   type="textarea"

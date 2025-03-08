@@ -105,7 +105,7 @@ const ChatbotWidget = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFirstScreen(false);
-    }, 80000); // 5 seconds
+    }, 80000);
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -791,7 +791,7 @@ const ChatbotWidget = () => {
         {chatVisible && (
           <>
             {showFirstScreen ? (
-              <FirstScreen setShowFirstScreen={setShowFirstScreen}/>
+              <FirstScreen setShowFirstScreen={setShowFirstScreen} chatbotData={chatbotData} />
             ) : (
               <>
                 {/* <button
@@ -815,15 +815,19 @@ const ChatbotWidget = () => {
                   {chatbotData?.projectLogo && (
                     <div className="chatbot-logo d-flex justify-content-center align-items-center">
                       <img
+                        key={chatbotData?.projectLogo}
                         className="chatbot-logo-img"
-                        src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
+                        src={ chatbotData?.projectLogo ? chatbotData?.projectLogo : 
+                          "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
+                        }
                         // src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
                         alt="Project Logo"
                         height="50"
                         width="60"
+                        onError={(e) => (e.target.style.display = "none")}
                       />
 
-<div className="py-2 text-left ms-2">
+                  <div className="py-2 text-left ms-2">
                     <h4 className="title">
                     {chatbotData?.chatbotName} Help Desk
                     </h4>
@@ -969,7 +973,7 @@ const ChatbotWidget = () => {
 )}
 
               {/* ✅ Image Message */}
-              {message?.images && message?.images?.length > 0 && (
+              {message?.images && (
                 <div className="image-container">
                   {message.images.map((img, idx) => (
                     <img

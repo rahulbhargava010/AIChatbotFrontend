@@ -43,11 +43,17 @@ ChartJS.register(
 const LeadDetails = () => {
   const [leadData, setLeadData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [messages, setMessages] = useState("");
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editCommentText, setEditCommentText] = useState("");
+  
   const { leadId } = useParams();
 
   useEffect(() => {
     if (!leadId) return;
-
+    console.log('coming inside leadid')
     const fetchLeadDetails = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -58,6 +64,7 @@ const LeadDetails = () => {
         );
         console.log("RES:", response);
         setLeadData(response.data);
+        setComments(response?.data?.commentLogs);
       } catch (error) {
         console.error("Error fetching lead details:", error);
       } finally {
@@ -67,6 +74,124 @@ const LeadDetails = () => {
 
     fetchLeadDetails();
   }, [leadId]);
+
+  // Add a new comment
+  const handleAddComment = async () => {
+    if (newComment.trim() === "") return;
+    try {
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      const response = await api.post("/leads/saveComment", 
+      {
+          leadId,
+          comment: newComment
+      },
+      {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      console.log('response --- ', response.data)
+
+      const comment = {
+          _id: response.data.comment._id, // Unique ID for the comment
+          comment: newComment,
+          createdAt: response.data.comment.createdAt,
+      };
+
+      setMessages("Comment added successfully!");
+      setComments([...comments, comment]);
+      setNewComment("");
+    } catch (error) {
+      setMessages(error.response?.data?.error || "Failed to add company.");
+    }
+  };
+
+  const handleEditComment = async (id) => {
+    try {
+
+      const commentToEdit = comments.find((comment) => comment._id === id);
+      if (commentToEdit) {
+        setEditCommentId(id);
+        setEditCommentText(commentToEdit.comment);
+      }
+      // const token = localStorage.getItem("token"); // Get token from localStorage
+      // const response = await api.post("/leads/saveComment", 
+      // {
+      //     leadId,
+      //     comment: newComment
+      // },
+      // {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      // });
+    } catch (error) {
+      setMessages(error.response?.data?.error || "Failed to add company.");
+    }
+  };
+
+  // Delete a comment
+  const handleDeleteComment = async (id) => {
+
+      try {
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        const response = await api.post("/leads/deleteComment", 
+        {
+            commentId: id
+        },
+        {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+        });
+      } catch (error) {
+          setMessages(error.response?.data?.error || "Failed to add company.");
+      }
+      const updatedComments = comments.filter((comment) => comment._id !== id);
+      setComments(updatedComments);
+  };
+
+  // Save the edited comment
+  const handleSaveEdit = async () => {
+    if (editCommentText.trim() === "") return;
+    try {
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      const response = await api.post("/leads/editComment", 
+      {
+          commentId: editCommentId,
+          comment: editCommentText
+      },
+      {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+
+      console.log('comments', comments)
+      const updatedComments = await comments?.map((comment) =>
+          comment._id === editCommentId ? { ...comment, comment: editCommentText } : comment
+      );
+
+      console.log('editCommentId', editCommentId)
+      console.log('editCommentText', editCommentText)
+      console.log('updatedComments', updatedComments)
+      setComments(updatedComments);
+      setEditCommentId(null);
+      setEditCommentText("");
+    } catch (error) {
+      setMessages(error.response?.data?.error || "Failed to add company.");
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditCommentId(null);
+    setEditCommentText("");
+  };
 
   if (!leadId) return <p className="text-center">No lead selected.</p>;
   if (loading)
@@ -78,8 +203,9 @@ const LeadDetails = () => {
   if (!leadData || !leadData.leadDetail)
     return <p className="text-center">No lead details found.</p>;
 
-  const { leadDetail, activityLogs, conversationLogs, followUpLogs } = leadData;
-      console.log('leadData', leadData);
+  const { leadDetail, activityLogs, conversationLogs, followUpLogs, commentLogs } = leadData;
+  // console.log('commentLogs', commentLogs);
+  // setComments(commentLogs);
   // Data for the bar chart (example: activity frequency)
   const activityLabels = activityLogs.map((log) => log.timestamp);
   const activityData = activityLogs.map((log, index) => index + 1);
@@ -111,10 +237,10 @@ const LeadDetails = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-6">
       <div className="row">
         {/* Lead Details Card */}
-        <div className="col-md-5 col-lg-5 mb-4">
+        <div className="col-md-6 col-lg-6 mb-6">
           <div className="card h-100 p-3">
             <h5 className="card-title text-center">Lead Details</h5>
             <div
@@ -175,7 +301,7 @@ const LeadDetails = () => {
         </div>
 
         {/* Follow-ups Card */}
-        <div className="col-md-5 col-lg-5 mb-4">
+        <div className="col-md-6 col-lg-6 mb-6">
           <div className="card h-100 p-3">
             <h6 className="card-title text-center">Follow-ups</h6>
             {followUpLogs && followUpLogs.length > 0 ? (
@@ -235,19 +361,49 @@ const LeadDetails = () => {
         <div className="col-md-6 col-lg-4 mb-4">
           <div className="card h-100 p-3">
             <h6 className="card-title text-center">Comments</h6>
-            {activityLogs && activityLogs.length > 0 ? (
+            <div className="add-comment">
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                />
+                <button onClick={handleAddComment}>Add Comment</button>
+            </div>
+            
+            {comments && comments?.length > 0 ? (
               <ul className="list-group">
-                {activityLogs
-                  .filter((log) => log.action.startsWith("Remark Added"))
-                  .map((log, index) => (
-                    <li
-                      key={index}
-                      className="list-group-item d-flex align-items-center"
-                    >
-                      <FaComment className="me-2 text-primary" />{" "}
-                      {log.timestamp} -{" "}
-                      {log.action.replace("Remark Added: ", "")}
-                    </li>
+                {comments?.map((comment) => (
+                      <div key={comment._id} className="comment">
+                      {editCommentId === comment._id ? (
+                        // Edit Comment Section
+                        <div className="edit-comment">
+                          <textarea
+                            value={editCommentText}
+                            onChange={(e) => setEditCommentText(e.target.value)}
+                          />
+                          <button onClick={handleSaveEdit}>Save</button>
+                          <button onClick={handleCancelEdit}>Cancel</button>
+                        </div>
+                      ) : (
+                        // Show Comment Section
+                        <div className="comment-content">
+                          <p>{comment.comment}</p>
+                          <small>{comment.createdAt}</small>
+                          <div className="comment-actions">
+                            <button onClick={() => handleEditComment(comment._id)}>Edit</button>
+                            <button onClick={() => handleDeleteComment(comment._id)}>Delete</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    // <li
+                    //   key={index}
+                    //   className="list-group-item d-flex align-items-center"
+                    // >
+                    //   <FaComment className="me-2 text-primary" />{" "}
+                    //   {log.comment} - {log.createdAt} -{" "}
+                    //   {/* {log.action.replace("Remark Added: ", "")} */}
+                    // </li>
                   ))}
               </ul>
             ) : (
