@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card, Row, Col, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { LoaderContext } from "../Auth/LoaderContext";
 import {
   faUsers,
   faChartLine,
@@ -20,6 +21,7 @@ import {
   LineElement,
 } from "chart.js";
 import api from "../config/axios";
+import Loader from "./Loader";
 
 // Register ChartJS components
 ChartJS.register(
@@ -37,9 +39,11 @@ const Dashboard = () => {
   const [analyticsData, setAnalyticsData] = useState({});
   const [chatbotData, setChatbotData] = useState([]);
   const [leadsData, setLeadsData] = useState([]);
+  const { isLoading, showLoader, hideLoader } = useContext(LoaderContext);
 
   useEffect(() => {
     const fetchData = async () => {
+      showLoader();
       try {
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -57,6 +61,8 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        hideLoader();
       }
     };
 

@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../config/axios";
 import DataTable from "./DataTable";
 import { FaEye, FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { LoaderContext } from "../Auth/LoaderContext";
 
 const CompaniesList = () => {
   const [companies, setCompanies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const { showLoader, hideLoader } = useContext(LoaderContext);
 
   useEffect(() => {
     fetchCompanies();
   }, []);
 
   const fetchCompanies = async () => {
+    showLoader();
     try {
       const response = await api.get("/company/all");
       setCompanies(response.data.companies);
       console.log("ComponiesList:", response.data);
     } catch (error) {
       console.error("Error fetching companies:", error);
+    } finally {
+      hideLoader();
     }
   };
 
