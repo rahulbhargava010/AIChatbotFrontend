@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../config/axios";
 import generateEmbedScript from "../config/embedScript";
-import DataTable from "./DataTable"; // Import the reusable component
+import DataTable from "./DataTable";
 import {
   FaPlay,
   FaEdit,
@@ -12,16 +12,19 @@ import {
   FaCode,
   FaTrash,
 } from "react-icons/fa";
-import TestChatbot from "./TestChatbot"; // Import the TestChatbot component
+import TestChatbot from "./TestChatbot";
+import { LoaderContext } from "../Auth/LoaderContext";
 
 const ChatbotList = () => {
   const [chatbots, setChatbots] = useState([]);
   const [error, setError] = useState("");
   const [activeChatbotId, setActiveChatbotId] = useState(null);
   const navigate = useNavigate();
+  const { showLoader, hideLoader } = useContext(LoaderContext);
 
   useEffect(() => {
     const fetchChatbots = async () => {
+      showLoader();
       try {
         const token = localStorage.getItem("token");
         const response = await api.get("/chatbots/list", {
@@ -31,6 +34,8 @@ const ChatbotList = () => {
         setChatbots(data);
       } catch (err) {
         setError(err.response?.data?.error || "Failed to fetch chatbots");
+      } finally {
+        hideLoader();
       }
     };
 
@@ -77,14 +82,15 @@ const ChatbotList = () => {
       header: "Created At",
       render: (value) => new Date(value).toLocaleString(),
     },
-    { 
-      key: "isActive", 
+    {
+      key: "isActive",
       header: "Status",
-      render : (value) => (
-      <span className={value === "active" ? "text-success" : "text-danger"}>
-        {value === "active" ? "Active" : "Inactive"}
-      </span>
-    )},
+      render: (value) => (
+        <span className={value === "active" ? "text-success" : "text-danger"}>
+          {value === "active" ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
   ];
 
   const actions = [

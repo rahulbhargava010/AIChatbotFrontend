@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import api from "../config/axios";
 import { FaToggleOn, FaToggleOff, FaTrashAlt } from "react-icons/fa";
 import DataTable from "./DataTable"; // Import the DataTable component
 import "./Dashboard.css";
+import { LoaderContext } from "../Auth/LoaderContext";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { showLoader, hideLoader } = useContext(LoaderContext);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
+    showLoader();
     try {
       const token = localStorage.getItem("token");
       const response = await api.post(
@@ -28,6 +31,8 @@ const UserList = () => {
       setUsers(response.data.user);
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      hideLoader();
     }
   };
 

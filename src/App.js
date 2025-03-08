@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,6 +10,9 @@ import {
 import * as jwtDecode from "jwt-decode";
 import { AuthProvider } from "./components/Auth/AuthContext";
 import AppRoutes from "./components/routes/AppRoutes";
+import { LoaderProvider } from "./components/Auth/LoaderContext";
+import { LoaderContext } from "./components/Auth/LoaderContext";
+import Loader from "./components/Dashboard/Loader";
 
 // import Login from './components/Auth/Login';
 // import Signup from './components/Auth/Signup';
@@ -157,10 +160,24 @@ const App = () => {
     //   </Routes>
     // </Router>
     <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
+      <LoaderProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </LoaderProvider>
     </AuthProvider>
+  );
+};
+
+const AppContent = () => {
+  const { LoaderContext } = require("./components/Auth/LoaderContext");
+  const { isLoading } = React.useContext(LoaderContext);
+
+  return (
+    <>
+      {isLoading && <Loader />}
+      <AppRoutes />
+    </>
   );
 };
 
