@@ -8,31 +8,21 @@ const ChatbotRating = ({ onClose, onSubmit }) => {
 
   // Emoji options with labels
   const emojis = [
-    { value: 1, icon: "😠", label: "Very Bad" },
-    { value: 2, icon: "😕", label: "Bad" },
-    { value: 3, icon: "😐", label: "Neutral" },
-    { value: 4, icon: "🙂", label: "Good" },
-    { value: 5, icon: "😍", label: "Excellent" },
+    { value: "Poor", icon: "😠", label: "Poor" },
+    { value: "Bad", icon: "😕", label: "Bad" },
+    { value: "Neutral", icon: "😐", label: "Neutral" },
+    { value: "Good", icon: "🙂", label: "Good" },
+    { value: "Excellent", icon: "😍", label: "Excellent" },
   ];
 
-  const handleSubmit = () => {
-    if (!rating) {
-      alert("⚠️ Please select a rating!");
-      return;
-    }
+  const handleSubmit = async () => {
+      if (!rating) {
+        alert("⚠️ Please select a rating!");
+        return;
+      }
 
-    if (!review.trim()) {
-      alert("⚠️ Please enter a comment before submitting!");
-      return;
-    }
-
-    // Send rating data to parent component
-    onSubmit({ rating, review });
-
-    // Smoothly close the modal after submitting
-    setTimeout(() => {
-      onClose();
-    }, 500);
+      // Send rating data to parent component
+      onSubmit({ rating, review });
   };
 
   return (

@@ -25,6 +25,8 @@ const ChatbotWidget = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { chatbotId } = useParams();
   const [messages, setMessages] = useState([]);
+  const [rating, setRating] = useState('');
+  const [review, setReview] = useState('');
   // const [embedScript, setEmbedScript] = useState('');
   
   const [webhook, setWebhook] = useState("");
@@ -145,9 +147,46 @@ const ChatbotWidget = () => {
     setShowRating(true); // Show full-height rating component
   };
 
-  const handleFeedbackSubmit = (feedback) => {
-    console.log("User Feedback:", feedback);
-    setShowRating(false); // Hide rating after submission
+  useEffect(() => {
+      if(rating) {
+          if(formSubmitted) {
+            const response = api.post("/conversations/addRating", 
+            {
+                rating,
+                sessionId,
+                review
+            });
+            setRating('');
+            setTimeout(() => {
+                setShowRating(false);
+            }, 5000);
+          } else {
+            setShowRating(false);
+            setFormVisible(true)
+          }
+      }
+  }, [rating, messages]);
+
+  const handleFeedbackSubmit = async (feedback) => {
+    try {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "User", text: `You rated chat as ${feedback.rating}` },
+        ]);
+        if(feedback?.review){
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            feedback.review ? { sender: "User", text: `Your review is ${feedback.review}` } : ''
+          ]);
+          setReview(feedback?.review)
+        }
+        setRating(feedback?.rating)
+        
+        saveConversation(storedSessionId)
+    } catch (error) {
+        // setMessages(error.response?.data?.error || "Failed to add company.");
+    }
+    
   };
 
   // const handleSendMessage = async () => {
@@ -279,19 +318,16 @@ const ChatbotWidget = () => {
   // Save chat message to backend
   const saveConversation = async (sessionId) => {
     try {
-      const response = await api.post("/conversations/save", {
-        chatbotId,
-        messages,
-        sessionId,
-      });
-      setConversation(response.data.conversation._id);
+        const response = await api.post("/conversations/save", {
+          chatbotId,
+          messages,
+          sessionId,
+        });
+        setConversation(response.data.conversation._id);
     } catch (err) {
       console.error("Error saving message:", err);
     }
   };
-
-
- 
 
   useEffect(() => {
       const timer = setTimeout(() => {
@@ -356,71 +392,6 @@ const ChatbotWidget = () => {
       { label: "Location Map", action: "get_callback" },
     ],
   };
-  
-  useEffect(() => {
-    const fetchWelcomeData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-  
-        const response = await api.post(
-          "/aichatbots/welcome",
-          { chatbotId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        // ✅ If API response is empty or missing, use dummyData
-        const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
-  
-        console.log("Welcome in project greeting 12: ", response);
-  
-        setWebhook(data.webhook);
-        setProjectLogo(data.projectLogo);
-        setProjectImages(data.projectImages);
-        setChatbotData(data);
-        setButtonContent(data.buttons || {});
-  
-        const buttonMap = {};
-        (data.buttons || []).forEach((btn) => {
-          buttonMap[btn.action] = btn.data || {};
-        });
-  
-        setButtonContent(buttonMap);
-  
-        setMessages([
-          { sender: "Bot", text: data.greeting },
-          { sender: "Bot", text: data.chatbotGreeting },
-          { sender: "Bot", text: data.projectHighlights },
-          { images: data.projectImages },
-          { buttons: data.buttons },
-        ]);
-      } catch (err) {
-        console.error("Error fetching welcome data:", err);
-  
-        // ✅ If API fails, set dummy data
-        setWebhook(dummyData.webhook);
-        setProjectLogo(dummyData.projectLogo);
-        setProjectImages(dummyData.projectImages);
-        setChatbotData(dummyData);
-        setButtonContent(dummyData.buttons || {});
-  
-        setMessages([
-          { sender: "Bot", text: dummyData.greeting },
-          { sender: "Bot", text: dummyData.chatbotGreeting },
-          { sender: "Bot", text: dummyData.projectHighlights },
-          { images: dummyData.projectImages },
-          { buttons: dummyData.buttons },
-        ]);
-      }
-    };
-  
-    fetchWelcomeData();
-  }, [chatbotId]);
-  
-
   
   useEffect(() => {
     if (chatWindowRef.current) {
@@ -518,70 +489,6 @@ const ChatbotWidget = () => {
     fetchWelcomeData();
   }, [chatbotId]);
   
-
-  // useEffect(() => {
-  //   const fetchWelcomeData = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-
-  //       const response = await api.post(
-  //         "/aichatbots/welcome",
-  //         { chatbotId },
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       const {
-  //         greeting,
-  //         projectHighlights,
-  //         buttons,
-  //         webhook,
-  //         projectImages,
-  //         chatbotGreeting,
-  //         chatbotName
-  //       } = response.data;
-  //       console.log('Welcome in project greeting 12: ' + response)
-  //       setWebhook(webhook);
-  //       setProjectLogo(projectLogo);
-  //       setProjectImages(projectImages);
-  //       setChatbotData(response.data);
-  //       setButtonContent(buttons || {});
-  //       const buttonMap = {};
-  //       // console.log('Welcome in project buttons: ', buttons);
-  //       const buttonList = buttons.map((btn) => {
-  //         buttonMap[btn.action] = btn.data;
-  //         // return { label: btn.label, action: btn.action };
-  //       });
-
-  //       // setButtons(buttonList);
-
-  //       setButtonContent(buttonMap);
-  //       // console.log('Welcome in project buttons: buttonMap', buttonMap);
-  //       // console.log('Welcome in project buttons: buttonList', buttonList);
-  //       // Set initial messages and buttons chatbotGreeting
-  //       setMessages([
-  //         { sender: "Bot", text: greeting },
-  //         { sender: "Bot", text: chatbotGreeting },
-  //         { sender: "Bot", text: projectHighlights },
-  //         { images: projectImages },
-  //         {
-  //           buttons: [
-  //             { label: "Site Visit Schedule", action: "schedule_site_visit" },
-  //             { label: "Brochure", action: "brochure" },
-  //             { label: "Location Map", action: "get_callback" },
-  //           ],
-  //         },
-  //       ]);
-  //       // setButtons(buttons);
-  //     } catch (err) {
-  //       console.error("Error fetching welcome data:", err);
-  //     }
-  //   };
-  //   fetchWelcomeData();
-  // }, [chatbotId]);
-
   const formatTimestamp = (timestamp) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now - new Date(timestamp)) / 1000);
@@ -780,7 +687,7 @@ const ChatbotWidget = () => {
             </div>
 
             {/* Submit Button */}
-            <button type="submit" class="btn btn-primary w-100">SUBMIT</button>
+            <button type="submit" className="btn btn-primary w-100">SUBMIT</button>
           </form>
         </>
       )}
