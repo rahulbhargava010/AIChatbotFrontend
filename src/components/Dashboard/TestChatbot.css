@@ -592,15 +592,15 @@ body {
   transition: background 0.3s ease-in-out;
 }
 .modal-fullscreen .modal-content {
-  height: 73%;
-  width: 448px;
-  border: 0;
-  background: #fff;
-  border-radius: 0;
-  right: 0;
-  /* float: right; */
-  position: absolute;
-  top: 14%;
+  height: 59%;
+    width: 399px;
+    border: 0;
+    background: #fff;
+    border-radius: 0;
+    right: 0.8%;
+    /* float: right; */
+    position: absolute;
+    top: 30%;
 }
 
 @media (max-width: 390px) and (max-width:490px) {
