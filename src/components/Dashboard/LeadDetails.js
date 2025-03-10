@@ -49,6 +49,10 @@ const LeadDetails = () => {
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
   
+  const [followUps, setFollowUps] = useState([]);
+  const [newFollowUp, setNewFollowUp] = useState({ followUpDate: '', notes: '', status: 'Pending' });
+  const [editFollowUp, setEditFollowUp] = useState(null);
+
   const { leadId } = useParams();
 
   useEffect(() => {
@@ -65,6 +69,7 @@ const LeadDetails = () => {
         console.log("RES:", response);
         setLeadData(response.data);
         setComments(response?.data?.commentLogs);
+        setFollowUps(response?.data?.followUpLogs);
       } catch (error) {
         console.error("Error fetching lead details:", error);
       } finally {
@@ -193,6 +198,76 @@ const LeadDetails = () => {
     setEditCommentText("");
   };
 
+
+
+  // Create a follow-up
+  const handleCreateFollowUp = async () => {
+    try {
+      // const response = await axios.post('/api/follow-ups', { ...newFollowUp, leadId });
+      const token = localStorage.getItem("token");
+      const response = await api.post("/followup/save", 
+      { ...newFollowUp, leadId },
+      {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      setFollowUps([...followUps, response.data.followUp]);
+      setNewFollowUp({ followUpDate: '', notes: '', status: 'Pending' });
+    } catch (error) {
+      console.error('Error creating follow-up:', error);
+    }
+  };
+
+  // Update a follow-up
+  const handleUpdateFollowUp = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post("/followup/update", 
+      {
+          followUpId: editFollowUp._id,
+          editFollowUp
+      },
+      {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      console.log('response --- ', response.data)
+      setFollowUps(followUps.map((f) => (f._id === editFollowUp._id ? response.data.followUp : f)));
+      setEditFollowUp(null);
+    } catch (error) {
+      console.error('Error updating follow-up:', error);
+    }
+  };
+
+  // Delete a follow-up
+  const handleDeleteFollowUp = async (id) => {
+    console.log('handleDeleteFollowUp', id)
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post("/followup/delete", 
+      {
+          followUpId: id,
+      },
+      {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      // await axios.delete(`/api/follow-ups/${id}`);
+      setFollowUps(followUps.filter((f) => f._id !== id));
+    } catch (error) {
+      console.error('Error deleting follow-up:', error);
+    }
+  };
+
+
+
+
   if (!leadId) return <p className="text-center">No lead selected.</p>;
   if (loading)
     return (
@@ -304,21 +379,66 @@ const LeadDetails = () => {
         <div className="col-md-6 col-lg-6 mb-6">
           <div className="card h-100 p-3">
             <h6 className="card-title text-center">Follow-ups</h6>
-            {followUpLogs && followUpLogs.length > 0 ? (
-              <ul className="list-group">
-                {followUpLogs.map((log, index) => (
-                  <li
-                    key={index}
-                    className="list-group-item d-flex align-items-center"
+            <div>
+                {/* Create Follow-Up */}
+                <div>
+                  <input
+                    type="datetime-local"
+                    value={newFollowUp.followUpDate}
+                    onChange={(e) => setNewFollowUp({ ...newFollowUp, followUpDate: e.target.value })}
+                  />
+                  <textarea
+                    placeholder="Notes"
+                    value={newFollowUp.notes}
+                    onChange={(e) => setNewFollowUp({ ...newFollowUp, notes: e.target.value })}
+                  />
+                  <select
+                    value={newFollowUp.status}
+                    onChange={(e) => setNewFollowUp({ ...newFollowUp, status: e.target.value })}
                   >
-                    <FaCalendar className="me-2 text-primary" /> {log.timestamp}{" "}
-                    - {log.msg}
-                  </li>
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                  <button onClick={handleCreateFollowUp}>Add Follow-Up</button>
+                </div>
+
+                {/* List Follow-Ups */}
+                {followUps.map((followUp) => (
+                  <div key={followUp._id}>
+                    <p>Date: {new Date(followUp.followUpDate).toLocaleDateString()}</p>
+                    <p>Notes: {followUp.notes}</p>
+                    <p>Status: {followUp.status}</p>
+                    <button onClick={() => setEditFollowUp(followUp)}>Edit</button>
+                    <button onClick={() => handleDeleteFollowUp(followUp._id)}>Delete</button>
+                  </div>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-center">No follow-ups available.</p>
-            )}
+
+                {/* Edit Follow-Up */}
+                {editFollowUp && (
+                  <div>
+                    <input
+                      type="datetime-local"
+                      value={editFollowUp.followUpDate}
+                      onChange={(e) => setEditFollowUp({ ...editFollowUp, followUpDate: e.target.value })}
+                    />
+                    <textarea
+                      placeholder="Notes"
+                      value={editFollowUp.notes}
+                      onChange={(e) => setEditFollowUp({ ...editFollowUp, notes: e.target.value })}
+                    />
+                    <select
+                      value={editFollowUp.status}
+                      onChange={(e) => setEditFollowUp({ ...editFollowUp, status: e.target.value })}
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <button onClick={handleUpdateFollowUp}>Save</button>
+                    <button onClick={() => setEditFollowUp(null)}>Cancel</button>
+                  </div>
+                )}
+              </div>
           </div>
         </div>
 
