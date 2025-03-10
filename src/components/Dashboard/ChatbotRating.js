@@ -8,12 +8,13 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
 
   // Emoji options with labels
   const emojis = [
-    { value: "Poor", icon: "😠", label: "Poor" },
-    { value: "Bad", icon: "😕", label: "Bad" },
-    { value: "Neutral", icon: "😐", label: "Average" },
-    { value: "Good", icon: "🙂", label: "Good" },
-    { value: "Excellent", icon: "😍", label: "Excellent" },
+    { value: "1", icon: "😠", label: "Poor" },
+    { value: "2", icon: "😕", label: "Bad" },
+    { value: "3", icon: "😐", label: "Average" },
+    { value: "4", icon: "🙂", label: "Good" },
+    { value: "5", icon: "😍", label: "Excellent" },
   ];
+
 
   const handleSubmit = async () => {
       if (!rating) {

@@ -52,7 +52,7 @@ const ChatbotWidget = () => {
   const [formAction, setFormAction] = useState("");
   const [buttonContent, setButtonContent] = useState({});
   const [isTyping, setIsTyping] = useState(false);
-  const [leadData, setLeadData] = useState({ name: "", phone: "", email: "" });
+  const [leadData, setLeadData] = useState({ name: "", phone: "", email: "", id: "" });
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
@@ -172,6 +172,8 @@ const ChatbotWidget = () => {
           if(formSubmitted) {
             const response = api.post("/conversations/addRating", 
             {
+                leadId: leadData.id,
+                chatbotId,
                 rating,
                 sessionId,
                 review
@@ -179,7 +181,7 @@ const ChatbotWidget = () => {
             setRating('');
             setTimeout(() => {
                 setShowRating(false);
-            }, 5000);
+            }, 3000);
           } else {
             setShowRating(false);
             setFormVisible(true)
@@ -188,15 +190,17 @@ const ChatbotWidget = () => {
   }, [rating, messages]);
 
   const handleFeedbackSubmit = async (feedback) => {
+    const feedbackRating = feedback?.rating
+    const feedbackReview = feedback?.review
     try {
         setMessages((prevMessages) => [
           ...prevMessages,
-          { sender: "User", text: `You rated chat as ${feedback.rating}` },
+          { sender: "User", text: `You rated chat as ${feedbackRating}` },
         ]);
         if(feedback?.review){
           setMessages((prevMessages) => [
             ...prevMessages,
-            feedback.review ? { sender: "User", text: `Your review is ${feedback.review}` } : ''
+            { sender: "User", text: `Your review is ${feedbackReview}` }
           ]);
           setReview(feedback?.review)
         }
@@ -593,6 +597,7 @@ const ChatbotWidget = () => {
              handleLeadSubmit(
                 e,
                 leadData,
+                setLeadData,
                 chatbotId,
                 conversation,
                 setMessages,
@@ -934,30 +939,30 @@ const ChatbotWidget = () => {
               
               {/* ✅ Text Message */}
               {message.text && (
- <div
- className="message-bubble"
- style={{
-   backgroundColor: "rgb(231 218 243 / 51%)",
-   boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-   borderRadius: "10px",
-   padding: "10px",
-   maxWidth: "100%",  // Ensures message doesn't stretch too much
-   width: "auto",    // Adapts width to content
-   lineHeight: "21px",
-   margin: "5px 0",
-   border: "2px solid rgb(255, 255, 255)",
-   fontSize: "14px",
-   textAlign: "left",
-   whiteSpace: "pre-line",
-   display: "inline-block", // Ensures width adapts to content
-   wordWrap: "break-word",  // Prevents long words from overflowing
- }}
->
-{message.text}
+              <div
+              className="message-bubble"
+              style={{
+                backgroundColor: "rgb(231 218 243 / 51%)",
+                boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                borderRadius: "10px",
+                padding: "10px",
+                maxWidth: "100%",  // Ensures message doesn't stretch too much
+                width: "auto",    // Adapts width to content
+                lineHeight: "21px",
+                margin: "5px 0",
+                border: "2px solid rgb(255, 255, 255)",
+                fontSize: "14px",
+                textAlign: "left",
+                whiteSpace: "pre-line",
+                display: "inline-block", // Ensures width adapts to content
+                wordWrap: "break-word",  // Prevents long words from overflowing
+              }}
+              >
+              {message.text}
 
-</div>
+              </div>
 
-)}
+              )}
 
               {/* ✅ Image Message */}
               {message?.images && (

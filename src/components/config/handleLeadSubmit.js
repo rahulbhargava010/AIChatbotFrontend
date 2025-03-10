@@ -3,6 +3,7 @@ import axios from "axios";
 const handleLeadSubmit = async (
   e,
   leadData,
+  setLeadData,
   chatbotId,
   conversation,
   setMessages,
@@ -58,25 +59,20 @@ const handleLeadSubmit = async (
     console.log("LeadData:", updatedLeadData);
 
     // console.log("Saving lead data...");
-    await api.post("/leads/save", {
+    const leadResponse = await api.post("/leads/save", {
       chatbotId,
       leadData: updatedLeadData,
       conversation,
     });
-    // console.log("Lead data saved successfully!");
-
-    // alert("Lead saved successfully!");
+    setLeadData({...leadData, id: leadResponse?.data?.lead?._id})
+    const leadName = leadData?.name?.toUpperCase()
     setMessages((prevMessages) => [
       ...prevMessages,
       {
         sender: "Bot",
-        text: (
-          <>
-            Thank you! <strong>{leadData.name.toUpperCase()}</strong>, for submitting your enquiry!
-          </>
-        )
+        text: `Thank you! ${leadName}, for submitting your enquiry!`
         
-      },
+      }
     ]);
     // setFormVisible(false);
 
@@ -88,7 +84,7 @@ const handleLeadSubmit = async (
       chatbotId,
       leadData: updatedLeadData,
     });
-    console.log("Analytics event saved!");
+    
     setFormSubmitted(true);
     setIsTyping(false);
     setTimeout(() => {
