@@ -831,7 +831,7 @@ const TestChatbot = () => {
   ×
 </button> */}
  {showRating && <ChatbotRating onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
-                <div className="d-flex header p-2 justify-content-between align-items-center">
+                <div className="d-flex header p-2 justify-content-between align-items-start">
                   {/* <div>
                 <img
                       className="chatbot-logo-img"
@@ -968,13 +968,14 @@ const TestChatbot = () => {
           message.buttons?.length; 
 
         return hasContent ? (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }} // Start slightly below
-            animate={{ opacity: 1, y: 0 }} // Move up and become visible
-            transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
-            className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
-          >
+           <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }} // Start slightly below
+                    animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
+                    transition={{ duration: 0.3, ease: "linear" }} // Instant response
+                    className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
+                  >
+        
             <div className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}>
               
               {/* ✅ Text Message */}

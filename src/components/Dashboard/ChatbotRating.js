@@ -9,7 +9,7 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
   // Emoji options with labels
   const emojis = [
     { value: "Poor", icon: "😠", label: "Poor" },
-    // { value: "Bad", icon: "😕", label: "Bad" },
+    { value: "Bad", icon: "😕", label: "Bad" },
     { value: "Neutral", icon: "😐", label: "Average" },
     { value: "Good", icon: "🙂", label: "Good" },
     { value: "Excellent", icon: "😍", label: "Excellent" },
@@ -42,7 +42,8 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
 
             {/* Emoji Rating with Labels */}
             <div className="d-flex justify-content-center gap-3 mb-4">
-              {emojis.map((item) => (
+              {emojis.map((item) =>
+               (
                 <div
                   key={item.value}
                   className={`d-flex flex-column align-items-center rating-emoji ${
@@ -51,14 +52,16 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
                   onClick={() => setRating(item.value)}
                 >
                   <span
-                    className={`fs-1 p-2 ${
+                    className={`fs-1 ${
                       rating === item.value ? "border border-primary rounded-circle bg-light" : ""
                     }`}
                     title={item.label}
                   >
                     {item.icon}
                   </span>
-                  <span className="mt-1">{item.label}</span>
+                 <small>
+                 <span className="mt-1">{item.label}</span> 
+                 </small>
                 </div>
               ))}
             </div>

@@ -35,7 +35,7 @@ const ChatbotWidget = () => {
   const [input, setInput] = useState("");
   const chatWindowRef = useRef(null);
   const [buttons] = useState([
-    { label: "Highlights", action: "highlight" },
+    // { label: "Highlights", action: "highlight" },
     { label: "Location", action: "location" },
     { label: "Amenities", action: "amenities" },
 
@@ -78,6 +78,26 @@ const ChatbotWidget = () => {
       setIsFullScreen(!isFullScreen);
     }
   };
+
+  
+
+  const emojis = [
+    { value: "Poor", icon: "😠", label: "Poor" },
+    { value: "Bad", icon: "😕", label: "Bad" },
+    { value: "Neutral", icon: "😐", label: "Average" },
+    { value: "Good", icon: "🙂", label: "Good" },
+    { value: "Excellent", icon: "😍", label: "Excellent" },
+  ];
+
+  const handleSubmit = () => {
+    if (!rating) {
+      alert("⚠️ Please select a rating!");
+      return;
+    }
+    console.log("Submitted:", { rating, review });
+    setShowRating(false); // Hide modal after submit
+  };
+
   const storedSessionId =
     sessionStorage.getItem("chatbotSessionId") || uuidv4();
   const uniqueSessionId = localStorage.getItem("uniqueSessionId");
@@ -707,19 +727,10 @@ const ChatbotWidget = () => {
 >
   ×
 </button> */}
- {showRating && <ChatbotRating isFullScreen={isFullScreen} onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
-                <div className="d-flex header p-2 justify-content-between align-items-center">
-                  {/* <div>
-                <img
-                      className="chatbot-logo-img"
-                      src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
-                      // src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
-                      alt="Project Logo"
-                      height="50"
-                      width="60"
-                    />
-                </div> */}
-                  {chatbotData?.projectLogo && (
+
+                <div className="d-flex header p-2 justify-content-between align-items-start">
+
+                  {/* {chatbotData?.projectLogo && (
                     <div className="chatbot-logo d-flex justify-content-center align-items-center">
                       <img
                         key={chatbotData?.projectLogo}
@@ -727,7 +738,6 @@ const ChatbotWidget = () => {
                         src={ chatbotData?.projectLogo ? chatbotData?.projectLogo : 
                           "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
                         }
-                        // src={`https://assist-ai.propstory.com/${chatbotData.projectLogo}`}
                         alt="Project Logo"
                         height="50"
                         width="60"
@@ -760,14 +770,38 @@ const ChatbotWidget = () => {
                         We are online to assist you
                       </span>
                     </small>
-
-                    {/* <p className="subtitle">
-                    How can I help you today {chatbotData?.name}?
-                  </p> */}
                   </div>
                     </div>
-                  )}
+                  )} */}
                 
+                {chatbotData?.projectLogo && (
+  <div className="chatbot-logo d-flex justify-content-center align-items-start">
+    <img
+      key={chatbotData?.projectLogo}
+      className="chatbot-logo-img"
+      src={chatbotData?.projectLogo}
+      alt="Project Logo"
+      height="50"
+      width="60"
+      onError={(e) => {
+        e.target.onerror = null; // Prevent infinite loop
+        e.target.src = "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+      }}
+    />
+
+    <div className="py-2 text-left ms-2">
+      <h4 className="title">{chatbotData?.chatbotName} Help Desk</h4>
+      <small>
+        <span className="d-block pt-2">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="6" fill="#198754" stroke="#28C840" strokeWidth="2" />
+          </svg>{" "}
+          We are online to assist you
+        </span>
+      </small>
+    </div>
+  </div>
+)}
 
                   <div className="relative py-2">
                   {isMobile && (
@@ -842,6 +876,45 @@ const ChatbotWidget = () => {
                 </div>
               
                 <div className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8" ref={chatWindowRef}>
+                {showRating && (
+            <div className="modal fade show d-block" style={{zIndex: "9999"}}>
+              <div className="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center">
+                <div className="modal-content p-3 window_bg_pink">
+                  <div className="modal-header border-0">
+                    <h5>Rate This Chat</h5>
+                    <button className="btn-close" onClick={() => setShowRating(false)}></button>
+                  </div>
+                  <div className="modal-body text-center">
+                    <h6>How was your experience?</h6>
+                    <div className="d-flex justify-content-center gap-3 mb-4">
+                      {emojis.map((item) => (
+                        <div
+                          key={item.value}
+                          className={`rating-emoji ${rating === item.value ? "selected" : ""}`}
+                          onClick={() => setRating(item.value)}
+                        >
+                          <span className="fs-1">{item.icon}</span>
+                          <small>{item.label}</small>
+                        </div>
+                      ))}
+                    </div>
+
+                    <textarea
+                      className="form-control"
+                      rows="2"
+                      placeholder="Leave a comment"
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                    />
+
+                    <button className="btn btn-primary w-100 mt-2" onClick={handleSubmit}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
       {messages?.map((message, index) => {
         const hasContent =
           message.text ||
@@ -850,12 +923,13 @@ const ChatbotWidget = () => {
 
         return hasContent ? (
           <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }} // Start slightly below
-            animate={{ opacity: 1, y: 0 }} // Move up and become visible
-            transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
-            className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
-          >
+          key={index}
+          initial={{ opacity: 0, y: 10 }} // Start slightly below
+          animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
+          transition={{ duration: 0.3, ease: "linear" }} // Instant response
+          className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
+        >
+        
             <div className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}>
               
               {/* ✅ Text Message */}
