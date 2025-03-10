@@ -480,7 +480,7 @@ body {
 .animated {
   animation: animated linear 4s;
   animation-iteration-count: infinite;
-  width: 62%;
+  width: 55%;
 }
 @keyframes animated {
   0% {
@@ -591,6 +591,17 @@ body {
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
+.modal-fullscreen .modal-content {
+  height: 59%;
+    width: 399px;
+    border: 0;
+    background: #fff;
+    border-radius: 0;
+    right: 0.8%;
+    /* float: right; */
+    position: absolute;
+    top: 30%;
+}
 
 @media (max-width: 390px) and (max-width:490px) {
   .header .title{
@@ -605,7 +616,7 @@ body {
     align-items: unset;
   }
   .menu-toggle1{
-    margin-top: -31px;
+    margin-top: -28px;
   }
 .full-screen {
   position: fixed;
@@ -653,8 +664,8 @@ button{
   cursor: pointer;
   z-index: 1100;
 }
-.message{
-  display: block;
+.header{
+  width: 100%;
 }
 .button-50{
   padding: 2px;
@@ -662,6 +673,31 @@ button{
 
 .animated {
   width: 35%;
+}
+.modal-fullscreen .modal-content.fullscreen-mode {
+  height: 100vh !important;
+  position: absolute;
+  border: 0;
+  right: 0;
+  border-radius: 0;
+  width: 100%;
+  top: 0;
+  background: #fff;
+}
+
+.modal-fullscreen .modal-content {
+  height: 41%;
+  position: absolute;
+  border: 0;
+  right: 8%;
+  border-radius: 0;
+  width: 325px;
+  top: 36%;
+  /* left: -8px; */
+  background: #fff;
+}
+.chatbot-container .modal-body{
+  overflow-x: hidden;
 }
   /* .test-chatbot-container1{
     height: 86vh;
