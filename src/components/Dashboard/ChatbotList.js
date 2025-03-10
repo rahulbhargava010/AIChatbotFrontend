@@ -94,16 +94,16 @@ const ChatbotList = () => {
   ];
 
   const actions = [
-    {
-      label: "Test",
-      icon: <FaPlay />,
-      onClick: (e, item) => handleTestChatbot(item._id),
-    },
-    {
-      label: "Edit",
-      icon: <FaEdit />,
-      to: (item) => `/dashboard/update/${item._id}`,
-    },
+    // {
+    //   label: "Test",
+    //   icon: <FaPlay />,
+    //   onClick: (e, item) => handleTestChatbot(item._id),
+    // },
+    // {
+    //   label: "Edit",
+    //   icon: <FaEdit />,
+    //   to: (item) => `/dashboard/update/${item._id}`,
+    // },
     {
       label: "Leads",
       icon: <FaUsers />,
