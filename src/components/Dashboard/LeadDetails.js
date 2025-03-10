@@ -29,7 +29,7 @@ import {
   Legend,
 } from "chart.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import SiteVisit from "./SiteVisit";
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -53,6 +53,8 @@ const LeadDetails = () => {
   const [newFollowUp, setNewFollowUp] = useState({ followUpDate: '', notes: '', status: 'Pending' });
   const [editFollowUp, setEditFollowUp] = useState(null);
 
+  const [siteVisitLogs, setSiteVisitLogs] = useState([]);
+
   const { leadId } = useParams();
 
   useEffect(() => {
@@ -70,6 +72,7 @@ const LeadDetails = () => {
         setLeadData(response.data);
         setComments(response?.data?.commentLogs);
         setFollowUps(response?.data?.followUpLogs);
+        setSiteVisitLogs(response?.data?.SiteVisitLogs);
       } catch (error) {
         console.error("Error fetching lead details:", error);
       } finally {
@@ -557,6 +560,14 @@ const LeadDetails = () => {
             ) : (
               <p className="text-center">No conversation logs available.</p>
             )}
+          </div>
+        </div>
+
+        {/* Activities Card */}
+        <div className="col-md-6 col-lg-4 mb-4">
+          <div className="card h-100 p-3">
+            <h6 className="card-title text-center">Activities 2</h6>
+              <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs}/>
           </div>
         </div>
 
