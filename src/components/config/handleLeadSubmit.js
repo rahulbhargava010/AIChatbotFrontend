@@ -65,7 +65,7 @@ const handleLeadSubmit = async (
     });
     // console.log("Lead data saved successfully!");
 
-    alert("Lead saved successfully!");
+    // alert("Lead saved successfully!");
     setMessages((prevMessages) => [
       ...prevMessages,
       {

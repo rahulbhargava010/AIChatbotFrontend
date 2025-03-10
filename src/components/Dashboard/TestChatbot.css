@@ -66,7 +66,8 @@
 
 .chat-window {
     flex: 1;
-    max-height: 400px   ;
+    max-height: 400px;
+    width: auto !important;
     overflow-x: hidden;
     overflow-y: auto;
     background: #f5f8fab8;
@@ -142,6 +143,7 @@
 
 .bot-message {
   justify-content: flex-start;
+  width: 100%;
 }
 
 .message-bubble {
@@ -591,21 +593,23 @@ body {
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
-.modal-fullscreen .modal-content {
+/* .modal-fullscreen .modal-content {
   height: 59%;
     width: 399px;
     border: 0;
     background: #fff;
     border-radius: 0;
     right: 0.8%;
-    /* float: right; */
     position: absolute;
     top: 30%;
-}
+} */
 
 @media (max-width: 390px) and (max-width:490px) {
   .header .title{
-    font-size: 1rem;
+    font-size: 15px;
+  }
+  .header small{
+    font-size: 13px;
   }
   .chatbot-form-container1{
     width: fit-content;
@@ -615,9 +619,9 @@ body {
     justify-content: center;
     align-items: unset;
   }
-  .menu-toggle1{
+  /* .menu-toggle1{
     margin-top: -28px;
-  }
+  } */
 .full-screen {
   position: fixed;
   top: 0;
@@ -640,6 +644,7 @@ body {
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease-in-out;
+  position: relative;
 }
 
 /* Make chatbot take full device size in full-screen */
@@ -685,7 +690,7 @@ button{
   background: #fff;
 }
 
-.modal-fullscreen .modal-content {
+/* .modal-fullscreen .modal-content {
   height: 41%;
   position: absolute;
   border: 0;
@@ -693,9 +698,8 @@ button{
   border-radius: 0;
   width: 325px;
   top: 36%;
-  /* left: -8px; */
   background: #fff;
-}
+} */
 .chatbot-container .modal-body{
   overflow-x: hidden;
 }
@@ -708,7 +712,7 @@ button{
     bottom: 5rem !important;
     left: 0;
     width: 324px;
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
     height:auto;
     background: white;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);

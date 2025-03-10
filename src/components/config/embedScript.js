@@ -14,7 +14,7 @@ const generateEmbedScript = (chatbotId) => {
             iframe.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
             iframe.style.borderRadius = '10px';
             iframe.style.overflow = 'hidden';
-            iframe.style.zIndex = '1000';
+            iframe.style.zIndex = '999999';
             iframe.style.display = 'none';
             iframe.id = 'chatbot-widget';
             document.body.appendChild(iframe);
@@ -38,7 +38,7 @@ const generateEmbedScript = (chatbotId) => {
             // toggleButton.style.border = 'none';
             // toggleButton.style.borderRadius = '50%';
             // toggleButton.style.cursor = 'pointer';
-            // toggleButton.style.zIndex = '1001';
+            // toggleButton.style.zIndex = '999999';
 
             toggleImage.style.position = 'fixed';
             toggleImage.style.bottom = '30px';
@@ -49,7 +49,7 @@ const generateEmbedScript = (chatbotId) => {
             // toggleImage.style.border = 'none';
             // toggleImage.style.borderRadius = '50%';
             toggleImage.style.cursor = 'pointer';
-            toggleImage.style.zIndex = '1001';
+            toggleImage.style.zIndex = '9999999';
 
             
 
