@@ -13,13 +13,13 @@ export const FirstScreen = ({ setShowFirstScreen, chatbotData }) => {
       />
   
 
-      <motion.div className="mt-5 text-center" 
+      <motion.div className="mt-5 text-center firstscreen" 
       initial={{ opacity: 0, y: 20 }} // Start slightly below
       animate={{ opacity: 1, y: 0 }} // Move up and become visible
       transition={{ duration: 0.5, delay: 0.1 }} // Stagger effect>
       >
         <h3 className="fw-normal">
-          Welcome! to AI {chatbotData?.chatbotName} Chatbot, How May <span className="fw-bold">I Assist <span className="d-block">You Today</span></span>
+          Welcome! to AI {chatbotData?.chatbotName} Chatbot, How May <span className="fw-bold">I Assist <span className="">You Today</span></span>
         </h3>
         <p className="pt-2">
           {chatbotData?.projectHighlights}

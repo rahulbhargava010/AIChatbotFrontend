@@ -445,9 +445,16 @@ filter: invert();
   filter: invert();
 }
 
+
 @media (max-width: 390px) and (max-width:490px) {
   .icondiv svg {
     width: 11%;
+}
+.firstscreen h3{
+  font-size: 1rem;
+}
+.firstscreen p{
+  font-size: 14px;
 }
 .full-screen {
   position: fixed;
@@ -525,6 +532,7 @@ button{
     bottom: 0;
     position: relative;
     border-radius: 2rem;
+    margin-top: 0;
   }
   .chatbot-form-overlay{
     height: 64vh !important;

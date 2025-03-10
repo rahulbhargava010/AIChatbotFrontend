@@ -119,7 +119,7 @@ const ChatbotWidget = () => {
         setFormVisible(true);
         // setChatVisible(false);
       }
-    }, 200000); // Runs every 10 seconds
+    }, 400000); // Runs every 10 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [formVisible, isTyping]);
@@ -707,7 +707,7 @@ const ChatbotWidget = () => {
 >
   ×
 </button> */}
- {showRating && <ChatbotRating onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
+ {showRating && <ChatbotRating isFullScreen={isFullScreen} onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
                 <div className="d-flex header p-2 justify-content-between align-items-center">
                   {/* <div>
                 <img
@@ -860,23 +860,29 @@ const ChatbotWidget = () => {
               
               {/* ✅ Text Message */}
               {message.text && (
-  <div className="message-bubble"
-    style={{
-      backgroundColor: "rgb(231 218 243 / 51%)",
-      boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-      borderRadius: "10px",
-      padding: "10px",
-      maxWidth: "80%",
-      width: "100%",
-      lineHeight: "21px",
-      margin: "5px 0",
-      border: "2px solid rgb(255, 255, 255)",
-      fontSize: "14px",
-      textAlign: "left",
-      whiteSpace: "pre-line",
-    }}>
-    {message.text} 
-  </div>
+ <div
+ className="message-bubble"
+ style={{
+   backgroundColor: "rgb(231 218 243 / 51%)",
+   boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+   borderRadius: "10px",
+   padding: "10px",
+   maxWidth: "100%",  // Ensures message doesn't stretch too much
+   width: "auto",    // Adapts width to content
+   lineHeight: "21px",
+   margin: "5px 0",
+   border: "2px solid rgb(255, 255, 255)",
+   fontSize: "14px",
+   textAlign: "left",
+   whiteSpace: "pre-line",
+   display: "inline-block", // Ensures width adapts to content
+   wordWrap: "break-word",  // Prevents long words from overflowing
+ }}
+>
+{message.text}
+
+</div>
+
 )}
 
               {/* ✅ Image Message */}

@@ -110,7 +110,7 @@ const TestChatbot = () => {
         setFormVisible(true);
         // setChatVisible(false);
       }
-    }, 200000); // Runs every 10 seconds
+    }, 400000); // Runs every 10 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [formVisible, isTyping]);
@@ -686,7 +686,7 @@ const TestChatbot = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            <h3 className="text-center mt-4">Please Introduce Yourself:</h3>
+            <h3 className="text-center">Please Introduce Yourself:</h3>
           </div>
 
           <form
@@ -993,7 +993,7 @@ const TestChatbot = () => {
                     textAlign: "left",
                   }}>
                   {message.text.split('.').filter(sentence => sentence.trim() !== "").map((sentence, idx) => (
-  <p key={idx}>{sentence.trim()}.</p>
+  <p key={idx}>{sentence.trim()}</p>
 ))}
 
                 </div>

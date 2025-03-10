@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./ChatbotWidget.css";
 
-const ChatbotRating = ({ onClose, onSubmit }) => {
+const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
   const [rating, setRating] = useState(null);
   const [review, setReview] = useState("");
 
   // Emoji options with labels
   const emojis = [
     { value: "Poor", icon: "😠", label: "Poor" },
-    { value: "Bad", icon: "😕", label: "Bad" },
-    { value: "Neutral", icon: "😐", label: "Neutral" },
+    // { value: "Bad", icon: "😕", label: "Bad" },
+    { value: "Neutral", icon: "😐", label: "Average" },
     { value: "Good", icon: "🙂", label: "Good" },
     { value: "Excellent", icon: "😍", label: "Excellent" },
   ];
@@ -28,7 +28,8 @@ const ChatbotRating = ({ onClose, onSubmit }) => {
   return (
     <div className="modal fade show d-block" tabIndex="-1" role="dialog">
       <div className="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center">
-        <div className="modal-content p-4 window_bg_pink">
+      <div className={`modal-fullscreen modal-content p-1 ${isFullScreen ? "fullscreen-mode" : ""}`}>
+        {/* <div className="modal-content p-1 window_bg_pink"> */}
           {/* Modal Header */}
           <div className="modal-header border-0 text-center">
             <h5 className="modal-title">Rate This Chat</h5>
