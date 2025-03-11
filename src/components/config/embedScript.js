@@ -6,7 +6,7 @@ const generateEmbedScript = (chatbotId) => {
             const iframe = document.createElement('iframe');
             iframe.src = 'https://assist-ai.propstory.com/chatbot-widget/${chatbotId}';
             iframe.style.position = 'fixed';
-            iframe.style.bottom = '80px';
+            iframe.style.bottom = '99px';
             iframe.style.right = '40px';
             iframe.style.width = '450px';
             iframe.style.height = '550px';
@@ -14,7 +14,7 @@ const generateEmbedScript = (chatbotId) => {
             iframe.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
             iframe.style.borderRadius = '10px';
             iframe.style.overflow = 'hidden';
-            iframe.style.zIndex = '999999';
+            iframe.style.zIndex = '999999999';
             iframe.style.display = 'none';
             iframe.id = 'chatbot-widget';
             document.body.appendChild(iframe);
@@ -38,10 +38,10 @@ const generateEmbedScript = (chatbotId) => {
             // toggleButton.style.border = 'none';
             // toggleButton.style.borderRadius = '50%';
             // toggleButton.style.cursor = 'pointer';
-            // toggleButton.style.zIndex = '999999';
+            // toggleButton.style.zIndex = '9999999999';
 
             toggleImage.style.position = 'fixed';
-            toggleImage.style.bottom = '30px';
+            toggleImage.style.bottom = '10px';
             toggleImage.style.right = '20px';
             // toggleImage.style.padding = '25px 25px';
             // toggleImage.style.background = '#34b7f1';
@@ -49,13 +49,13 @@ const generateEmbedScript = (chatbotId) => {
             // toggleImage.style.border = 'none';
             // toggleImage.style.borderRadius = '50%';
             toggleImage.style.cursor = 'pointer';
-            toggleImage.style.zIndex = '9999999';
+            toggleImage.style.zIndex = '99999999999';
 
             
 
             // Set width and height (optional)
-            toggleImage.width = 50;
-            toggleImage.height = 50;
+            toggleImage.width = 80;
+            toggleImage.height = 80;
 
 
             toggleImage.onclick = function() {
@@ -66,7 +66,7 @@ const generateEmbedScript = (chatbotId) => {
                     toggleImage.src = "http://assist-ai.propstory.com/uploads/letter-x-gif.gif"; 
                     chatbotIframe.style.width = window.innerWidth <= 768 ? '100%' : '450px';
                     chatbotIframe.style.height = window.innerWidth <= 768 ? '100%' : '550px';
-                    chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '80px';
+                    chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '72px';
                     chatbotIframe.style.right = window.innerWidth <= 768 ? '0' : '40px';
                 } else {
                     // toggleButton.innerText = 'Hi!';
