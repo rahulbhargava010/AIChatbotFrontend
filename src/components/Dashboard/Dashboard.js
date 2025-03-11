@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { Card, Row, Col, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderContext } from "../Auth/LoaderContext";
+import "./Dashboard.css";
+
 import {
   faUsers,
   faChartLine,
@@ -22,6 +24,7 @@ import {
 } from "chart.js";
 import api from "../config/axios";
 import Loader from "./Loader";
+import { useNavigate } from "react-router-dom";
 
 // Register ChartJS components
 ChartJS.register(
@@ -40,6 +43,7 @@ const Dashboard = () => {
   const [chatbotData, setChatbotData] = useState([]);
   const [leadsData, setLeadsData] = useState([]);
   const { isLoading, showLoader, hideLoader } = useContext(LoaderContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +72,10 @@ const Dashboard = () => {
 
     fetchData();
   }, []);
+
+  const handleCreateChatbot = () => {
+    navigate("/dashboard/create-chatbot");
+  };
 
   const barChartData = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -100,7 +108,12 @@ const Dashboard = () => {
 
   return (
     <Container fluid>
-      <h1 className="my-4">Dashboard</h1>
+      <div className="d-flex justify-content-between align-items-center mb-5">
+        <h1 className="my-4">Dashboard</h1>
+        <button className="create-btn mb-3" onClick={handleCreateChatbot}>
+          + Create Chatbot
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <Row className="mb-4">

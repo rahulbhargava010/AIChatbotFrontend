@@ -4,6 +4,7 @@ import { FaToggleOn, FaToggleOff, FaTrashAlt } from "react-icons/fa";
 import DataTable from "./DataTable"; // Import the DataTable component
 import "./Dashboard.css";
 import { LoaderContext } from "../Auth/LoaderContext";
+import Swal from "sweetalert2";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -59,27 +60,55 @@ const UserList = () => {
     const loggedInUserId = localStorage.getItem("userId");
 
     if (userId === loggedInUserId) {
-      alert("You cannot delete your own account.");
+      Swal.fire({
+        icon: "warning",
+        title: "Action Not Allowed",
+        text: "You cannot delete your own account.",
+      });
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await api.post(
-        "/users/remove",
-        { userId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
+          await api.post(
+            "/users/remove",
+            { userId },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          setUsers((prevUsers) =>
+            prevUsers.filter((user) => user._id !== userId)
+          );
+
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "The user has been deleted.",
+          });
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Failed to delete user. Please try again.",
+          });
         }
-      );
-      setUsers(users.filter((user) => user._id !== userId)); // Update the user list after deletion
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
+      }
+    });
   };
 
   // Define columns for the DataTable
