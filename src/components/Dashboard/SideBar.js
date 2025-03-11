@@ -14,7 +14,7 @@ import { useAuth } from "../Auth/AuthContext";
 import "./Sidebar.css";
 
 const Sidebar = ({ onSidebarToggle }) => {
-  const [isOpen, setIsOpen] = useState(window.innerWidth > 768);
+  const [isOpen, setIsOpen] = useState(true); // Expanded by default
   const navigate = useNavigate();
   const { logout } = useAuth();
   const userRole = localStorage.getItem("userRole");
@@ -45,20 +45,14 @@ const Sidebar = ({ onSidebarToggle }) => {
 
       {/* Sidebar Menu */}
       <ul className="sidebar-menu">
-        <li onClick={handleItemClick}>
+        <li>
           <Link to="/dashboard" className="menu-item">
             <FaTachometerAlt className="icon" />
             {isOpen && <span>Dashboard</span>}
           </Link>
         </li>
 
-        {/* <li onClick={handleItemClick}>
-          <Link to="/dashboard/create" className="menu-item">
-            <FaRobot className="icon" />
-            {isOpen && <span>Chatbot</span>}
-          </Link>
-        </li> */}
-        <li onClick={handleItemClick}>
+        <li>
           <Link to="/dashboard/AdminAnalytics" className="menu-item">
             <FaChartBar className="icon" />
             {isOpen && <span>Analytics</span>}
@@ -68,19 +62,19 @@ const Sidebar = ({ onSidebarToggle }) => {
         {/* Show Company & Users only for "ps-owner" */}
         {userRole === "ps-owner" && (
           <>
-            <li onClick={handleItemClick}>
+            <li>
               <Link to="/dashboard/chatbotList" className="menu-item">
                 <FaComments className="icon" />
                 {isOpen && <span>Chatbot List</span>}
               </Link>
             </li>
-            <li onClick={handleItemClick}>
+            <li>
               <Link to="/dashboard/companyList" className="menu-item">
                 <FaBuilding className="icon" />
                 {isOpen && <span>Company</span>}
               </Link>
             </li>
-            <li onClick={handleItemClick}>
+            <li>
               <Link to="/dashboard/userList" className="menu-item">
                 <FaUsers className="icon" />
                 {isOpen && <span>Users</span>}
@@ -89,7 +83,7 @@ const Sidebar = ({ onSidebarToggle }) => {
           </>
         )}
 
-        <li className="logout-container" onClick={handleItemClick}>
+        <li className="logout-container">
           <button className="logout-btn menu-item" onClick={handleLogout}>
             <FaSignOutAlt className="icon" />
             {isOpen && <span>Logout</span>}

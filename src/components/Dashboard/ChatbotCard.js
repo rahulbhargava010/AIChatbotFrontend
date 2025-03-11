@@ -43,6 +43,7 @@ const ChatbotCard = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setData(response.data);
+        console.log("RESDATA:", response.data);
         setIsActive(response.data.chatbotDetails.isActive === "active");
       } catch (err) {
         setError(err.response?.data?.error || "Failed to fetch data.");
@@ -56,14 +57,40 @@ const ChatbotCard = () => {
     try {
       const token = localStorage.getItem("token");
       const newStatus = isActive ? "inactive" : "active";
-      await api.post(
-        "/chatbots/update-status",
-        { chatbot: chatbotId, status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setIsActive(!isActive);
+
+      const requestBody = {
+        id: chatbotId,
+        isActive: newStatus,
+        name: data.chatbotDetails.name,
+        webhook: data.chatbotDetails.webhook,
+        buttonContent: JSON.stringify(data.chatbotDetails.button_content || {}),
+        projectLogo: data.chatbotDetails.projectLogo || null,
+        projectImages: data.chatbotDetails.projectImages || [],
+      };
+
+      const response = await api.post("/chatbots/create", requestBody, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        setIsActive(!isActive);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: `Chatbot is now ${newStatus}.`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        throw new Error("Failed to update chatbot status.");
+      }
     } catch (err) {
       console.error("Failed to update status:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to update chatbot status.",
+      });
     }
   };
 

@@ -14,6 +14,7 @@ import {
 } from "react-icons/fa";
 import TestChatbot from "./TestChatbot";
 import { LoaderContext } from "../Auth/LoaderContext";
+import Swal from "sweetalert2";
 
 const ChatbotList = () => {
   const [chatbots, setChatbots] = useState([]);
@@ -44,8 +45,18 @@ const ChatbotList = () => {
 
   const handleDelete = async (chatbotId, e) => {
     e.stopPropagation();
-    if (!window.confirm("Are you sure you want to delete this chatbot?"))
-      return;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won’t be able to undo this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const token = localStorage.getItem("token");
@@ -54,17 +65,35 @@ const ChatbotList = () => {
         { chatbotId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setChatbots(chatbots.filter((chatbot) => chatbot._id !== chatbotId));
+
+      Swal.fire("Deleted!", "Chatbot has been removed.", "success");
     } catch (err) {
-      console.error("Error deleting chatbot:", err);
+      Swal.fire("Error!", "Failed to delete the chatbot.", "error");
     }
   };
 
-  const handleCopyScript = (chatbotId, e) => {
+  const handleCopyScript = async (chatbotId, e) => {
     e.stopPropagation();
     const embedScript = generateEmbedScript(chatbotId);
-    navigator.clipboard.writeText(embedScript);
-    alert("Chatbot script copied to clipboard!");
+
+    try {
+      await navigator.clipboard.writeText(embedScript);
+      Swal.fire({
+        icon: "success",
+        title: "Copied!",
+        text: "Chatbot script copied to clipboard!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to copy the script!",
+      });
+    }
   };
 
   const handleTestChatbot = (chatbotId) => {
@@ -99,11 +128,11 @@ const ChatbotList = () => {
     //   icon: <FaPlay />,
     //   onClick: (e, item) => handleTestChatbot(item._id),
     // },
-    // {
-    //   label: "Edit",
-    //   icon: <FaEdit />,
-    //   to: (item) => `/dashboard/update/${item._id}`,
-    // },
+    {
+      label: "Edit",
+      icon: <FaEdit />,
+      to: (item) => `/dashboard/update/${item._id}`,
+    },
     {
       label: "Leads",
       icon: <FaUsers />,
