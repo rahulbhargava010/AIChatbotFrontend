@@ -10,6 +10,7 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   // Fetch companies from backend
@@ -29,103 +30,107 @@ const Signup = () => {
     e.preventDefault();
     try {
       await api.post("/users/register", { email, password, name, company });
-      navigate("/");
+      setMessage("Signup successful! Redirecting to login");
+      setError("");
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       setError(err.response?.data?.error || "Something went wrong");
+      setMessage("");
     }
   };
 
   return (
-
     <div className="auth-container d-flex justify-content-center align-items-center vh-100">
-    <div className="row w-100 align-items-center justify-content-center">
-      <div className="col-md-6 d-none d-md-block text-center">
-        <img
-          src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png"
-          alt="AI Chatbot"
-          className="img-fluid w-50 h-auto animated"
-        />
-      </div>
+      <div className="row w-100 align-items-center justify-content-center">
+        <div className="col-md-6 d-none d-md-block text-center">
+          <img
+            src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png"
+            alt="AI Chatbot"
+            className="img-fluid w-50 h-auto animated"
+          />
+        </div>
 
-      <div className="col-md-5 p-4">
-      <div
-        className="card p-4 shadow-lg"
-        style={{ maxWidth: "400px", width: "100%" }}
-      >
-        <h2 className="text-center mb-4 text-primary fw-bold">Sign Up</h2>
-        {error && <p className="alert alert-danger">{error}</p>}
-        <form onSubmit={handleSignup}>
-          <div className="mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
+        <div className="col-md-5 p-4">
+          <div
+            className="card p-4 shadow-lg"
+            style={{ maxWidth: "400px", width: "100%" }}
+          >
+            <h2 className="text-center mb-4 text-primary fw-bold">Sign Up</h2>
+            {message && <div className="alert alert-success">{message}</div>}
+            {error && <p className="alert alert-danger">{error}</p>}
+            <form onSubmit={handleSignup}>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className="mb-3">
-            {/* <label htmlFor="company" className="form-label">
+              <div className="mb-3">
+                {/* <label htmlFor="company" className="form-label">
               Select Company
             </label> */}
-            <select
-              id="company"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className="form-select"
-              required
-            >
-              <option value="">Select a company</option>
-              {companies.map((comp) => (
-                <option key={comp._id} value={comp._id}>
-                  {comp.name}
-                </option>
-              ))}
-            </select>
-          </div>
+                <select
+                  id="company"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="form-select"
+                  required
+                >
+                  <option value="">Select a company</option>
+                  {companies.map((comp) => (
+                    <option key={comp._id} value={comp._id}>
+                      {comp.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="mb-3">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+              <div className="mb-3">
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
 
-          <div className="mb-3">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+              <div className="mb-3">
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Sign Up
-          </button>
-        </form>
-        
-        <p className="text-center mt-3">
-          Already have an account? <Link className="a-link" to="/">Login</Link>
-        </p>
+              <button type="submit" className="btn btn-primary w-100">
+                Sign Up
+              </button>
+            </form>
+
+            <p className="text-center mt-3">
+              Already have an account?{" "}
+              <Link className="a-link" to="/">
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-1"></div>
       </div>
-
-
-      </div>
-      <div class="col-lg-1"></div>
     </div>
-  </div>
 
     // <div className="auth-container d-flex justify-content-center align-items-center vh-100">
-      
+
     // </div>
   );
 };

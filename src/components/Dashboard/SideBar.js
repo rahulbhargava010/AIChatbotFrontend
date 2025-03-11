@@ -51,12 +51,7 @@ const Sidebar = ({ onSidebarToggle }) => {
             {isOpen && <span>Dashboard</span>}
           </Link>
         </li>
-        <li onClick={handleItemClick}>
-          <Link to="/dashboard/chatbotList" className="menu-item">
-            <FaComments className="icon" />
-            {isOpen && <span>Chatbot List</span>}
-          </Link>
-        </li>
+
         {/* <li onClick={handleItemClick}>
           <Link to="/dashboard/create" className="menu-item">
             <FaRobot className="icon" />
@@ -73,6 +68,12 @@ const Sidebar = ({ onSidebarToggle }) => {
         {/* Show Company & Users only for "ps-owner" */}
         {userRole === "ps-owner" && (
           <>
+            <li onClick={handleItemClick}>
+              <Link to="/dashboard/chatbotList" className="menu-item">
+                <FaComments className="icon" />
+                {isOpen && <span>Chatbot List</span>}
+              </Link>
+            </li>
             <li onClick={handleItemClick}>
               <Link to="/dashboard/companyList" className="menu-item">
                 <FaBuilding className="icon" />
