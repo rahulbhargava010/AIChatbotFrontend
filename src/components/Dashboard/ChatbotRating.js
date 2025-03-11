@@ -17,19 +17,29 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
 
 
   const handleSubmit = async () => {
-      if (!rating) {
-        alert("⚠️ Please select a rating!");
-        return;
-      }
-
-      // Send rating data to parent component
-      onSubmit({ rating, review });
+    if (!rating) {
+      alert("⚠️ Please select a rating!");
+      return;
+    }
+  
+    // Call onSubmit if provided
+    if (onSubmit) {
+      onSubmit({ rating, review });  // ✅ Pass feedback to parent component
+    }
+  
+    setRating("");  // ✅ Reset rating
+    setReview("");  // ✅ Reset review
+  
+    setTimeout(() => {
+      onClose(); // ✅ Close the modal
+    }, 2000);
   };
+  
 
   return (
     <div className="modal fade show d-block" tabIndex="-1" role="dialog">
       <div className="modal-dialog modal-fullscreen d-flex align-items-center justify-content-center">
-      <div className={`modal-fullscreen modal-content p-1 ${isFullScreen ? "fullscreen-mode" : ""}`}>
+      <div className={`modal-fullscreen modal-content window_bg_pink p-1 ${isFullScreen ? "fullscreen-mode" : ""}`}>
         {/* <div className="modal-content p-1 window_bg_pink"> */}
           {/* Modal Header */}
           <div className="modal-header border-0 text-center">
