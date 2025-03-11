@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ const Signup = () => {
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // Fetch companies from backend
@@ -25,6 +27,10 @@ const Signup = () => {
     };
     fetchCompanies();
   }, []);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -102,14 +108,31 @@ const Signup = () => {
               </div>
 
               <div className="mb-3">
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="input-group">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-control"
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary border-1 d-flex align-items-center justify-content-center"
+                    style={{ width: "46px", height: "46px" }}
+                    onClick={togglePasswordVisibility}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash size={18} />
+                    ) : (
+                      <FaEye size={18} />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="btn btn-primary w-100">
