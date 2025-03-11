@@ -38,6 +38,17 @@ const UserList = () => {
   };
 
   const toggleActivation = async (userId, isActive) => {
+    const loggedInUserId = localStorage.getItem("userId");
+
+    if (userId === loggedInUserId) {
+      Swal.fire({
+        icon: "warning",
+        title: "Action Not Allowed",
+        text: "You cannot deactivate your own account.",
+      });
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       await api.post(
