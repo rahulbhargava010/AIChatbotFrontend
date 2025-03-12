@@ -22,6 +22,9 @@ import {
   FaSave,
   FaTimes,
   FaPlus,
+  FaTag,
+  FaCheckCircle,
+  FaExclamationCircle,
 } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import {
@@ -60,14 +63,14 @@ const LeadDetails = () => {
     notes: "",
     status: "Pending",
   });
-  const [editFollowUpId, setEditFollowUpId] = useState(null); // Now, store the ID of the FollowUp being edited
+  const [editFollowUpId, setEditFollowUpId] = useState(null);
   const [editFollowUpData, setEditFollowUpData] = useState({
-    // Stores temporary edited data
     followUpDate: new Date(),
     notes: "",
     status: "Pending",
   });
   const [siteVisitLogs, setSiteVisitLogs] = useState([]);
+  const [activeTab, setActiveTab] = useState("details");
 
   const [isFollowUpPaneOpen, setIsFollowUpPaneOpen] = useState(false);
   const [isCommentPaneOpen, setIsCommentPaneOpen] = useState(false);
@@ -235,7 +238,7 @@ const LeadDetails = () => {
         notes: "",
         status: "Pending",
       });
-      setIsFollowUpPaneOpen(false); // Close the panel after creation
+      setIsFollowUpPaneOpen(false);
     } catch (error) {
       console.error("Error creating follow-up:", error);
     }
@@ -259,13 +262,12 @@ const LeadDetails = () => {
         }
       );
 
-      // Update the followUps state with the updated follow-up
       const updatedFollowUps = followUps.map((followUp) =>
         followUp._id === editFollowUpId ? response.data.followUp : followUp
       );
       setFollowUps(updatedFollowUps);
 
-      setEditFollowUpId(null); // Clear the ID of the follow-up being edited
+      setEditFollowUpId(null);
       setEditFollowUpData({
         followUpDate: new Date(),
         notes: "",
@@ -337,8 +339,9 @@ const LeadDetails = () => {
   if (!leadId) return <p className="text-center">No lead selected.</p>;
   if (loading)
     return (
-      <div className="text-center">
-        <div className="spinner-border" role="status"></div>
+      <div className="loading-container">
+        <div className="spinner-pulse"></div>
+        <p>Loading lead details...</p>
       </div>
     );
   if (!leadData || !leadData.leadDetail)
@@ -347,7 +350,11 @@ const LeadDetails = () => {
   const { leadDetail, activityLogs, conversationLogs } = leadData;
 
   // Data for the bar chart (example: activity frequency)
-  const activityLabels = activityLogs.map((log) => log.timestamp);
+  const activityLabels = activityLogs.map((log) => {
+    const date = new Date(log.timestamp);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  });
+
   const activityData = activityLogs.map((log, index) => index + 1);
 
   const chartData = {
@@ -356,9 +363,10 @@ const LeadDetails = () => {
       {
         label: "Activity Frequency",
         data: activityData,
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(59, 130, 246, 0.6)",
+        borderColor: "rgba(59, 130, 246, 1)",
         borderWidth: 1,
+        borderRadius: 6,
       },
     ],
   };
@@ -369,384 +377,598 @@ const LeadDetails = () => {
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          font: {
+            family: "'Inter', sans-serif",
+            size: 12,
+          },
+        },
       },
       title: {
         display: true,
         text: "Lead Activity Over Time",
+        font: {
+          family: "'Inter', sans-serif",
+          size: 16,
+          weight: "600",
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(17, 24, 39, 0.9)",
+        titleFont: {
+          family: "'Inter', sans-serif",
+          size: 14,
+        },
+        bodyFont: {
+          family: "'Inter', sans-serif",
+          size: 12,
+        },
+        padding: 12,
+        cornerRadius: 8,
       },
     },
     scales: {
-      //Added scales to fix chart warnings
       x: {
         ticks: {
           autoSkip: true,
           maxRotation: 45,
           minRotation: 0,
+          font: {
+            family: "'Inter', sans-serif",
+            size: 11,
+          },
+        },
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: "rgba(243, 244, 246, 1)",
+        },
+        ticks: {
+          font: {
+            family: "'Inter', sans-serif",
+            size: 11,
+          },
         },
       },
     },
+    animation: {
+      duration: 1000,
+      easing: "easeOutQuart",
+    },
   };
 
-  return (
-    <div className="container mt-4">
-      <div className="row">
-        {/* Top Buttons */}
-        <div className="col-md-12 mb-3">
-          <div className="d-flex justify-content-end">
-            <button
-              className="btn btn-primary me-2"
-              onClick={() => setIsFollowUpPaneOpen(true)}
-            >
-              <FaPlus className="me-1" /> Add Follow-Up
-            </button>
-            <button
-              className="btn btn-primary me-2"
-              onClick={() => setIsCommentPaneOpen(true)}
-            >
-              <FaPlus className="me-1" /> Add Comment
-            </button>
-            {/* <button
-              className="btn btn-primary"
-              onClick={() => setIsSiteVisitPaneOpen(true)}
-            >
-              <FaPlus className="me-1" /> Add Site Visit
-            </button> */}
-          </div>
-        </div>
+  const getStatusBadgeClass = (status) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "status-badge pending";
+      case "completed":
+        return "status-badge completed";
+      case "cancelled":
+        return "status-badge cancelled";
+      default:
+        return "status-badge";
+    }
+  };
 
-        {/* Lead Details Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header">
-              <h5 className="card-title">Lead Details</h5>
-            </div>
-            <div className="card-body">
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <FaUser className="me-2 icon" />
-                  <strong>Name:</strong> {leadDetail.name}
-                </li>
-                <li className="list-group-item">
-                  <FaEnvelope className="me-2 icon" />
-                  <strong>Email:</strong> {leadDetail.email}
-                </li>
-                <li className="list-group-item">
-                  <FaPhone className="me-2 icon" />
-                  <strong>Phone:</strong> {leadDetail.phone}
-                </li>
-                <li className="list-group-item">
-                  <FaRobot className="me-2 icon" />
-                  <strong>Chatbot:</strong>{" "}
-                  {leadDetail.chatbotId?.name || "N/A"}
-                </li>
-                <li className="list-group-item">
-                  <FaCalendar className="me-2 icon" />
-                  <strong>Created At:</strong>{" "}
-                  {new Date(leadDetail.createdAt).toLocaleString()}
-                </li>
-                <li className="list-group-item">
-                  <FaBuilding className="me-2 icon" />
-                  <strong>Status:</strong> {leadDetail.status}
-                </li>
-                <li className="list-group-item">
-                  <FaMapMarker className="me-2 icon" />
-                  <strong>Location:</strong>{" "}
-                  {leadDetail.location
-                    ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
-                    : "N/A"}
-                </li>
-              </ul>
+  const renderLeadDetails = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaUser className="header-icon" /> Lead Profile
+        </h5>
+        <span className={`lead-status ${leadDetail.status.toLowerCase()}`}>
+          {leadDetail.status}
+        </span>
+      </div>
+      <div className="card-body">
+        <div className="lead-info-grid">
+          <div className="lead-info-item">
+            <div className="info-label">Name</div>
+            <div className="info-value">{leadDetail.name}</div>
+          </div>
+
+          <div className="lead-info-item">
+            <div className="info-label">Email</div>
+            <div className="info-value email-value">
+              <FaEnvelope className="me-2 info-icon" />
+              {leadDetail.email}
             </div>
           </div>
-        </div>
 
-        {/* Follow-ups List Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title">Follow-ups</h5>
-            </div>
-            <div className="card-body ">
-              {followUps.map((followUp) => (
-                <li key={followUp._id} className="list-group-item comment-item">
-                  {editFollowUpId === followUp._id ? (
-                    <div className="edit-comment">
-                      <div className="mb-2">
-                        <DatePicker
-                          selected={new Date(editFollowUpData.followUpDate)}
-                          onChange={handleDateChange}
-                          showTimeSelect
-                          dateFormat="Pp"
-                          className="form-control"
-                          placeholderText="Select date and time"
-                        />
-                      </div>
-                      <textarea
-                        className="form-control mb-2"
-                        placeholder="Notes"
-                        name="notes"
-                        value={editFollowUpData.notes}
-                        onChange={handleFollowUpInputChange}
-                      />
-                      <select
-                        className="form-control mb-2"
-                        name="status"
-                        value={editFollowUpData.status}
-                        onChange={handleFollowUpInputChange}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-
-                      <div className="edit-comment-actions">
-                        <button
-                          className="btn btn-sm btn-success me-2 save-btn"
-                          onClick={handleUpdateFollowUp}
-                        >
-                          <FaSave className="me-1" /> Save
-                        </button>
-                        <button
-                          className="btn btn-sm btn-secondary cancel-btn"
-                          onClick={handleCancelEditFollowUp}
-                        >
-                          <FaTimes className="me-1" /> Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      key={followUp._id}
-                      className="card col-md-12 mb-2 follow-up-item"
-                    >
-                      <div className="card-body">
-                        <p className="follow-up-date">
-                          <FaCalendar className="me-1" />
-                          {followUp.followUpDate.toLocaleString()}
-                        </p>
-                        <p className="follow-up-notes">
-                          <strong>Notes:</strong> {followUp.notes}
-                        </p>
-                        <p className="follow-up-status">
-                          <strong>Status:</strong> {followUp.status}
-                        </p>
-                        <div className="follow-up-actions">
-                          <button
-                            className="btn btn-sm btn-outline-secondary me-2 edit-btn"
-                            onClick={() => handleEditFollowUp(followUp._id)}
-                          >
-                            <FaEdit className="me-1" /> Edit
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger delete-btn"
-                            onClick={() => handleDeleteFollowUp(followUp._id)}
-                          >
-                            <FaTrash className="me-1" /> Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </li>
-              ))}
+          <div className="lead-info-item">
+            <div className="info-label">Phone</div>
+            <div className="info-value">
+              <FaPhone className="me-2 info-icon" />
+              {leadDetail.phone}
             </div>
           </div>
-        </div>
 
-        {/* Activities Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header">
-              <h5 className="card-title">Activities</h5>
-            </div>
-            <div className="card-body">
-              {activityLogs && activityLogs.length > 0 ? (
-                <ul className="list-group">
-                  {activityLogs.map((log, index) => (
-                    <li key={index} className="list-group-item activity-item">
-                      <FaHistory className="me-2 icon" /> {log.timestamp} -{" "}
-                      {log.action}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-center">No activity logs available.</p>
-              )}
+          <div className="lead-info-item">
+            <div className="info-label">Chatbot</div>
+            <div className="info-value">
+              <FaRobot className="me-2 info-icon" />
+              {leadDetail.chatbotId?.name || "N/A"}
             </div>
           </div>
-        </div>
 
-        {/* Comments List Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title">Comments</h5>
-            </div>
-            <div className="card-body">
-              {comments && comments.length > 0 ? (
-                <ul className="list-group">
-                  {comments.map((comment) => (
-                    <li
-                      key={comment._id}
-                      className="list-group-item comment-item"
-                    >
-                      {editCommentId === comment._id ? (
-                        <div className="edit-comment">
-                          <textarea
-                            className="form-control mb-2"
-                            value={editCommentText}
-                            onChange={(e) => setEditCommentText(e.target.value)}
-                          />
-                          <div className="edit-comment-actions">
-                            <button
-                              className="btn btn-sm btn-success me-2 save-btn"
-                              onClick={handleSaveEdit}
-                            >
-                              <FaSave className="me-1" /> Save
-                            </button>
-                            <button
-                              className="btn btn-sm btn-secondary cancel-btn"
-                              onClick={handleCancelEdit}
-                            >
-                              <FaTimes className="me-1" /> Cancel
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="comment-content">
-                          <p>{comment.comment}</p>
-                          <small className="text-muted">
-                            {new Date(comment.createdAt).toLocaleString()}
-                          </small>
-                          <div className="comment-actions">
-                            <button
-                              className="btn btn-sm btn-outline-secondary me-2 edit-btn"
-                              onClick={() => handleEditComment(comment._id)}
-                            >
-                              <FaEdit className="me-1" /> Edit
-                            </button>
-                            <button
-                              className="btn btn-sm btn-outline-danger delete-btn"
-                              onClick={() => handleDeleteComment(comment._id)}
-                            >
-                              <FaTrash className="me-1" /> Delete
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-center">No comments available.</p>
-              )}
+          <div className="lead-info-item">
+            <div className="info-label">Created</div>
+            <div className="info-value">
+              <FaCalendar className="me-2 info-icon" />
+              {new Date(leadDetail.createdAt).toLocaleString()}
             </div>
           </div>
-        </div>
 
-        {/* Conversation Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header">
-              <h5 className="card-title">Conversation</h5>
-            </div>
-            <div className="card-body">
-              {conversationLogs &&
-              conversationLogs.messages &&
-              conversationLogs.messages.length > 0 ? (
-                <div
-                  className="list-group conversation-list"
-                  style={{ maxHeight: "300px", overflowY: "auto" }}
-                >
-                  {conversationLogs.messages.map((log, index) =>
-                    log.sender ? (
-                      <div
-                        key={index}
-                        className="list-group-item conversation-item"
-                      >
-                        <div className="d-flex align-items-center">
-                          <FaComment className="me-2 icon" />
-                          <strong>{log.sender}:</strong>
-                        </div>
-                        <div className="ms-4 mt-2">
-                          <p className="mb-1">
-                            {log.text || "No message content"}
-                          </p>
-                          <small className="text-muted">
-                            {new Date(log.timestamp).toLocaleString()}
-                          </small>
-                        </div>
-                      </div>
-                    ) : null
-                  )}
-                </div>
-              ) : (
-                <p className="text-center">No conversation logs available.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Site Visit Card */}
-        <div className="col-md-6 mb-4">
-          <div className="card lead-card">
-            <div className="card-header">
-              <h5 className="card-title">Site Visits</h5>
-            </div>
-            <div className="card-body">
-              <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
-            </div>
-          </div>
-        </div>
-
-        {/* Activity Chart Card */}
-        <div className="col-md-12 mb-4">
-          <div className="card lead-card">
-            <div className="card-header">
-              <h5 className="card-title">Lead Activity Over Time</h5>
-            </div>
-            <div className="card-body">
-              <div className="chart-container">
-                {/* Use the class for chart height */}
-                <Bar data={chartData} options={chartOptions} />
-              </div>
+          <div className="lead-info-item">
+            <div className="info-label">Location</div>
+            <div className="info-value">
+              <FaMapMarker className="me-2 info-icon" />
+              {leadDetail.location
+                ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
+                : "N/A"}
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  const renderFollowUps = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaBell className="header-icon" /> Follow-ups
+        </h5>
+        {/* <button
+          className="btn btn-primary add-btn"
+          onClick={() => setIsFollowUpPaneOpen(true)}
+        >
+          <FaPlus className="me-1" /> Add
+        </button> */}
+      </div>
+      <div className="card-body scrollable-content">
+        {followUps.length === 0 ? (
+          <div className="empty-state">
+            <FaBell className="empty-icon" />
+            <p>No follow-ups scheduled</p>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => setIsFollowUpPaneOpen(true)}
+            >
+              Schedule now
+            </button>
+          </div>
+        ) : (
+          followUps.map((followUp) => (
+            <div key={followUp._id} className="list-item">
+              {editFollowUpId === followUp._id ? (
+                <div className="edit-form">
+                  <div className="form-group mb-3">
+                    <label>Date & Time</label>
+                    <DatePicker
+                      selected={new Date(editFollowUpData.followUpDate)}
+                      onChange={handleDateChange}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      dateFormat="MMM d, yyyy h:mm aa"
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Notes</label>
+                    <textarea
+                      className="form-control"
+                      placeholder="Notes"
+                      name="notes"
+                      value={editFollowUpData.notes}
+                      onChange={handleFollowUpInputChange}
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Status</label>
+                    <select
+                      className="form-control"
+                      name="status"
+                      value={editFollowUpData.status}
+                      onChange={handleFollowUpInputChange}
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div className="edit-actions">
+                    <button
+                      className="btn btn-success save-btn"
+                      onClick={handleUpdateFollowUp}
+                    >
+                      <FaSave className="me-1" /> Save
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary cancel-btn"
+                      onClick={handleCancelEditFollowUp}
+                    >
+                      <FaTimes className="me-1" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`follow-up-item ${followUp.status.toLowerCase()}`}
+                >
+                  <div className="follow-up-header">
+                    <div className="follow-up-date">
+                      <FaCalendar className="me-1" />
+                      {followUp.followUpDate.toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </div>
+                    <span className={getStatusBadgeClass(followUp.status)}>
+                      {followUp.status === "Pending" ? (
+                        <FaExclamationCircle className="me-1" />
+                      ) : (
+                        <FaCheckCircle className="me-1" />
+                      )}
+                      {followUp.status}
+                    </span>
+                  </div>
+                  <div className="follow-up-body">
+                    <p className="follow-up-notes">{followUp.notes}</p>
+                  </div>
+                  <div className="item-actions">
+                    <button
+                      className="btn btn-sm btn-outline-primary me-2 edit-btn"
+                      onClick={() => handleEditFollowUp(followUp._id)}
+                    >
+                      <FaEdit className="me-1" /> Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger delete-btn"
+                      onClick={() => handleDeleteFollowUp(followUp._id)}
+                    >
+                      <FaTrash className="me-1" /> Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
+  const renderActivities = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaHistory className="header-icon" /> Activities
+        </h5>
+      </div>
+      <div className="card-body scrollable-content">
+        {activityLogs && activityLogs.length > 0 ? (
+          <div className="timeline">
+            {activityLogs.map((log, index) => (
+              <div key={index} className="timeline-item">
+                <div className="timeline-indicator"></div>
+                <div className="timeline-content">
+                  <span className="timeline-date">
+                    {new Date(log.timestamp).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                  </span>
+                  <p className="timeline-text">{log.action}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <FaHistory className="empty-icon" />
+            <p>No activity logs available</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderComments = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaComment className="header-icon" /> Comments
+        </h5>
+        {/* <button
+          className="btn btn-primary add-btn"
+          onClick={() => setIsCommentPaneOpen(true)}
+        >
+          <FaPlus className="me-1" /> Add
+        </button> */}
+      </div>
+      <div className="card-body scrollable-content">
+        {comments && comments.length > 0 ? (
+          comments.map((comment) => (
+            <div key={comment._id} className="comment-item">
+              {editCommentId === comment._id ? (
+                <div className="edit-comment">
+                  <textarea
+                    className="form-control mb-3"
+                    value={editCommentText}
+                    onChange={(e) => setEditCommentText(e.target.value)}
+                  />
+                  <div className="edit-actions">
+                    <button
+                      className="btn btn-success save-btn"
+                      onClick={handleSaveEdit}
+                    >
+                      <FaSave className="me-1" /> Save
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary cancel-btn"
+                      onClick={handleCancelEdit}
+                    >
+                      <FaTimes className="me-1" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="comment-content">
+                  <p>{comment.comment}</p>
+                  <div className="comment-footer">
+                    <small className="comment-date">
+                      {new Date(comment.createdAt).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </small>
+                    <div className="item-actions">
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2 edit-btn"
+                        onClick={() => handleEditComment(comment._id)}
+                      >
+                        <FaEdit className="me-1" /> Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger delete-btn"
+                        onClick={() => handleDeleteComment(comment._id)}
+                      >
+                        <FaTrash className="me-1" /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="empty-state">
+            <FaComment className="empty-icon" />
+            <p>No comments available</p>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => setIsCommentPaneOpen(true)}
+            >
+              Add comment
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderConversation = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaComment className="header-icon" /> Conversation
+        </h5>
+      </div>
+      <div className="card-body scrollable-content">
+        {conversationLogs &&
+        conversationLogs.messages &&
+        conversationLogs.messages.length > 0 ? (
+          <div className="conversation-container">
+            {conversationLogs.messages.map((log, index) =>
+              log.sender ? (
+                <div
+                  key={index}
+                  className={`chat-bubble ${
+                    log.sender.toLowerCase() === "user" ? "user" : "bot"
+                  }`}
+                >
+                  <div className="chat-header">
+                    <strong>{log.sender}</strong>
+                    <small className="chat-time">
+                      {new Date(log.timestamp).toLocaleString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </small>
+                  </div>
+                  <p>{log.text || "No message content"}</p>
+                </div>
+              ) : null
+            )}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <FaComment className="empty-icon" />
+            <p>No conversation logs available</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSiteVisits = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaMapMarker className="header-icon" /> Site Visits
+        </h5>
+      </div>
+      <div className="card-body">
+        <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
+      </div>
+    </div>
+  );
+
+  const renderActivityChart = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaInfoCircle className="header-icon" /> Activity Analysis
+        </h5>
+      </div>
+      <div className="card-body chart-container">
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="lead-details-container">
+      {/* Top Action Bar */}
+      <div className="action-bar">
+        <h2 className="page-title">
+          <span className="lead-name">{leadDetail.name}</span>
+          <span
+            className={`status-indicator ${leadDetail.status.toLowerCase()}`}
+          ></span>
+        </h2>
+        <div className="action-buttons">
+          <button
+            className="btn btn-primary action-btn"
+            onClick={() => setIsFollowUpPaneOpen(true)}
+          >
+            <FaPlus className="me-1" /> FollowUp
+          </button>
+          <button
+            className="btn btn-primary action-btn"
+            onClick={() => setIsCommentPaneOpen(true)}
+          >
+            <FaPlus className="me-1" /> Comment
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button
+          className={`tab-button ${activeTab === "details" ? "active" : ""}`}
+          onClick={() => setActiveTab("details")}
+        >
+          <FaUser className="me-1" /> Details
+        </button>
+        <button
+          className={`tab-button ${activeTab === "engagement" ? "active" : ""}`}
+          onClick={() => setActiveTab("engagement")}
+        >
+          <FaHistory className="me-1" /> Engagement
+        </button>
+        <button
+          className={`tab-button ${activeTab === "analysis" ? "active" : ""}`}
+          onClick={() => setActiveTab("analysis")}
+        >
+          <FaInfoCircle className="me-1" /> Analysis
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {activeTab === "details" && (
+          <>
+            <div className="row">
+              <div className="col-md-6">
+                {renderLeadDetails()}
+                {renderFollowUps()}
+              </div>
+              <div className="col-md-6">
+                {renderComments()}
+                {renderSiteVisits()}
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === "engagement" && (
+          <>
+            <div className="row">
+              <div className="col-md-6">{renderActivities()}</div>
+              <div className="col-md-6">{renderConversation()}</div>
+            </div>
+          </>
+        )}
+
+        {activeTab === "analysis" && (
+          <>
+            <div className="row">
+              <div className="col-md-12">{renderActivityChart()}</div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Follow-Up Sliding Pane */}
       <SlidingPane
-        className="sliding-pane"
+        className="modern-sliding-pane"
         isOpen={isFollowUpPaneOpen}
-        title="Add Follow-Up"
-        width="500px" // Adjust width as needed
+        title="Schedule Follow-Up"
+        width="400px"
         onRequestClose={() => setIsFollowUpPaneOpen(false)}
       >
         <div className="pane-content">
-          <div className="mb-3">
-            <div className="mb-2">
-              <DatePicker
-                selected={newFollowUp.followUpDate}
-                onChange={(date) =>
-                  setNewFollowUp({ ...newFollowUp, followUpDate: date })
-                }
-                showTimeSelect
-                dateFormat="Pp"
-                className="form-control"
-                placeholderText="Select date and time"
-              />
-            </div>
+          <div className="form-group mb-4">
+            <label className="form-label">Date & Time</label>
+            <DatePicker
+              selected={newFollowUp.followUpDate}
+              onChange={(date) =>
+                setNewFollowUp({ ...newFollowUp, followUpDate: date })
+              }
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="MMM d, yyyy h:mm aa"
+              className="form-control"
+              placeholderText="Select date and time"
+            />
+          </div>
+          <div className="form-group mb-4">
+            <label className="form-label">Notes</label>
             <textarea
-              className="form-control mb-2"
-              placeholder="Notes"
+              className="form-control"
+              placeholder="What needs to be discussed?"
               value={newFollowUp.notes}
+              rows={4}
               onChange={(e) =>
                 setNewFollowUp({ ...newFollowUp, notes: e.target.value })
               }
-            />
+            ></textarea>
+          </div>
+          <div className="form-group mb-4">
+            <label className="form-label">Status</label>
             <select
-              className="form-control mb-2"
+              className="form-control"
               value={newFollowUp.status}
               onChange={(e) =>
                 setNewFollowUp({ ...newFollowUp, status: e.target.value })
@@ -755,12 +977,14 @@ const LeadDetails = () => {
               <option value="Pending">Pending</option>
               <option value="Completed">Completed</option>
             </select>
+          </div>
+          <div className="pane-actions">
             <button
               className="btn btn-primary w-100 add-followup-btn"
               onClick={handleCreateFollowUp}
             >
-              <FaPlus className="me-1" />
-              Add Follow-Up
+              <FaPlus className="me-2" />
+              Schedule Follow-Up
             </button>
           </div>
         </div>
@@ -768,25 +992,29 @@ const LeadDetails = () => {
 
       {/* Comment Sliding Pane */}
       <SlidingPane
-        className="sliding-pane"
+        className="modern-sliding-pane"
         isOpen={isCommentPaneOpen}
         title="Add Comment"
-        width="500px" // Adjust width as needed
+        width="400px"
         onRequestClose={() => setIsCommentPaneOpen(false)}
       >
         <div className="pane-content">
-          <div className="mb-3">
+          <div className="form-group mb-4">
+            <label className="form-label">Comment</label>
             <textarea
-              className="form-control mb-2"
+              className="form-control"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-            />
+              placeholder="Enter your comment here..."
+              rows={6}
+            ></textarea>
+          </div>
+          <div className="pane-actions">
             <button
               className="btn btn-primary w-100 add-comment-btn"
               onClick={handleAddComment}
             >
-              <FaPlus className="me-1" />
+              <FaPlus className="me-2" />
               Add Comment
             </button>
           </div>
@@ -795,10 +1023,10 @@ const LeadDetails = () => {
 
       {/* Site Visit Sliding Pane */}
       <SlidingPane
-        className="sliding-pane"
+        className="modern-sliding-pane"
         isOpen={isSiteVisitPaneOpen}
         title="Add Site Visit"
-        width="500px" // Adjust width as needed
+        width="400px"
         onRequestClose={() => setIsSiteVisitPaneOpen(false)}
       >
         <div className="pane-content">
