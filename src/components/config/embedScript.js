@@ -6,7 +6,7 @@ const generateEmbedScript = (chatbotId) => {
             const iframe = document.createElement('iframe');
             iframe.src = 'https://assist-ai.propstory.com/chatbot-widget/${chatbotId}';
             iframe.style.position = 'fixed';
-            iframe.style.bottom = '99px';
+            iframe.style.bottom = '85px';
             iframe.style.right = '40px';
             iframe.style.width = '450px';
             iframe.style.height = '550px';
@@ -54,8 +54,8 @@ const generateEmbedScript = (chatbotId) => {
             
 
             // Set width and height (optional)
-            toggleImage.width = 80;
-            toggleImage.height = 80;
+            toggleImage.width = 70;
+            toggleImage.height = 70;
 
 
             toggleImage.onclick = function() {
@@ -68,6 +68,8 @@ const generateEmbedScript = (chatbotId) => {
                     chatbotIframe.style.height = window.innerWidth <= 768 ? '100%' : '550px';
                     chatbotIframe.style.bottom = window.innerWidth <= 768 ? '0' : '72px';
                     chatbotIframe.style.right = window.innerWidth <= 768 ? '0' : '40px';
+
+                    
                 } else {
                     // toggleButton.innerText = 'Hi!';
                     toggleImage.src = "http://assist-ai.propstory.com/uploads/chat-bot-gif.gif"; 
