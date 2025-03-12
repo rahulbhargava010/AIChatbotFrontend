@@ -1,0 +1,366 @@
+/* LeadDetails.css - Modern & Balanced Cards */
+
+/* -------------------- General Styles -------------------- */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 15px; /* Slightly reduced container padding */
+}
+
+/* -------------------- Card Styles -------------------- */
+.lead-card {
+  border: none;
+  border-radius: 12px; /* Slightly smaller corner radius */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07); /* Reduced shadow intensity */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-bottom: 20px; /* Reduced margin */
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.lead-card:hover {
+  transform: translateY(-6px); /* Reduced hover elevation */
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1); /* Reduced shadow intensity on hover */
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 16px 20px; /* Reduced header padding */
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.3rem; /* Reduced title size */
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0;
+}
+
+.card-body {
+  padding: 20px; /* Reduced body padding */
+}
+
+/* -------------------- List Group Styles -------------------- */
+.list-group-item {
+  border: none;
+  padding: 12px 20px; /* Reduced list item padding */
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  color: #555;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.list-group-item .icon {
+  margin-right: 12px; /* Reduced icon spacing */
+  font-size: 1rem; /* Reduced icon size */
+  color: #3498db;
+}
+
+/* -------------------- Form Control Styles -------------------- */
+.form-control {
+  border-radius: 6px; /* Slightly smaller */
+  border: 1px solid #ced4da;
+  padding: 10px 14px; /* Reduced form control padding */
+  font-size: 0.9rem; /* Reduced font size */
+  color: #555;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #81b0ff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(129, 176, 255, 0.25);
+}
+
+/* -------------------- Button Styles -------------------- */
+.btn {
+  border-radius: 8px; /* Slightly smaller */
+  padding: 10px 20px; /* Reduced button padding */
+  font-size: 0.9rem; /* Reduced font size */
+  font-weight: 500;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+  transform: scale(1.03); /* Less scale-up on hover */
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+.btn-outline-secondary {
+  color: #7f8c8d;
+  border-color: #7f8c8d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #7f8c8d;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.btn-outline-danger:hover {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+.btn-success {
+  background-color: #2ecc71;
+  border-color: #2ecc71;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+.btn-sm {
+  padding: 6px 12px; /* Reduced small button padding */
+  font-size: 0.75rem; /* Reduced small button font size */
+}
+
+/* -------------------- Specific Component Styles -------------------- */
+
+/* Comment Styles */
+.comment-item {
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 15px; /* Reduced margin */
+  padding-bottom: 15px; /* Reduced padding */
+}
+
+.comment-content {
+  background-color: #f8f9fa;
+  padding: 16px; /* Reduced padding */
+  border-radius: 10px; /* Slightly smaller */
+  margin-bottom: 12px; /* Reduced margin */
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; /* Reduced gap */
+}
+
+.edit-comment textarea {
+  width: 100%;
+  margin-bottom: 12px; /* Reduced margin */
+  border-radius: 6px; /* Slightly smaller */
+  padding: 10px 14px; /* Reduced padding */
+  border: 1px solid #ced4da;
+}
+
+.edit-comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; /* Reduced gap */
+}
+
+/* Follow Up Styles */
+.follow-up-item {
+  background-color: #f8f9fa;
+  border-radius: 10px; /* Slightly smaller */
+  padding: 16px; /* Reduced padding */
+  margin-bottom: 15px; /* Reduced margin */
+}
+
+.follow-up-date {
+  font-weight: bold;
+  color: #34495e;
+  margin-bottom: 8px; /* Reduced margin */
+  font-size: 0.9rem; /* Reduced date size */
+}
+
+.follow-up-notes {
+  color: #7f8c8d;
+  margin-bottom: 8px; /* Reduced margin */
+  font-size: 0.9rem; /* Reduced notes size */
+}
+
+.follow-up-status {
+  color: #2ecc71;
+  font-size: 0.9rem; /* Reduced status size */
+}
+
+.follow-up-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; /* Reduced gap */
+  margin-top: 15px; /* Reduced margin */
+}
+
+.edit-follow-up-card {
+  background-color: #f8f9fa;
+  border-radius: 10px; /* Slightly smaller */
+  padding: 16px; /* Reduced padding */
+}
+
+.edit-follow-up-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; /* Reduced gap */
+  margin-top: 15px; /* Reduced margin */
+}
+
+/* Conversation Styles */
+.conversation-list {
+  border: 1px solid #e9ecef;
+  border-radius: 10px; /* Slightly smaller */
+  padding: 12px; /* Reduced padding */
+  max-height: 350px; /* Slightly reduced */
+  overflow-y: auto;
+}
+
+.conversation-item {
+  border-bottom: 1px solid #e9ecef;
+  padding: 12px 0; /* Reduced padding */
+}
+
+/* Activity Styles */
+.activity-item {
+  padding: 12px 0; /* Reduced padding */
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem; /* Reduced font size */
+}
+
+/* Chart Styles */
+.chart-container {
+  position: relative;
+  height: 350px; /* Reduced chart height */
+}
+
+/* Utility Classes */
+.text-muted {
+  color: #7f8c8d !important;
+  font-size: 0.85rem; /* Reduced muted text size */
+}
+
+.me-2 {
+  margin-right: 0.4rem !important; /* Reduced icon spacing */
+}
+
+.mb-2 {
+  margin-bottom: 0.4rem !important; /* Reduced margin */
+}
+
+.mt-2 {
+  margin-top: 0.4rem !important; /* Reduced margin */
+}
+
+.ms-4 {
+  margin-left: 1.2rem !important; /* Reduced margin */
+}
+
+/* Datepicker styles */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #555;
+  box-shadow: none;
+}
+
+/* Slide-in Panel Styles */
+.react-sliding-pane {
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.react-sliding-pane__header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.react-sliding-pane__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.react-sliding-pane__close {
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.react-sliding-pane__content {
+  padding: 20px;
+}
+
+/* Modern Button Styles */
+.btn-primary {
+  background-color: #3498db;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+/* Card Hover Effects */
+.lead-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Control Styles */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 10px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: none;
+}
+
+/* Add some specific styles for the pane content if needed */
+.pane-content {
+  padding: 20px;
+}

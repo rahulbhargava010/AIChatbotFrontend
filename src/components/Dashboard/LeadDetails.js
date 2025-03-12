@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../config/axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import SlidingPane from "react-sliding-pane";
+import "react-sliding-pane/dist/react-sliding-pane.css";
 import {
   FaUser,
   FaEnvelope,
@@ -10,13 +14,14 @@ import {
   FaComment,
   FaCalendar,
   FaMapMarker,
-  FaMoneyBill,
   FaBuilding,
-  FaDesktop,
   FaBell,
-  FaGlobe,
-  FaCalendarCheck,
   FaInfoCircle,
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaPlus,
 } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import {
@@ -30,7 +35,8 @@ import {
 } from "chart.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SiteVisit from "./SiteVisit";
-// Register Chart.js components
+import "./LeadDetails.css";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -48,18 +54,29 @@ const LeadDetails = () => {
   const [messages, setMessages] = useState("");
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
-  
   const [followUps, setFollowUps] = useState([]);
-  const [newFollowUp, setNewFollowUp] = useState({ followUpDate: '', notes: '', status: 'Pending' });
-  const [editFollowUp, setEditFollowUp] = useState(null);
-
+  const [newFollowUp, setNewFollowUp] = useState({
+    followUpDate: new Date(),
+    notes: "",
+    status: "Pending",
+  });
+  const [editFollowUpId, setEditFollowUpId] = useState(null); // Now, store the ID of the FollowUp being edited
+  const [editFollowUpData, setEditFollowUpData] = useState({
+    // Stores temporary edited data
+    followUpDate: new Date(),
+    notes: "",
+    status: "Pending",
+  });
   const [siteVisitLogs, setSiteVisitLogs] = useState([]);
+
+  const [isFollowUpPaneOpen, setIsFollowUpPaneOpen] = useState(false);
+  const [isCommentPaneOpen, setIsCommentPaneOpen] = useState(false);
+  const [isSiteVisitPaneOpen, setIsSiteVisitPaneOpen] = useState(false);
 
   const { leadId } = useParams();
 
   useEffect(() => {
     if (!leadId) return;
-    console.log('coming inside leadid')
     const fetchLeadDetails = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -68,10 +85,14 @@ const LeadDetails = () => {
           { lead: leadId },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log("RES:", response);
         setLeadData(response.data);
         setComments(response?.data?.commentLogs);
-        setFollowUps(response?.data?.followUpLogs);
+        setFollowUps(
+          response?.data?.followUpLogs.map((followUp) => ({
+            ...followUp,
+            followUpDate: new Date(followUp.followUpDate),
+          }))
+        );
         setSiteVisitLogs(response?.data?.SiteVisitLogs);
       } catch (error) {
         console.error("Error fetching lead details:", error);
@@ -87,139 +108,136 @@ const LeadDetails = () => {
   const handleAddComment = async () => {
     if (newComment.trim() === "") return;
     try {
-      const token = localStorage.getItem("token"); // Get token from localStorage
-      const response = await api.post("/leads/saveComment", 
-      {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/leads/saveComment",
+        {
           leadId,
-          comment: newComment
-      },
-      {
+          comment: newComment,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-      });
-      console.log('response --- ', response.data)
+        }
+      );
 
       const comment = {
-          _id: response.data.comment._id, // Unique ID for the comment
-          comment: newComment,
-          createdAt: response.data.comment.createdAt,
+        _id: response.data.comment._id,
+        comment: newComment,
+        createdAt: response.data.comment.createdAt,
       };
 
       setMessages("Comment added successfully!");
       setComments([...comments, comment]);
       setNewComment("");
+      setIsCommentPaneOpen(false);
     } catch (error) {
-      setMessages(error.response?.data?.error || "Failed to add company.");
+      setMessages(error.response?.data?.error || "Failed to add comment.");
     }
   };
 
+  // Edit a comment
   const handleEditComment = async (id) => {
-    try {
-
-      const commentToEdit = comments.find((comment) => comment._id === id);
-      if (commentToEdit) {
-        setEditCommentId(id);
-        setEditCommentText(commentToEdit.comment);
-      }
-      // const token = localStorage.getItem("token"); // Get token from localStorage
-      // const response = await api.post("/leads/saveComment", 
-      // {
-      //     leadId,
-      //     comment: newComment
-      // },
-      // {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json",
-      //     },
-      // });
-    } catch (error) {
-      setMessages(error.response?.data?.error || "Failed to add company.");
+    const commentToEdit = comments.find((comment) => comment._id === id);
+    if (commentToEdit) {
+      setEditCommentId(id);
+      setEditCommentText(commentToEdit.comment);
     }
-  };
-
-  // Delete a comment
-  const handleDeleteComment = async (id) => {
-
-      try {
-        const token = localStorage.getItem("token"); // Get token from localStorage
-        const response = await api.post("/leads/deleteComment", 
-        {
-            commentId: id
-        },
-        {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-        });
-      } catch (error) {
-          setMessages(error.response?.data?.error || "Failed to add company.");
-      }
-      const updatedComments = comments.filter((comment) => comment._id !== id);
-      setComments(updatedComments);
   };
 
   // Save the edited comment
   const handleSaveEdit = async () => {
     if (editCommentText.trim() === "") return;
     try {
-      const token = localStorage.getItem("token"); // Get token from localStorage
-      const response = await api.post("/leads/editComment", 
-      {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/leads/editComment",
+        {
           commentId: editCommentId,
-          comment: editCommentText
-      },
-      {
+          comment: editCommentText,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-      });
-
-      console.log('comments', comments)
-      const updatedComments = await comments?.map((comment) =>
-          comment._id === editCommentId ? { ...comment, comment: editCommentText } : comment
+        }
       );
 
-      console.log('editCommentId', editCommentId)
-      console.log('editCommentText', editCommentText)
-      console.log('updatedComments', updatedComments)
+      const updatedComments = comments.map((comment) =>
+        comment._id === editCommentId
+          ? { ...comment, comment: editCommentText }
+          : comment
+      );
+
       setComments(updatedComments);
       setEditCommentId(null);
       setEditCommentText("");
     } catch (error) {
-      setMessages(error.response?.data?.error || "Failed to add company.");
+      setMessages(error.response?.data?.error || "Failed to edit comment.");
     }
   };
 
-  // Cancel editing
   const handleCancelEdit = () => {
     setEditCommentId(null);
     setEditCommentText("");
   };
 
-
-
-  // Create a follow-up
-  const handleCreateFollowUp = async () => {
+  // Delete a comment
+  const handleDeleteComment = async (id) => {
     try {
-      // const response = await axios.post('/api/follow-ups', { ...newFollowUp, leadId });
       const token = localStorage.getItem("token");
-      const response = await api.post("/followup/save", 
-      { ...newFollowUp, leadId },
-      {
+      await api.post(
+        "/leads/deleteComment",
+        {
+          commentId: id,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-      });
-      setFollowUps([...followUps, response.data.followUp]);
-      setNewFollowUp({ followUpDate: '', notes: '', status: 'Pending' });
+        }
+      );
+
+      const updatedComments = comments.filter((comment) => comment._id !== id);
+      setComments(updatedComments);
     } catch (error) {
-      console.error('Error creating follow-up:', error);
+      setMessages(error.response?.data?.error || "Failed to delete comment.");
+    }
+  };
+
+  // Create a follow-up
+  const handleCreateFollowUp = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/followup/save",
+        { ...newFollowUp, leadId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setFollowUps([
+        ...followUps,
+        {
+          ...response.data.followUp,
+          followUpDate: new Date(response.data.followUp.followUpDate),
+        },
+      ]);
+      setNewFollowUp({
+        followUpDate: new Date(),
+        notes: "",
+        status: "Pending",
+      });
+      setIsFollowUpPaneOpen(false); // Close the panel after creation
+    } catch (error) {
+      console.error("Error creating follow-up:", error);
     }
   };
 
@@ -227,49 +245,94 @@ const LeadDetails = () => {
   const handleUpdateFollowUp = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await api.post("/followup/update", 
-      {
-          followUpId: editFollowUp._id,
-          editFollowUp
-      },
-      {
+      const response = await api.post(
+        "/followup/update",
+        {
+          followUpId: editFollowUpId,
+          editFollowUp: editFollowUpData,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+        }
+      );
+
+      // Update the followUps state with the updated follow-up
+      const updatedFollowUps = followUps.map((followUp) =>
+        followUp._id === editFollowUpId ? response.data.followUp : followUp
+      );
+      setFollowUps(updatedFollowUps);
+
+      setEditFollowUpId(null); // Clear the ID of the follow-up being edited
+      setEditFollowUpData({
+        followUpDate: new Date(),
+        notes: "",
+        status: "Pending",
       });
-      console.log('response --- ', response.data)
-      setFollowUps(followUps.map((f) => (f._id === editFollowUp._id ? response.data.followUp : f)));
-      setEditFollowUp(null);
     } catch (error) {
-      console.error('Error updating follow-up:', error);
+      console.error("Error updating follow-up:", error);
     }
   };
 
   // Delete a follow-up
   const handleDeleteFollowUp = async (id) => {
-    console.log('handleDeleteFollowUp', id)
     try {
       const token = localStorage.getItem("token");
-      const response = await api.post("/followup/delete", 
-      {
+      await api.post(
+        "/followup/delete",
+        {
           followUpId: id,
-      },
-      {
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-      });
-      // await axios.delete(`/api/follow-ups/${id}`);
+        }
+      );
       setFollowUps(followUps.filter((f) => f._id !== id));
     } catch (error) {
-      console.error('Error deleting follow-up:', error);
+      console.error("Error deleting follow-up:", error);
     }
   };
 
+  const handleEditFollowUp = (id) => {
+    const followUpToEdit = followUps.find((followUp) => followUp._id === id);
+    if (followUpToEdit) {
+      setEditFollowUpId(id);
+      setEditFollowUpData({
+        followUpDate: followUpToEdit.followUpDate,
+        notes: followUpToEdit.notes,
+        status: followUpToEdit.status,
+      });
+    }
+  };
 
+  const handleCancelEditFollowUp = () => {
+    setEditFollowUpId(null);
+    setEditFollowUpData({
+      followUpDate: new Date(),
+      notes: "",
+      status: "Pending",
+    });
+  };
 
+  const handleFollowUpInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFollowUpData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (date) => {
+    setEditFollowUpData((prevData) => ({
+      ...prevData,
+      followUpDate: date,
+    }));
+  };
 
   if (!leadId) return <p className="text-center">No lead selected.</p>;
   if (loading)
@@ -281,9 +344,8 @@ const LeadDetails = () => {
   if (!leadData || !leadData.leadDetail)
     return <p className="text-center">No lead details found.</p>;
 
-  const { leadDetail, activityLogs, conversationLogs, followUpLogs, commentLogs } = leadData;
-  // console.log('commentLogs', commentLogs);
-  // setComments(commentLogs);
+  const { leadDetail, activityLogs, conversationLogs } = leadData;
+
   // Data for the bar chart (example: activity frequency)
   const activityLabels = activityLogs.map((log) => log.timestamp);
   const activityData = activityLogs.map((log, index) => index + 1);
@@ -303,6 +365,7 @@ const LeadDetails = () => {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -312,306 +375,436 @@ const LeadDetails = () => {
         text: "Lead Activity Over Time",
       },
     },
+    scales: {
+      //Added scales to fix chart warnings
+      x: {
+        ticks: {
+          autoSkip: true,
+          maxRotation: 45,
+          minRotation: 0,
+        },
+      },
+    },
   };
 
   return (
-    <div className="container mt-6">
+    <div className="container mt-4">
       <div className="row">
-        {/* Lead Details Card */}
-        <div className="col-md-6 col-lg-6 mb-6">
-          <div className="card h-100 p-3">
-            <h5 className="card-title text-center">Lead Details</h5>
-            <div
-              className="list-group list-group-flush"
-              style={{ maxHeight: "350px", overflowY: "auto" }}
+        {/* Top Buttons */}
+        <div className="col-md-12 mb-3">
+          <div className="d-flex justify-content-end">
+            <button
+              className="btn btn-primary me-2"
+              onClick={() => setIsFollowUpPaneOpen(true)}
             >
-              <li className="list-group-item d-flex align-items-center">
-                <FaUser className="me-2 text-primary" /> <strong></strong>{" "}
-                {leadDetail.name}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaEnvelope className="me-2 text-primary" />{" "}
-                <strong></strong> {leadDetail.email}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaPhone className="me-2 text-primary" />{" "}
-                <strong></strong> {leadDetail.phone}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaRobot className="me-2 text-primary" />{" "}
-                <strong>Chatbot:</strong> {leadDetail.chatbotId?.name || "N/A"}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaCalendar className="me-2 text-primary" />{" "}
-                <strong>Created At:</strong>{" "}
-                {new Date(leadDetail.createdAt).toLocaleString()}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaBuilding className="me-2 text-primary" />{" "}
-                <strong>Status:</strong> {leadDetail.status}
-              </li>
-              {/* <li className="list-group-item d-flex align-items-center">
-                <FaDesktop className="me-2 text-primary" />{" "}
-                <strong>Device:</strong> {leadDetail.device}
-              </li> */}
-              {/* <li className="list-group-item d-flex align-items-center">
-                <FaGlobe className="me-2 text-primary" />{" "}
-                <strong>IP Address:</strong> {leadDetail.ipAddress}
-              </li> */}
-              <li className="list-group-item d-flex align-items-center">
-                <FaMapMarker className="me-2 text-primary" />{" "}
-                <strong>Location:</strong>{" "}
-                {leadDetail.location
-                  ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
-                  : "N/A"}
-              </li>
-              {/* <li className="list-group-item d-flex align-items-center">
-                <FaCalendarCheck className="me-2 text-primary" />{" "}
-                <strong>Site Visit:</strong>{" "}
-                {leadDetail.siteVisit?.status || "N/A"}
-              </li> */}
-              {/* <li className="list-group-item d-flex align-items-center">
-                <FaInfoCircle className="me-2 text-primary" />{" "}
-                <strong>User Agent:</strong> {leadDetail.userAgent}
-              </li> */}
+              <FaPlus className="me-1" /> Add Follow-Up
+            </button>
+            <button
+              className="btn btn-primary me-2"
+              onClick={() => setIsCommentPaneOpen(true)}
+            >
+              <FaPlus className="me-1" /> Add Comment
+            </button>
+            {/* <button
+              className="btn btn-primary"
+              onClick={() => setIsSiteVisitPaneOpen(true)}
+            >
+              <FaPlus className="me-1" /> Add Site Visit
+            </button> */}
+          </div>
+        </div>
+
+        {/* Lead Details Card */}
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header">
+              <h5 className="card-title">Lead Details</h5>
+            </div>
+            <div className="card-body">
+              <ul className="list-group list-group-flush">
+                <li className="list-group-item">
+                  <FaUser className="me-2 icon" />
+                  <strong>Name:</strong> {leadDetail.name}
+                </li>
+                <li className="list-group-item">
+                  <FaEnvelope className="me-2 icon" />
+                  <strong>Email:</strong> {leadDetail.email}
+                </li>
+                <li className="list-group-item">
+                  <FaPhone className="me-2 icon" />
+                  <strong>Phone:</strong> {leadDetail.phone}
+                </li>
+                <li className="list-group-item">
+                  <FaRobot className="me-2 icon" />
+                  <strong>Chatbot:</strong>{" "}
+                  {leadDetail.chatbotId?.name || "N/A"}
+                </li>
+                <li className="list-group-item">
+                  <FaCalendar className="me-2 icon" />
+                  <strong>Created At:</strong>{" "}
+                  {new Date(leadDetail.createdAt).toLocaleString()}
+                </li>
+                <li className="list-group-item">
+                  <FaBuilding className="me-2 icon" />
+                  <strong>Status:</strong> {leadDetail.status}
+                </li>
+                <li className="list-group-item">
+                  <FaMapMarker className="me-2 icon" />
+                  <strong>Location:</strong>{" "}
+                  {leadDetail.location
+                    ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
+                    : "N/A"}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Follow-ups Card */}
-        <div className="col-md-6 col-lg-6 mb-6">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Follow-ups</h6>
-            <div>
-                {/* Create Follow-Up */}
-                <div>
-                  <input
-                    type="datetime-local"
-                    value={newFollowUp.followUpDate}
-                    onChange={(e) => setNewFollowUp({ ...newFollowUp, followUpDate: e.target.value })}
-                  />
-                  <textarea
-                    placeholder="Notes"
-                    value={newFollowUp.notes}
-                    onChange={(e) => setNewFollowUp({ ...newFollowUp, notes: e.target.value })}
-                  />
-                  <select
-                    value={newFollowUp.status}
-                    onChange={(e) => setNewFollowUp({ ...newFollowUp, status: e.target.value })}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                  <button onClick={handleCreateFollowUp}>Add Follow-Up</button>
-                </div>
+        {/* Follow-ups List Card */}
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h5 className="card-title">Follow-ups</h5>
+            </div>
+            <div className="card-body ">
+              {followUps.map((followUp) => (
+                <li key={followUp._id} className="list-group-item comment-item">
+                  {editFollowUpId === followUp._id ? (
+                    <div className="edit-comment">
+                      <div className="mb-2">
+                        <DatePicker
+                          selected={new Date(editFollowUpData.followUpDate)}
+                          onChange={handleDateChange}
+                          showTimeSelect
+                          dateFormat="Pp"
+                          className="form-control"
+                          placeholderText="Select date and time"
+                        />
+                      </div>
+                      <textarea
+                        className="form-control mb-2"
+                        placeholder="Notes"
+                        name="notes"
+                        value={editFollowUpData.notes}
+                        onChange={handleFollowUpInputChange}
+                      />
+                      <select
+                        className="form-control mb-2"
+                        name="status"
+                        value={editFollowUpData.status}
+                        onChange={handleFollowUpInputChange}
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
 
-                {/* List Follow-Ups */}
-                {followUps.map((followUp) => (
-                  <div key={followUp._id}>
-                    <p>Date: {new Date(followUp.followUpDate).toLocaleDateString()}</p>
-                    <p>Notes: {followUp.notes}</p>
-                    <p>Status: {followUp.status}</p>
-                    <button onClick={() => setEditFollowUp(followUp)}>Edit</button>
-                    <button onClick={() => handleDeleteFollowUp(followUp._id)}>Delete</button>
-                  </div>
-                ))}
-
-                {/* Edit Follow-Up */}
-                {editFollowUp && (
-                  <div>
-                    <input
-                      type="datetime-local"
-                      value={editFollowUp.followUpDate}
-                      onChange={(e) => setEditFollowUp({ ...editFollowUp, followUpDate: e.target.value })}
-                    />
-                    <textarea
-                      placeholder="Notes"
-                      value={editFollowUp.notes}
-                      onChange={(e) => setEditFollowUp({ ...editFollowUp, notes: e.target.value })}
-                    />
-                    <select
-                      value={editFollowUp.status}
-                      onChange={(e) => setEditFollowUp({ ...editFollowUp, status: e.target.value })}
+                      <div className="edit-comment-actions">
+                        <button
+                          className="btn btn-sm btn-success me-2 save-btn"
+                          onClick={handleUpdateFollowUp}
+                        >
+                          <FaSave className="me-1" /> Save
+                        </button>
+                        <button
+                          className="btn btn-sm btn-secondary cancel-btn"
+                          onClick={handleCancelEditFollowUp}
+                        >
+                          <FaTimes className="me-1" /> Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      key={followUp._id}
+                      className="card col-md-12 mb-2 follow-up-item"
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
-                    <button onClick={handleUpdateFollowUp}>Save</button>
-                    <button onClick={() => setEditFollowUp(null)}>Cancel</button>
-                  </div>
-                )}
-              </div>
+                      <div className="card-body">
+                        <p className="follow-up-date">
+                          <FaCalendar className="me-1" />
+                          {followUp.followUpDate.toLocaleString()}
+                        </p>
+                        <p className="follow-up-notes">
+                          <strong>Notes:</strong> {followUp.notes}
+                        </p>
+                        <p className="follow-up-status">
+                          <strong>Status:</strong> {followUp.status}
+                        </p>
+                        <div className="follow-up-actions">
+                          <button
+                            className="btn btn-sm btn-outline-secondary me-2 edit-btn"
+                            onClick={() => handleEditFollowUp(followUp._id)}
+                          >
+                            <FaEdit className="me-1" /> Edit
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-danger delete-btn"
+                            onClick={() => handleDeleteFollowUp(followUp._id)}
+                          >
+                            <FaTrash className="me-1" /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* Assigned User Card */}
-        {/* <div className="col-md-2 col-lg-2 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Assigned User</h6>
-            <ul className="list-group">
-              <li className="list-group-item d-flex align-items-center">
-                <FaUser className="me-2 text-primary" />{" "}
-                {leadDetail.assignedTo?.name || "Unassigned"}
-              </li>
-            </ul>
-          </div>
-        </div> */}
 
         {/* Activities Card */}
-        <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Activities</h6>
-            {activityLogs && activityLogs.length > 0 ? (
-              <ul className="list-group">
-                {activityLogs.map((log, index) => (
-                  <li
-                    key={index}
-                    className="list-group-item d-flex align-items-center"
-                  >
-                    <FaHistory className="me-2 text-danger" /> {log.timestamp} -{" "}
-                    {log.action}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center">No activity logs available.</p>
-            )}
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header">
+              <h5 className="card-title">Activities</h5>
+            </div>
+            <div className="card-body">
+              {activityLogs && activityLogs.length > 0 ? (
+                <ul className="list-group">
+                  {activityLogs.map((log, index) => (
+                    <li key={index} className="list-group-item activity-item">
+                      <FaHistory className="me-2 icon" /> {log.timestamp} -{" "}
+                      {log.action}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-center">No activity logs available.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Comments Card */}
-        <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Comments</h6>
-            <div className="add-comment">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Add a comment..."
-                />
-                <button onClick={handleAddComment}>Add Comment</button>
+        {/* Comments List Card */}
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h5 className="card-title">Comments</h5>
             </div>
-            
-            {comments && comments?.length > 0 ? (
-              <ul className="list-group">
-                {comments?.map((comment) => (
-                      <div key={comment._id} className="comment">
+            <div className="card-body">
+              {comments && comments.length > 0 ? (
+                <ul className="list-group">
+                  {comments.map((comment) => (
+                    <li
+                      key={comment._id}
+                      className="list-group-item comment-item"
+                    >
                       {editCommentId === comment._id ? (
-                        // Edit Comment Section
                         <div className="edit-comment">
                           <textarea
+                            className="form-control mb-2"
                             value={editCommentText}
                             onChange={(e) => setEditCommentText(e.target.value)}
                           />
-                          <button onClick={handleSaveEdit}>Save</button>
-                          <button onClick={handleCancelEdit}>Cancel</button>
+                          <div className="edit-comment-actions">
+                            <button
+                              className="btn btn-sm btn-success me-2 save-btn"
+                              onClick={handleSaveEdit}
+                            >
+                              <FaSave className="me-1" /> Save
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary cancel-btn"
+                              onClick={handleCancelEdit}
+                            >
+                              <FaTimes className="me-1" /> Cancel
+                            </button>
+                          </div>
                         </div>
                       ) : (
-                        // Show Comment Section
                         <div className="comment-content">
                           <p>{comment.comment}</p>
-                          <small>{comment.createdAt}</small>
+                          <small className="text-muted">
+                            {new Date(comment.createdAt).toLocaleString()}
+                          </small>
                           <div className="comment-actions">
-                            <button onClick={() => handleEditComment(comment._id)}>Edit</button>
-                            <button onClick={() => handleDeleteComment(comment._id)}>Delete</button>
+                            <button
+                              className="btn btn-sm btn-outline-secondary me-2 edit-btn"
+                              onClick={() => handleEditComment(comment._id)}
+                            >
+                              <FaEdit className="me-1" /> Edit
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger delete-btn"
+                              onClick={() => handleDeleteComment(comment._id)}
+                            >
+                              <FaTrash className="me-1" /> Delete
+                            </button>
                           </div>
                         </div>
                       )}
-                    </div>
-                    // <li
-                    //   key={index}
-                    //   className="list-group-item d-flex align-items-center"
-                    // >
-                    //   <FaComment className="me-2 text-primary" />{" "}
-                    //   {log.comment} - {log.createdAt} -{" "}
-                    //   {/* {log.action.replace("Remark Added: ", "")} */}
-                    // </li>
+                    </li>
                   ))}
-              </ul>
-            ) : (
-              <p className="text-center">No comments available.</p>
-            )}
+                </ul>
+              ) : (
+                <p className="text-center">No comments available.</p>
+              )}
+            </div>
           </div>
         </div>
+
         {/* Conversation Card */}
-        <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Conversation</h6>
-            {conversationLogs && conversationLogs.messages && conversationLogs.messages.length > 0 ? (
-              <div className="list-group" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                {conversationLogs.messages.map((log, index) => (
-                  log.sender ? (
-                    <div key={index} className="list-group-item d-flex flex-column align-items-start">
-                      <div className="d-flex align-items-center">
-                        <FaComment className="me-2 text-primary" />
-                        <strong>{log?.sender }:</strong>
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header">
+              <h5 className="card-title">Conversation</h5>
+            </div>
+            <div className="card-body">
+              {conversationLogs &&
+              conversationLogs.messages &&
+              conversationLogs.messages.length > 0 ? (
+                <div
+                  className="list-group conversation-list"
+                  style={{ maxHeight: "300px", overflowY: "auto" }}
+                >
+                  {conversationLogs.messages.map((log, index) =>
+                    log.sender ? (
+                      <div
+                        key={index}
+                        className="list-group-item conversation-item"
+                      >
+                        <div className="d-flex align-items-center">
+                          <FaComment className="me-2 icon" />
+                          <strong>{log.sender}:</strong>
+                        </div>
+                        <div className="ms-4 mt-2">
+                          <p className="mb-1">
+                            {log.text || "No message content"}
+                          </p>
+                          <small className="text-muted">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </small>
+                        </div>
                       </div>
-                      <div className="ms-4 mt-2">
-                        <p className="mb-1">{log.text || "No message content"}</p>
-                        <small className="text-muted">
-                          {new Date(log.timestamp).toLocaleString()}
-                        </small>
-                      </div>
-                    </div>
-                  ) : null 
-                ))}
-              </div>
-            ) : (
-              <p className="text-center">No conversation logs available.</p>
-            )}
+                    ) : null
+                  )}
+                </div>
+              ) : (
+                <p className="text-center">No conversation logs available.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Activities Card */}
-        <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Activities 2</h6>
-              <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs}/>
+        {/* Site Visit Card */}
+        <div className="col-md-6 mb-4">
+          <div className="card lead-card">
+            <div className="card-header">
+              <h5 className="card-title">Site Visits</h5>
+            </div>
+            <div className="card-body">
+              <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
+            </div>
           </div>
         </div>
-
-
-        {/* Future Details Card */}
-        {/* <div className="col-md-6 col-lg-4 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Future Details</h6>
-            <ul className="list-group">
-              <li className="list-group-item d-flex align-items-center">
-                <FaMoneyBill className="me-2 text-primary" />{" "}
-                <strong>Budget:</strong> {leadDetail.budget || "N/A"}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaBuilding className="me-2 text-primary" />{" "}
-                <strong>Property Type:</strong>{" "}
-                {leadDetail.propertyType || "N/A"}
-                <FaHistory className="me-2 text-danger" /> {log?.timestamp} -{" "}
-                {log?.action || "Unknown"}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaMapMarker className="me-2 text-primary" />
-                <strong>Location:</strong>{" "}
-                {leadDetail.location
-                  ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
-                  : "N/A"}
-              </li>
-              <li className="list-group-item d-flex align-items-center">
-                <FaBell className="me-2 text-primary" />{" "}
-                <strong>Notifications:</strong>{" "}
-                {leadDetail.notifications ? "Enabled" : "Disabled"}
-              </li>
-            </ul>
-          </div>
-        </div> */}
 
         {/* Activity Chart Card */}
         <div className="col-md-12 mb-4">
-          <div className="card h-100 p-3">
-            <h6 className="card-title text-center">Lead Activity Over Time</h6>
-            <Bar data={chartData} options={chartOptions} />
+          <div className="card lead-card">
+            <div className="card-header">
+              <h5 className="card-title">Lead Activity Over Time</h5>
+            </div>
+            <div className="card-body">
+              <div className="chart-container">
+                {/* Use the class for chart height */}
+                <Bar data={chartData} options={chartOptions} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Follow-Up Sliding Pane */}
+      <SlidingPane
+        className="sliding-pane"
+        isOpen={isFollowUpPaneOpen}
+        title="Add Follow-Up"
+        width="500px" // Adjust width as needed
+        onRequestClose={() => setIsFollowUpPaneOpen(false)}
+      >
+        <div className="pane-content">
+          <div className="mb-3">
+            <div className="mb-2">
+              <DatePicker
+                selected={newFollowUp.followUpDate}
+                onChange={(date) =>
+                  setNewFollowUp({ ...newFollowUp, followUpDate: date })
+                }
+                showTimeSelect
+                dateFormat="Pp"
+                className="form-control"
+                placeholderText="Select date and time"
+              />
+            </div>
+            <textarea
+              className="form-control mb-2"
+              placeholder="Notes"
+              value={newFollowUp.notes}
+              onChange={(e) =>
+                setNewFollowUp({ ...newFollowUp, notes: e.target.value })
+              }
+            />
+            <select
+              className="form-control mb-2"
+              value={newFollowUp.status}
+              onChange={(e) =>
+                setNewFollowUp({ ...newFollowUp, status: e.target.value })
+              }
+            >
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <button
+              className="btn btn-primary w-100 add-followup-btn"
+              onClick={handleCreateFollowUp}
+            >
+              <FaPlus className="me-1" />
+              Add Follow-Up
+            </button>
+          </div>
+        </div>
+      </SlidingPane>
+
+      {/* Comment Sliding Pane */}
+      <SlidingPane
+        className="sliding-pane"
+        isOpen={isCommentPaneOpen}
+        title="Add Comment"
+        width="500px" // Adjust width as needed
+        onRequestClose={() => setIsCommentPaneOpen(false)}
+      >
+        <div className="pane-content">
+          <div className="mb-3">
+            <textarea
+              className="form-control mb-2"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+            />
+            <button
+              className="btn btn-primary w-100 add-comment-btn"
+              onClick={handleAddComment}
+            >
+              <FaPlus className="me-1" />
+              Add Comment
+            </button>
+          </div>
+        </div>
+      </SlidingPane>
+
+      {/* Site Visit Sliding Pane */}
+      <SlidingPane
+        className="sliding-pane"
+        isOpen={isSiteVisitPaneOpen}
+        title="Add Site Visit"
+        width="500px" // Adjust width as needed
+        onRequestClose={() => setIsSiteVisitPaneOpen(false)}
+      >
+        <div className="pane-content">
+          <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
+        </div>
+      </SlidingPane>
     </div>
   );
 };
