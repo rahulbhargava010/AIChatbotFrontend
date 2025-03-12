@@ -7,7 +7,6 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
   const [review, setReview] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false); // Track submission status
 
-  // Emoji options with labels
   const emojis = [
     { value: "1", icon: "😠", label: "Poor" },
     { value: "2", icon: "😕", label: "Bad" },
@@ -16,7 +15,6 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
     { value: "5", icon: "😍", label: "Excellent" },
   ];
 
-  // Function to return a message based on the rating
   const getThankYouMessage = () => {
     switch (rating) {
       case "1":
@@ -52,7 +50,7 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose }) => {
       setRating("");
       setReview("");
       onClose(); // Close the modal after 3 seconds
-    }, 3000000);
+    }, 3000);
   };
 
   return (
