@@ -732,7 +732,8 @@ button{
   }
   .user-message {
     width: 24rem;
-    margin-right: -6rem;
+    margin-right: -4rem;
+    text-align: end;
 }
 .mobile{
   display: none;
