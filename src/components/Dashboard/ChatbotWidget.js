@@ -84,7 +84,6 @@ const ChatbotWidget = () => {
     }
   };
 
-
   const storedSessionId =
     sessionStorage.getItem("chatbotSessionId") || uuidv4();
   const uniqueSessionId = localStorage.getItem("uniqueSessionId");
@@ -148,32 +147,48 @@ const ChatbotWidget = () => {
   const [showRating, setShowRating] = useState(false);
 
   const handleRateChat = () => {
-    setShowRating(true); // Show full-height rating component
+    if (formSubmitted) {
+      setShowRating(true); // Show rating component if form is submitted
+    } else {
+      // Show form first if not submitted
+      setFormVisible(true);
+      // Optionally, you can show a message indicating they need to fill the form first
+      setMsgFromResponse("Please fill out your information before rating our chat service.");
+    }
+    setIsOpen(false);
   };
 
   useEffect(() => {
     if (rating) {
-      console.log(formSubmitted, "form submitted");
       if (formSubmitted) {
-        const response = api.post("/conversations/addRating", {
-          leadId: leadData.id,
-          chatbotId,
-          rating,
-          sessionId,
-          review,
-        });
-        setRating("");
-        setTimeout(() => {
-          setShowRating(false);
-        }, 3000);
+        // Only post rating if form is submitted
+        const submitRating = async () => {
+          try {
+            await api.post("/conversations/addRating", {
+              leadId: leadData.id,
+              chatbotId,
+              rating,
+              sessionId,
+              review,
+            });
+            setRating("");
+            setTimeout(() => {
+              setShowRating(false);
+            }, 3000);
+          } catch (error) {
+            console.error("Error submitting rating:", error);
+          }
+        };
+        submitRating();
       } else {
+        // If form not submitted, show form
         setShowRating(false);
         setFormVisible(true);
+        setMsgFromResponse("Please fill out your information before rating our chat service.");
       }
     }
-  }, [rating, messages]);
+  }, [rating, formSubmitted]);
 
-  
   const handleFeedbackSubmit = async (feedback) => {
     const feedbackRating = feedback?.rating;
     const feedbackReview = feedback?.review;
@@ -844,7 +859,6 @@ const ChatbotWidget = () => {
                       </div>
                     )}
                   </div>
-
                 </div>
 
                 <div
@@ -852,8 +866,15 @@ const ChatbotWidget = () => {
                   id="style-8"
                   ref={chatWindowRef}
                 >
-                   {showRating && <ChatbotRating onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
-                  
+                  {showRating && (
+                    <ChatbotRating
+                      isFullScreen={isFullScreen}
+                      onSubmit={handleFeedbackSubmit}
+                      onClose={() => setShowRating(false)}
+                      formSubmitted={formSubmitted}
+                    />
+                  )}
+
                   {messages?.map((message, index) => {
                     const hasContent =
                       message.text ||
