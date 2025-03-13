@@ -180,7 +180,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 onChange={(e) => setPhone(e.target.value)}
                 className="form-control"
               />
-              
+
               <label htmlFor="chatbot-name" className="form-label">
                 Webhook
               </label>

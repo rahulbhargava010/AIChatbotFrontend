@@ -72,6 +72,10 @@ const LeadDetails = () => {
   const [siteVisitLogs, setSiteVisitLogs] = useState([]);
   const [activeTab, setActiveTab] = useState("details");
 
+  const [allUsers, setAllUsers] = useState([]);
+  const [currentUserRole, setCurrentUserRole] = useState("");
+  const [isAssigningLead, setIsAssigningLead] = useState(false);
+
   const [isFollowUpPaneOpen, setIsFollowUpPaneOpen] = useState(false);
   const [isCommentPaneOpen, setIsCommentPaneOpen] = useState(false);
   const [isSiteVisitPaneOpen, setIsSiteVisitPaneOpen] = useState(false);
@@ -88,6 +92,7 @@ const LeadDetails = () => {
           { lead: leadId },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        console.log("LEAD_DETAILS:", response.data);
         setLeadData(response.data);
         setComments(response?.data?.commentLogs);
         setFollowUps(
@@ -97,6 +102,15 @@ const LeadDetails = () => {
           }))
         );
         setSiteVisitLogs(response?.data?.SiteVisitLogs);
+
+        // Get current user role from localStorage or user service
+        const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+        setCurrentUserRole(userInfo.role || "");
+
+        // Fetch all users if the current user is not a regular user (admin, manager, etc.)
+        if (userInfo.role !== "user") {
+          fetchAllUsers(token);
+        }
       } catch (error) {
         console.error("Error fetching lead details:", error);
       } finally {
@@ -106,6 +120,54 @@ const LeadDetails = () => {
 
     fetchLeadDetails();
   }, [leadId]);
+
+  // Function to fetch all users
+  const fetchAllUsers = async (token) => {
+    try {
+      const response = await api.post("/users/allUsers", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("USERS:", response.data);
+      setAllUsers(response.data.user);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  // Function to handle lead assignment
+  const handleAssignLead = async (userId) => {
+    if (isAssigningLead) return;
+
+    setIsAssigningLead(true);
+    try {
+      const token = localStorage.getItem("token");
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+      await api.post(
+        "/leads/assign",
+        {
+          lead: leadId,
+          assignedTo: userId === "unassigned" ? null : userId,
+          user: userInfo._id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Refresh lead data to get updated assignment
+      const response = await api.post(
+        "/leads/getLead",
+        { lead: leadId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setLeadData(response.data);
+      setMessages("Lead assignment updated successfully!");
+    } catch (error) {
+      setMessages(error.response?.data?.error || "Failed to assign lead.");
+    } finally {
+      setIsAssigningLead(false);
+    }
+  };
 
   // Add a new comment
   const handleAddComment = async () => {
@@ -510,6 +572,59 @@ const LeadDetails = () => {
               {leadDetail.location
                 ? `${leadDetail.location.city}, ${leadDetail.location.region}, ${leadDetail.location.country}`
                 : "N/A"}
+            </div>
+          </div>
+          <div className="lead-info-item">
+            <div className="info-label">Coordinates</div>
+            <div className="info-value">
+              <FaMapMarker className="me-2 info-icon" />
+              {leadDetail.location &&
+              (leadDetail.location.lat || leadDetail.location.lng)
+                ? `${leadDetail.location.lat || "N/A"}, ${
+                    leadDetail.location.lng || "N/A"
+                  }`
+                : "N/A"}
+            </div>
+          </div>
+          <div className="lead-info-item">
+            <div className="info-label">Assigned To</div>
+            <div className="info-value">
+              <FaBuilding className="me-2 info-icon" />
+              {currentUserRole === "user" ? (
+                // If current user role is "user", just show the assigned user name
+                leadDetail.assignedTo ? (
+                  leadDetail.assignedTo.name
+                ) : (
+                  "Not Assigned"
+                )
+              ) : (
+                // For admin/manager roles, show the dropdown
+                <div className="assignment-dropdown">
+                  <select
+                    className="form-control assignment-select"
+                    value={
+                      leadDetail.assignedTo
+                        ? leadDetail.assignedTo._id
+                        : "unassigned"
+                    }
+                    onChange={(e) => handleAssignLead(e.target.value)}
+                    disabled={isAssigningLead}
+                  >
+                    <option value="unassigned">Not Assigned</option>
+                    {allUsers.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                  {isAssigningLead && (
+                    <div
+                      className="spinner-border spinner-border-sm ms-2"
+                      role="status"
+                    ></div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
