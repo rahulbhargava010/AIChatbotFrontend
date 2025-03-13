@@ -43,7 +43,7 @@ const ChatbotCard = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setData(response.data);
-        console.log("RESDATA:", response.data);
+        // console.log("RESDATA:", response.data);
         setIsActive(response.data.chatbotDetails.isActive === "active");
       } catch (err) {
         setError(err.response?.data?.error || "Failed to fetch data.");

@@ -1,4 +1,6 @@
 import axios from "axios";
+// Import api directly instead of receiving it as a parameter
+import api from "../config/axios";
 
 const handleLeadSubmit = async (
   e,
@@ -13,8 +15,7 @@ const handleLeadSubmit = async (
   setChatVisible,
   setIsTyping,
   uniqueSessionId,
-  messages,
-  api
+  messages
 ) => {
   e.preventDefault();
   console.log("handleLeadSubmit function called");
@@ -41,8 +42,8 @@ const handleLeadSubmit = async (
         country: geoResponse.data.country_name,
         region: geoResponse.data.region,
         city: geoResponse.data.city,
-        latitude: geoResponse.data.latitude,
-        longitude: geoResponse.data.longitude,
+        lat: geoResponse.data.latitude,
+        lng: geoResponse.data.longitude,
       };
     } catch (error) {
       console.error("Error fetching geolocation data:", error);
@@ -64,15 +65,14 @@ const handleLeadSubmit = async (
       leadData: updatedLeadData,
       conversation,
     });
-    setLeadData({...leadData, id: leadResponse?.data?.lead?._id})
-    const leadName = leadData?.name?.toUpperCase()
+    setLeadData({ ...leadData, id: leadResponse?.data?.lead?._id });
+    const leadName = leadData?.name?.toUpperCase();
     setMessages((prevMessages) => [
       ...prevMessages,
       {
         sender: "Bot",
-        text: `Thank you! ${leadName}, for submitting your enquiry!`
-        
-      }
+        text: `Thank you! ${leadName}, for submitting your enquiry!`,
+      },
     ]);
     // setFormVisible(false);
 
@@ -84,14 +84,13 @@ const handleLeadSubmit = async (
       chatbotId,
       leadData: updatedLeadData,
     });
-    
+
     setFormSubmitted(true);
     setIsTyping(false);
     setTimeout(() => {
       setFormVisible(false);
       setChatVisible(true);
       setShowRating(true);
-
     }, 3000);
   } catch (error) {
     console.error("Error in handleLeadSubmit:", error);

@@ -888,3 +888,72 @@ select.form-control {
     align-self: flex-start;
   }
 }
+
+/* Assignment dropdown styling */
+.assignment-dropdown {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.assignment-select {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-300);
+  background-color: white;
+  color: var(--gray-800);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  width: 100%;
+  max-width: 200px;
+}
+
+.assignment-select:hover {
+  border-color: var(--primary);
+}
+
+.assignment-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+  outline: none;
+}
+
+.assignment-select option {
+  padding: 0.5rem;
+}
+
+/* Loading spinner for assignment */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+  color: var(--primary);
+  margin-left: 0.5rem;
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-border {
+  display: inline-block;
+  vertical-align: -0.125em;
+  border: 0.15em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+/* Responsive styling for assignment dropdown */
+@media (max-width: 768px) {
+  .assignment-select {
+    max-width: 100%;
+  }
+
+  .assignment-dropdown {
+    flex-wrap: wrap;
+  }
+}
