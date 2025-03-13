@@ -37,7 +37,6 @@ import {
   Legend,
 } from "chart.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import SiteVisit from "./SiteVisit";
 import "./LeadDetails.css";
 
 ChartJS.register(
@@ -70,6 +69,17 @@ const LeadDetails = () => {
     status: "Pending",
   });
   const [siteVisitLogs, setSiteVisitLogs] = useState([]);
+  const [newSiteVisit, setNewSiteVisit] = useState({
+    datetime: new Date(),
+    notes: "",
+    status: "Scheduled",
+  });
+  const [editSiteVisitId, setEditSiteVisitId] = useState(null);
+  const [editSiteVisitData, setEditSiteVisitData] = useState({
+    datetime: new Date(),
+    notes: "",
+    status: "Scheduled",
+  });
   const [activeTab, setActiveTab] = useState("details");
 
   const [allUsers, setAllUsers] = useState([]);
@@ -101,7 +111,14 @@ const LeadDetails = () => {
             followUpDate: new Date(followUp.followUpDate),
           }))
         );
-        setSiteVisitLogs(response?.data?.SiteVisitLogs);
+
+        // Process site visit logs, converting datetime strings to Date objects
+        const updatedSiteVisitLogs =
+          response?.data?.SiteVisitLogs?.map((visit) => ({
+            ...visit,
+            datetime: new Date(visit.datetime),
+          })) || [];
+        setSiteVisitLogs(updatedSiteVisitLogs);
 
         // Get current user role from localStorage or user service
         const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
@@ -383,6 +400,117 @@ const LeadDetails = () => {
     });
   };
 
+  // Create a site visit
+  const handleCreateSiteVisit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/sitevisit/save",
+        { ...newSiteVisit, leadId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setSiteVisitLogs([
+        ...siteVisitLogs,
+        { ...response.data, datetime: new Date(response.data.datetime) },
+      ]);
+      setNewSiteVisit({ datetime: new Date(), notes: "", status: "Scheduled" });
+      setIsSiteVisitPaneOpen(false);
+      setMessages("Site visit scheduled successfully!");
+    } catch (error) {
+      console.error("Error creating site visit:", error);
+      setMessages("Failed to schedule site visit.");
+    }
+  };
+
+  // Update a site visit
+  const handleUpdateSiteVisit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/sitevisit/update",
+        {
+          editSiteVisit: {
+            _id: editSiteVisitId,
+            datetime: editSiteVisitData.datetime,
+            notes: editSiteVisitData.notes,
+            status: editSiteVisitData.status,
+            leadId: leadId,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setSiteVisitLogs(
+        siteVisitLogs.map((sv) =>
+          sv._id === editSiteVisitId
+            ? { ...response.data, datetime: new Date(response.data.datetime) }
+            : sv
+        )
+      );
+      setEditSiteVisitId(null);
+      setEditSiteVisitData({
+        datetime: new Date(),
+        notes: "",
+        status: "Scheduled",
+      });
+      setMessages("Site visit updated successfully!");
+    } catch (error) {
+      console.error("Error updating site visit:", error);
+      setMessages("Failed to update site visit.");
+    }
+  };
+
+  // Delete a site visit
+  const handleDeleteSiteVisit = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/sitevisit/delete",
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setSiteVisitLogs(siteVisitLogs.filter((sv) => sv._id !== id));
+      setMessages("Site visit deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting site visit:", error);
+      setMessages("Failed to delete site visit.");
+    }
+  };
+
+  const handleEditSiteVisit = (siteVisit) => {
+    setEditSiteVisitId(siteVisit._id);
+    setEditSiteVisitData({
+      datetime: new Date(siteVisit.datetime),
+      notes: siteVisit.notes,
+      status: siteVisit.status,
+    });
+  };
+
+  const handleCancelEditSiteVisit = () => {
+    setEditSiteVisitId(null);
+    setEditSiteVisitData({
+      datetime: new Date(),
+      notes: "",
+      status: "Scheduled",
+    });
+  };
+
   const handleFollowUpInputChange = (e) => {
     const { name, value } = e.target;
     setEditFollowUpData((prevData) => ({
@@ -395,6 +523,22 @@ const LeadDetails = () => {
     setEditFollowUpData((prevData) => ({
       ...prevData,
       followUpDate: date,
+    }));
+  };
+
+  // Site visit handlers
+  const handleSiteVisitInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditSiteVisitData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSiteVisitDateChange = (date) => {
+    setEditSiteVisitData((prevData) => ({
+      ...prevData,
+      datetime: date,
     }));
   };
 
@@ -506,6 +650,7 @@ const LeadDetails = () => {
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {
       case "pending":
+      case "scheduled":
         return "status-badge pending";
       case "completed":
         return "status-badge completed";
@@ -638,12 +783,6 @@ const LeadDetails = () => {
         <h5 className="card-title">
           <FaBell className="header-icon" /> Follow-ups
         </h5>
-        {/* <button
-          className="btn btn-primary add-btn"
-          onClick={() => setIsFollowUpPaneOpen(true)}
-        >
-          <FaPlus className="me-1" /> Add
-        </button> */}
       </div>
       <div className="card-body scrollable-content">
         {followUps.length === 0 ? (
@@ -764,6 +903,132 @@ const LeadDetails = () => {
     </div>
   );
 
+  const renderSiteVisits = () => (
+    <div className="card lead-card">
+      <div className="card-header">
+        <h5 className="card-title">
+          <FaMapMarker className="header-icon" /> Site Visits
+        </h5>
+      </div>
+      <div className="card-body scrollable-content">
+        {siteVisitLogs.length === 0 ? (
+          <div className="empty-state">
+            <FaMapMarker className="empty-icon" />
+            <p>No site visits scheduled</p>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => setIsSiteVisitPaneOpen(true)}
+            >
+              Schedule visit
+            </button>
+          </div>
+        ) : (
+          siteVisitLogs.map((siteVisit) => (
+            <div key={siteVisit._id} className="list-item">
+              {editSiteVisitId === siteVisit._id ? (
+                <div className="edit-form">
+                  <div className="form-group mb-3">
+                    <label>Date & Time</label>
+                    <DatePicker
+                      selected={new Date(editSiteVisitData.datetime)}
+                      onChange={handleSiteVisitDateChange}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      dateFormat="MMM d, yyyy h:mm aa"
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Notes</label>
+                    <textarea
+                      className="form-control"
+                      placeholder="Notes"
+                      name="notes"
+                      value={editSiteVisitData.notes}
+                      onChange={handleSiteVisitInputChange}
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Status</label>
+                    <select
+                      className="form-control"
+                      name="status"
+                      value={editSiteVisitData.status}
+                      onChange={handleSiteVisitInputChange}
+                    >
+                      <option value="Scheduled">Scheduled</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div className="edit-actions">
+                    <button
+                      className="btn btn-success save-btn"
+                      onClick={handleUpdateSiteVisit}
+                    >
+                      <FaSave className="me-1" /> Save
+                    </button>
+                    <button
+                      className="btn btn-outline-secondary cancel-btn"
+                      onClick={handleCancelEditSiteVisit}
+                    >
+                      <FaTimes className="me-1" /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`follow-up-item ${siteVisit.status.toLowerCase()}`}
+                >
+                  <div className="follow-up-header">
+                    <div className="follow-up-date">
+                      <FaCalendar className="me-1" />
+                      {new Date(siteVisit.datetime).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </div>
+                    <span className={getStatusBadgeClass(siteVisit.status)}>
+                      {siteVisit.status === "Scheduled" ? (
+                        <FaExclamationCircle className="me-1" />
+                      ) : (
+                        <FaCheckCircle className="me-1" />
+                      )}
+                      {siteVisit.status}
+                    </span>
+                  </div>
+                  <div className="follow-up-body">
+                    <p className="follow-up-notes">{siteVisit.notes}</p>
+                  </div>
+                  <div className="item-actions">
+                    <button
+                      className="btn btn-sm btn-outline-primary me-2 edit-btn"
+                      onClick={() => handleEditSiteVisit(siteVisit)}
+                    >
+                      <FaEdit className="me-1" /> Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger delete-btn"
+                      onClick={() => handleDeleteSiteVisit(siteVisit._id)}
+                    >
+                      <FaTrash className="me-1" /> Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
   const renderActivities = () => (
     <div className="card lead-card">
       <div className="card-header">
@@ -808,12 +1073,6 @@ const LeadDetails = () => {
         <h5 className="card-title">
           <FaComment className="header-icon" /> Comments
         </h5>
-        {/* <button
-          className="btn btn-primary add-btn"
-          onClick={() => setIsCommentPaneOpen(true)}
-        >
-          <FaPlus className="me-1" /> Add
-        </button> */}
       </div>
       <div className="card-body scrollable-content">
         {comments && comments.length > 0 ? (
@@ -935,19 +1194,6 @@ const LeadDetails = () => {
     </div>
   );
 
-  const renderSiteVisits = () => (
-    <div className="card lead-card">
-      <div className="card-header">
-        <h5 className="card-title">
-          <FaMapMarker className="header-icon" /> Site Visits
-        </h5>
-      </div>
-      <div className="card-body">
-        <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
-      </div>
-    </div>
-  );
-
   const renderActivityChart = () => (
     <div className="card lead-card">
       <div className="card-header">
@@ -983,6 +1229,12 @@ const LeadDetails = () => {
             onClick={() => setIsCommentPaneOpen(true)}
           >
             <FaPlus className="me-1" /> Comment
+          </button>
+          <button
+            className="btn btn-primary action-btn"
+            onClick={() => setIsSiteVisitPaneOpen(true)}
+          >
+            <FaPlus className="me-1" /> Site Visit
           </button>
         </div>
       </div>
@@ -1091,6 +1343,7 @@ const LeadDetails = () => {
             >
               <option value="Pending">Pending</option>
               <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
             </select>
           </div>
           <div className="pane-actions">
@@ -1140,12 +1393,61 @@ const LeadDetails = () => {
       <SlidingPane
         className="modern-sliding-pane"
         isOpen={isSiteVisitPaneOpen}
-        title="Add Site Visit"
+        title="Schedule Site Visit"
         width="400px"
         onRequestClose={() => setIsSiteVisitPaneOpen(false)}
       >
         <div className="pane-content">
-          <SiteVisit leadId={leadId} siteVisitLogs={siteVisitLogs} />
+          <div className="form-group mb-4">
+            <label className="form-label">Date & Time</label>
+            <DatePicker
+              selected={newSiteVisit.datetime}
+              onChange={(date) =>
+                setNewSiteVisit({ ...newSiteVisit, datetime: date })
+              }
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="MMM d, yyyy h:mm aa"
+              className="form-control"
+              placeholderText="Select date and time"
+            />
+          </div>
+          <div className="form-group mb-4">
+            <label className="form-label">Notes</label>
+            <textarea
+              className="form-control"
+              placeholder="Visit details and preparation notes"
+              value={newSiteVisit.notes}
+              rows={4}
+              onChange={(e) =>
+                setNewSiteVisit({ ...newSiteVisit, notes: e.target.value })
+              }
+            ></textarea>
+          </div>
+          <div className="form-group mb-4">
+            <label className="form-label">Status</label>
+            <select
+              className="form-control"
+              value={newSiteVisit.status}
+              onChange={(e) =>
+                setNewSiteVisit({ ...newSiteVisit, status: e.target.value })
+              }
+            >
+              <option value="Scheduled">Scheduled</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="pane-actions">
+            <button
+              className="btn btn-primary w-100 add-site-visit-btn"
+              onClick={handleCreateSiteVisit}
+            >
+              <FaPlus className="me-2" />
+              Schedule Site Visit
+            </button>
+          </div>
         </div>
       </SlidingPane>
     </div>
