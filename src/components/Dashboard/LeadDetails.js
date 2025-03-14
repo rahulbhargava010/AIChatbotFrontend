@@ -89,6 +89,7 @@ const LeadDetails = () => {
   const [isFollowUpPaneOpen, setIsFollowUpPaneOpen] = useState(false);
   const [isCommentPaneOpen, setIsCommentPaneOpen] = useState(false);
   const [isSiteVisitPaneOpen, setIsSiteVisitPaneOpen] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const { leadId } = useParams();
 
@@ -493,6 +494,42 @@ const LeadDetails = () => {
     }
   };
 
+  const handleUpdateLeadStatus = async (newStatus) => {
+    if (isUpdatingStatus) return;
+
+    setIsUpdatingStatus(true);
+    try {
+      const token = localStorage.getItem("token");
+      const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+      await api.post(
+        "/leads/updateStatus",
+        {
+          lead: leadId,
+          status: newStatus,
+          user: userInfo._id,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Refresh lead data to get updated status
+      const response = await api.post(
+        "/leads/getLead",
+        { lead: leadId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setLeadData(response.data);
+      setMessages("Lead status updated successfully!");
+    } catch (error) {
+      setMessages(
+        error.response?.data?.error || "Failed to update lead status."
+      );
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   const handleEditSiteVisit = (siteVisit) => {
     setEditSiteVisitId(siteVisit._id);
     setEditSiteVisitData({
@@ -649,6 +686,20 @@ const LeadDetails = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {
+      case "new":
+        return "status-badge new";
+      case "follow-up":
+        return "status-badge follow-up";
+      case "booked":
+        return "status-badge booked";
+      case "lost":
+        return "status-badge lost";
+      case "duplicate":
+        return "status-badge duplicate";
+      case "sitevisitscheduled":
+        return "status-badge sitevisitscheduled";
+      case "sitevisitdone":
+        return "status-badge sitevisitdone";
       case "pending":
       case "scheduled":
         return "status-badge pending";
@@ -663,13 +714,40 @@ const LeadDetails = () => {
 
   const renderLeadDetails = () => (
     <div className="card lead-card">
-      <div className="card-header">
+      <div className="card-header lead-profile-header">
         <h5 className="card-title">
           <FaUser className="header-icon" /> Lead Profile
         </h5>
-        <span className={`lead-status ${leadDetail.status.toLowerCase()}`}>
-          {leadDetail.status}
-        </span>
+        {currentUserRole === "user" ? (
+          // If current user role is "user", just show the status badge
+          <span className={`lead-status ${leadDetail.status.toLowerCase()}`}>
+            {leadDetail.status}
+          </span>
+        ) : (
+          // For admin/manager roles, show the dropdown
+          <div className="assignment-dropdown">
+            <select
+              className="form-control assignment-select"
+              value={leadDetail.status}
+              onChange={(e) => handleUpdateLeadStatus(e.target.value)}
+              disabled={isUpdatingStatus}
+            >
+              <option value="New">New</option>
+              <option value="Follow-up">Follow-up</option>
+              <option value="Booked">Booked</option>
+              <option value="Lost">Lost</option>
+              <option value="Duplicate">Duplicate</option>
+              <option value="SiteVisitScheduled">Site Visit Scheduled</option>
+              <option value="SiteVisitDone">Site Visit Done</option>
+            </select>
+            {isUpdatingStatus && (
+              <div
+                className="spinner-border spinner-border-sm ms-2"
+                role="status"
+              ></div>
+            )}
+          </div>
+        )}
       </div>
       <div className="card-body">
         <div className="lead-info-grid">
