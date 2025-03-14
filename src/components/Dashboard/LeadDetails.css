@@ -324,6 +324,10 @@ body {
   border-left: 3px solid var(--warning);
 }
 
+.follow-up-item.scheduled {
+  border-left: 3px solid var(--warning);
+}
+
 .follow-up-item.completed {
   border-left: 3px solid var(--success);
 }
@@ -955,5 +959,166 @@ select.form-control {
 
   .assignment-dropdown {
     flex-wrap: wrap;
+  }
+}
+
+/* Lead Status Colors */
+.lead-status.new {
+  background-color: #eef2ff; /* Light Blue */
+  color: #4f46e5;
+}
+
+.lead-status.follow-up {
+  background-color: #fef3c7; /* Light Yellow */
+  color: #f59e0b;
+}
+
+.lead-status.booked {
+  background-color: #d1fae5; /* Light Green */
+  color: #10b981;
+}
+
+.lead-status.lost {
+  background-color: #fee2e2; /* Light Red */
+  color: #ef4444;
+}
+
+.lead-status.duplicate {
+  background-color: #e5e7eb; /* Light Gray */
+  color: #6b7280;
+}
+
+.lead-status.sitevisitscheduled {
+  background-color: #dbeafe; /* Sky Blue */
+  color: #3b82f6;
+}
+
+.lead-status.sitevisitdone {
+  background-color: #c7d2fe; /* Indigo */
+  color: #6366f1;
+}
+
+/* Status indicator colors */
+.status-indicator.new {
+  background-color: #4f46e5;
+}
+
+.status-indicator.follow-up {
+  background-color: #f59e0b;
+}
+
+.status-indicator.booked {
+  background-color: #10b981;
+}
+
+.status-indicator.lost {
+  background-color: #ef4444;
+}
+
+.status-indicator.duplicate {
+  background-color: #6b7280;
+}
+
+.status-indicator.sitevisitscheduled {
+  background-color: #3b82f6;
+}
+
+.status-indicator.sitevisitdone {
+  background-color: #6366f1;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.new {
+  background-color: #eef2ff; /* Light Blue */
+  color: #4f46e5;
+}
+
+.status-badge.follow-up {
+  background-color: #fef3c7; /* Light Yellow */
+  color: #f59e0b;
+}
+
+.status-badge.booked {
+  background-color: #d1fae5; /* Light Green */
+  color: #10b981;
+}
+
+.status-badge.lost {
+  background-color: #fee2e2; /* Light Red */
+  color: #ef4444;
+}
+
+.status-badge.duplicate {
+  background-color: #e5e7eb; /* Light Gray */
+  color: #6b7280;
+}
+
+.status-badge.sitevisitscheduled {
+  background-color: #dbeafe; /* Sky Blue */
+  color: #3b82f6;
+}
+
+.status-badge.sitevisitdone {
+  background-color: #c7d2fe; /* Indigo */
+  color: #6366f1;
+}
+
+.status-badge.pending {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+
+.status-badge.completed {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.status-badge.cancelled {
+  background-color: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.lead-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem; /* Increases the space between elements */
+}
+
+/* Make the title take less space */
+.lead-profile-header .card-title {
+  flex-shrink: 0;
+  min-width: 150px;
+}
+
+/* Make the dropdown not stretch too much */
+.lead-profile-header .assignment-dropdown {
+  flex-grow: 0;
+  width: auto;
+  max-width: 250px;
+}
+
+/* Ensure proper alignment on mobile */
+@media (max-width: 576px) {
+  .lead-profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .lead-profile-header .assignment-dropdown,
+  .lead-profile-header .lead-status {
+    align-self: flex-start;
+    width: 100%;
+    max-width: 100%;
   }
 }
