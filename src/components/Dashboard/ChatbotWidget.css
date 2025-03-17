@@ -72,7 +72,7 @@ body{
     transform: scale(0);
     background: transparent;
     transition: transform 0.2s ease;
-    margin-top: -21px;
+    margin-top: -2px;
   }
   .typing-form .typing-input:valid ~ #send-message-button {
     transform: scale(1);
