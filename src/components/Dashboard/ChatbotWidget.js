@@ -188,7 +188,7 @@ const ChatbotWidget = () => {
       }
     }
   }, [rating, formSubmitted]);
-
+  
   const handleFeedbackSubmit = async (feedback) => {
     const feedbackRating = feedback?.rating;
     const feedbackReview = feedback?.review;
@@ -867,13 +867,13 @@ const ChatbotWidget = () => {
                   ref={chatWindowRef}
                 >
                   {showRating && (
-                    <ChatbotRating
-                      isFullScreen={isFullScreen}
-                      onSubmit={handleFeedbackSubmit}
-                      onClose={() => setShowRating(false)}
-                      formSubmitted={formSubmitted}
-                    />
-                  )}
+  <ChatbotRating
+    isFullScreen={isFullScreen}
+    onSubmit={handleFeedbackSubmit}
+    onClose={() => setShowRating(false)}
+    formSubmitted={formSubmitted}
+  />
+)}
 
                   {messages?.map((message, index) => {
                     const hasContent =
