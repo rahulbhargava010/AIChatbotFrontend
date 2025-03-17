@@ -7,20 +7,31 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose, formSubmitted }) => {
   const [review, setReview] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showLeadFormMessage, setShowLeadFormMessage] = useState(false);
+    const [sessionId, setSessionId] = useState("");
   
   // Add a state to track whether a rating has ever been submitted
   // Check localStorage on component mount to see if rating was submitted previously
   useEffect(() => {
     const hasRatedBefore = localStorage.getItem("chatRatingSubmitted");
-    if (hasRatedBefore === "true") {
+    const storedSessionId = localStorage.getItem("chatSessionId");
+  
+    // Only load previous rating if it's the same session
+    if (hasRatedBefore === "true" && storedSessionId === sessionId) {
       setIsSubmitted(true);
-      // Optionally retrieve the previous rating to show the correct thank you message
       const previousRating = localStorage.getItem("chatRatingValue");
       if (previousRating) {
         setRating(previousRating);
       }
+    } else {
+      // Reset rating if session ID has changed
+      localStorage.removeItem("chatRatingSubmitted");
+      localStorage.removeItem("chatRatingValue");
+      localStorage.removeItem("chatSessionId");
+      setIsSubmitted(false);
+      setRating(null);
     }
-  }, []);
+  }, [sessionId]);
+  
   
   // Check if lead form has been filled out
   const hasFilledLeadForm = () => {
@@ -74,30 +85,30 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose, formSubmitted }) => {
       alert("⚠ Please select a rating!");
       return;
     }
-    
+  
     // Check if lead form has been filled out
     if (!hasFilledLeadForm()) {
       setShowLeadFormMessage(true);
       return;
     }
-
-    // Send rating data to parent component
-    onSubmit({ rating, review });
-
-    // Store submission status in localStorage
+  
+    // Store rating & session in localStorage
     localStorage.setItem("chatRatingSubmitted", "true");
     localStorage.setItem("chatRatingValue", rating);
-
+    localStorage.setItem("chatSessionId", sessionId); // Store current session ID
+  
+    // Send rating data to parent component
+    onSubmit({ rating, review });
+  
     // Show Thank You message
     setIsSubmitted(true);
     setShowLeadFormMessage(false);
-
-    // No longer reset the form after submission
-    // The timeout now only closes the modal after showing the thank you message
+  
     setTimeout(() => {
       onClose();
     }, 30000);
   };
+  
   
   // Redirect user to lead form
   const redirectToLeadForm = () => {
@@ -167,7 +178,7 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose, formSubmitted }) => {
             // Show lead form message if needed
             <div className="modal-body text-center">
               <div className="alert alert-warning" role="alert">
-                {/* <h6 className="alert-heading">Complete Your Profile First</h6> */}
+                <h6 className="alert-heading">Complete Your Profile First</h6>
                 <p>Please fill out your information before submitting a rating.</p>
                 <hr />
                 <div className="d-flex justify-content-center gap-2">
