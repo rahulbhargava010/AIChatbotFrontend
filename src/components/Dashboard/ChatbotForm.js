@@ -6,7 +6,6 @@ import api from "../config/axios";
 
 const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [name, setName] = useState("");
-  const [map, setMap] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [gtm, setGTM] = useState("");
@@ -19,6 +18,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     highlight: "",
     location: "",
     amenities: "",
+    map: "",
   });
   const [step, setStep] = useState(1);
   const [projectLogo, setProjectLogo] = useState(null);
@@ -80,6 +80,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
 
     formData.append("name", name);
     formData.append("webhook", webhook);
+    formData.append("phone", phone);
     // formData.append("button_content", JSON.stringify(buttonContent));
     if (buttonContent && typeof buttonContent === "object") {
       formData.append("buttonContent", JSON.stringify(buttonContent));
@@ -205,19 +206,11 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
             <div className="multi-step-form">
               <div className="mb-3">
                 <label>Map:</label>
-                <input
-                  id="chatbot-map"
-                  type="text"
-                  placeholder="Enter Map Location"
-                  value={map}
-                  onChange={(e) => setMap(e.target.value)}
-                  className="form-control"
-                />
-                <textarea
+                <text
                   type="text"
                   name="map"
-                  value={map}
-                  onChange={(e) => setMap(e.target.value)}
+                  value={buttonContent.map}
+                  onChange={handleInputChange}
                   className="form-control"
                 />
 
