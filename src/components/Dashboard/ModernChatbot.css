@@ -1,0 +1,956 @@
+/* Modern Chatbot CSS */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Animation keyframes */
+@keyframes typing {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Checkmark animation */
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
+}
+
+/* Main container styles */
+.modern-chatbot-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.modern-chatbot-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.modern-chatbot-container {
+  width: 380px;
+  height: 600px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+.modern-full-screen {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0;
+  z-index: 10000;
+}
+
+/* Header styles */
+.modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+}
+
+.modern-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modern-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-chatbot-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+}
+
+.modern-header-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modern-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.modern-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+}
+
+.modern-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s ease;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Dropdown menu */
+.modern-dropdown {
+  position: relative;
+}
+
+.modern-dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 10;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modern-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+/* Chat window styles */
+.modern-chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f5f7fb;
+  position: relative;
+}
+
+.modern-chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern-chat-window::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modern-chat-window::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modern-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modern-message {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modern-user-message {
+  align-self: flex-end;
+}
+
+.modern-bot-message {
+  align-self: flex-start;
+}
+
+.modern-message-bubble {
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-line;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.modern-user-message .modern-message-bubble {
+  background: #6a11cb;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: #333;
+  border-top-left-radius: 4px;
+}
+
+.modern-image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.modern-chat-image {
+  width: 150px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.modern-chat-image:hover {
+  transform: scale(1.05);
+}
+
+.modern-button-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.modern-option-button {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modern-option-button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+.modern-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px;
+  width: fit-content;
+}
+
+.modern-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #aaa;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+.modern-typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.modern-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.modern-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Quick buttons */
+.modern-quick-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.modern-quick-buttons::-webkit-scrollbar {
+  height: 4px;
+}
+
+.modern-quick-buttons::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modern-quick-button {
+  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: #f1f1f1;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.modern-quick-button:hover {
+  background: #e5e5e5;
+}
+
+/* Input area */
+.modern-input-area {
+  padding: 16px;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.modern-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f7fb;
+  border-radius: 24px;
+  padding: 0 8px;
+}
+
+.modern-mic-button {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6a11cb;
+  transition: all 0.2s ease;
+}
+
+.modern-mic-button:hover {
+  background: rgba(106, 17, 203, 0.1);
+}
+
+.modern-mic-button.recording {
+  color: #e53935;
+  animation: pulse 1.5s infinite;
+}
+
+.modern-chat-input {
+  flex: 1;
+  border: none;
+  padding: 12px 0;
+  outline: none;
+  font-size: 15px;
+  background: transparent;
+}
+
+.modern-send-button {
+  background: #6a11cb;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.modern-send-button:hover {
+  background: #5a0fb6;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modern-powered-by {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.modern-powered-link {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Form overlay */
+.modern-form-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-form-container {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  background: linear-gradient(
+    100deg,
+    #f8dfe3,
+    #e6d9f3,
+    #fcf6f8,
+    #f0cbd2,
+    #e6d9f3
+  );
+}
+
+.modern-close-form {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.modern-close-form:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-success {
+  text-align: center;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Checkmark styling */
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 0 auto 20px;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: fill 0.8s ease-in-out 0.8s forwards,
+    scale 0.6s ease-in-out 1.8s both;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: stroke 1.2s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) 1.8s forwards;
+}
+
+.modern-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.modern-form-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.modern-form-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.modern-form-header p {
+  font-size: 14px;
+  color: #666;
+}
+
+.modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modern-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modern-form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.modern-form-group input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.modern-form-group input:focus {
+  border-color: #6a11cb;
+  outline: none;
+  background: white;
+}
+
+.modern-form-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.modern-form-checkbox input {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+
+.modern-form-submit {
+  background: #6a11cb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-top: 8px;
+}
+
+.modern-form-submit:hover {
+  background: #5a0fb6;
+}
+
+/* First screen */
+.modern-first-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+}
+
+.modern-first-screen-content {
+  max-width: 300px;
+}
+
+.modern-logo-container {
+  margin-bottom: 24px;
+}
+
+.modern-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+}
+
+.modern-first-screen h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.modern-first-screen p {
+  margin-bottom: 24px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.modern-start-button {
+  background: white;
+  color: #6a11cb;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.modern-start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Rating modal */
+.modern-rating-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(245, 247, 251, 0.95);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-rating-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.modern-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-emoji-rating {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.modern-emoji {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modern-emoji:hover {
+  transform: scale(1.1);
+}
+
+.modern-emoji.selected {
+  transform: scale(1.2);
+}
+
+.modern-emoji-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.modern-emoji span {
+  font-size: 12px;
+  color: #666;
+}
+
+.modern-review-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  margin-bottom: 16px;
+  resize: none;
+}
+
+.modern-review-input:focus {
+  border-color: #6a11cb;
+  outline: none;
+}
+
+.modern-submit-button {
+  background: #6a11cb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modern-submit-button:hover {
+  background: #5a0fb6;
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .modern-chatbot-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+  }
+
+  .modern-chatbot-wrapper {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .modern-header {
+    padding: 12px;
+  }
+
+  .modern-chat-window {
+    padding: 12px;
+  }
+
+  .modern-message {
+    max-width: 85%;
+  }
+
+  .modern-input-area {
+    padding: 12px;
+  }
+
+  .modern-form-container {
+    padding: 16px;
+  }
+
+  .modern-rating-content {
+    width: 95%;
+  }
+
+  .modern-form-checkbox {
+    align-items: flex-start;
+  }
+
+  .modern-form-checkbox input {
+    margin-top: 3px;
+  }
+}
+
+/* Compatibility with existing styles */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  appearance: none;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-primary {
+  background: #6a11cb !important;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5a0fb6 !important;
+}
+
+/* Overrides for Bootstrap form elements */
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  min-height: 1.5rem;
+  margin-bottom: 0.125rem;
+}
+
+.form-check-input {
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  margin-right: 0.5rem;
+  vertical-align: top;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  appearance: none;
+}
+
+.form-check-label {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Make sure original Bootstrap classes don't override our modern styles */
+.modern-chatbot-container .btn,
+.modern-chatbot-container .form-control {
+  border-radius: 8px;
+}
+
+.modern-chatbot-container .btn-primary {
+  background: #6a11cb !important;
+}
+
+.modern-chatbot-container .form-check-input:checked {
+  background-color: #6a11cb;
+  border-color: #6a11cb;
+}
