@@ -79,7 +79,33 @@ const ChatbotWidget = () => {
 
   // Toggle full-screen mode (only for mobile)
   const toggleFullScreen = () => {
-    if (isMobile) {
+    const chatbotIframe = document.getElementById("chatbot-widget");
+    if (chatbotIframe) {
+      if (!isFullScreen) {
+        // Enter fullscreen mode
+        chatbotIframe.style.width = "100vw";
+        chatbotIframe.style.height = "100vh";
+        chatbotIframe.style.left = "0";
+        chatbotIframe.style.top = "0";
+        chatbotIframe.style.transform = "none";
+        chatbotIframe.style.borderRadius = "0";
+        chatbotIframe.style.zIndex = "999999999";
+      } else {
+        // Exit fullscreen mode
+        chatbotIframe.style.width = window.innerWidth <= 768 ? "90%" : "300px";
+        chatbotIframe.style.height = window.innerWidth <= 768 ? "70%" : "400px";
+        chatbotIframe.style.borderRadius = "10px";
+        if (window.innerWidth <= 768) {
+          chatbotIframe.style.left = "50%";
+          chatbotIframe.style.top = "50%";
+          chatbotIframe.style.transform = "translate(-50%, -50%)";
+        } else {
+          chatbotIframe.style.bottom = "20px";
+          chatbotIframe.style.right = "20px";
+          chatbotIframe.style.left = "auto";
+          chatbotIframe.style.top = "auto";
+        }
+      }
       setIsFullScreen(!isFullScreen);
     }
   };
@@ -483,7 +509,7 @@ const ChatbotWidget = () => {
   const theme = chatbotThemes["default"] || chatbotThemes.default;
 
   return (
-    <div className={`chatbot-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
+    <div className={`chat-wrapper ${chatVisible ? "" : "chatbot-hidden"}`}>
       <div
         className={`test-chatbot-container chatbot-container ${
           isFullScreen ? "full-screen" : ""
@@ -760,11 +786,11 @@ const ChatbotWidget = () => {
                         alt="Project Logo"
                         height="50"
                         width="60"
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop
-                          e.target.src =
-                            "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
-                        }}
+                        // onError={(e) => {
+                        //   e.target.onerror = null; // Prevent infinite loop
+                        //   e.target.src =
+                        //     "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                        // }}
                       />
 
                       <div className="py-2 text-left ms-2">

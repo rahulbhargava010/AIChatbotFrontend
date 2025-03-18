@@ -657,7 +657,7 @@ button{
   background-color: transparent !important;
 }
 /* Fullscreen button styling */
-.fullscreen-toggle1 {
+/* .fullscreen-toggle1 {
   position: absolute;
   top: -16px;
   display: block;
@@ -668,7 +668,7 @@ button{
   border-radius: 5px;
   cursor: pointer;
   z-index: 1100;
-}
+} */
 .header{
   width: 100%;
 }

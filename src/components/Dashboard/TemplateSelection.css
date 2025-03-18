@@ -21,7 +21,7 @@
     flex-wrap: wrap;
 }
 
-.template-card {
+/* .template-card {
     width: 450px;
     height: auto;
     padding: 15px;
@@ -31,7 +31,7 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     background: #f9f9f9;
     text-align: center;
-}
+} */
 
 .template-card:hover {
     transform: scale(1.05);

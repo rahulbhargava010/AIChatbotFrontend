@@ -95,7 +95,7 @@ const ChatbotRating = ({ isFullScreen, onSubmit, onClose, formSubmitted }) => {
     // Store rating & session in localStorage
     localStorage.setItem("chatRatingSubmitted", "true");
     localStorage.setItem("chatRatingValue", rating);
-    localStorage.setItem("chatSessionId", sessionId); // Store current session ID
+    localStorage.setItem("chatSessionId", sessionId); 
   
     // Send rating data to parent component
     onSubmit({ rating, review });
