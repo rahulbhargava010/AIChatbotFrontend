@@ -779,7 +779,7 @@ const ChatbotWidget = () => {
                 </div>
               ) : (
                 <>
-                  <div className="text-center mt-4 mobile">
+                  <div className="text-center mt-4">
                     <svg
                       width="50"
                       height="50"
