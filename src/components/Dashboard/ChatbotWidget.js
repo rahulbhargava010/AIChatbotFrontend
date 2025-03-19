@@ -3,10 +3,11 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import "./ChatbotWidget.css";
 // import "./TestChatbot.css";
+import { Mic, Send, Languages, X } from "lucide-react";
+import { Dropdown } from "react-bootstrap";
 import ChatbotRating from "./ChatbotRating";
 import api from "../config/axios";
 import handleLeadSubmit from "../config/handleLeadSubmit";
-import { Mic, Send } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { SketchPicker } from "react-color";
 import chatbotThemes from "../config/chatbotThemes";
@@ -67,6 +68,34 @@ const ChatbotWidget = () => {
     option1: false,
     option2: false,
   });
+  const [speechRecognition, setSpeechRecognition] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("en-IN");
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+
+  const indianLanguages = [
+    { code: "en-IN", name: "English (India)" },
+    { code: "hi-IN", name: "Hindi" },
+    { code: "bn-IN", name: "Bengali" },
+    { code: "ta-IN", name: "Tamil" },
+    { code: "te-IN", name: "Telugu" },
+    { code: "mr-IN", name: "Marathi" },
+    { code: "gu-IN", name: "Gujarati" },
+    { code: "kn-IN", name: "Kannada" },
+    { code: "ml-IN", name: "Malayalam" },
+    { code: "pa-IN", name: "Punjabi" },
+    { code: "ur-IN", name: "Urdu" },
+  ];
+
+  useEffect(() => {
+    return () => {
+      if (speechRecognition) {
+        speechRecognition.stop();
+      }
+    };
+  }, [speechRecognition]);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768); // Mobile if width ≤ 768px
@@ -119,13 +148,163 @@ const ChatbotWidget = () => {
   // const [selectedBubbleColor, setSelectedBubbleColor] = useState("#dddddd");
   // const [showColorPicker, setShowColorPicker] = useState(false);
   const handleRecord = () => {
-    setIsRecording(!isRecording);
-    // Add voice recording logic here
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
   };
 
-  const handleSend = () => {
-    console.log("Message sent:", message);
-    setMessage("");
+  const startRecording = () => {
+    try {
+      // Initialize SpeechRecognition
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        console.error("Speech recognition not supported in this browser.");
+        // Show a notification to the user
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            sender: "Bot",
+            text: "Speech recognition is not supported in your browser. Please type your message instead.",
+          },
+        ]);
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      setSpeechRecognition(recognition);
+
+      // Configure recognition
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = selectedLanguage;
+
+      // Set up event handlers
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setIsListening(true);
+        setTranscribing(false);
+        // Clear input when starting new recording
+        setInput("");
+      };
+
+      recognition.onresult = (event) => {
+        setTranscribing(true);
+        const transcript = Array.from(event.results)
+          .map((result) => result[0].transcript)
+          .join("");
+
+        setInput(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        setIsRecording(false);
+        setIsListening(false);
+        setTranscribing(false);
+
+        // Specific handling for different error types
+        switch (event.error) {
+          case "network":
+            // Network-related error handling
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                text: "Network error occurred with speech recognition. Please check your internet connection and try again. You can also type your message directly.",
+              },
+            ]);
+
+            // Add a retry button to the UI
+            // setShowRetryButton(true);
+            break;
+
+          case "not-allowed":
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                text: "Please allow microphone access to use speech recognition.",
+              },
+            ]);
+            break;
+
+          case "no-speech":
+            // Silent error - no need to display a message for no speech detected
+            break;
+
+          case "aborted":
+            // User or system aborted the recognition - no need for message
+            break;
+
+          case "audio-capture":
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                text: "Unable to capture audio. Please check your microphone settings.",
+              },
+            ]);
+            break;
+
+          case "service-not-allowed":
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                text: "Speech recognition service not available. This may be due to network restrictions or service limitations. Please type your message instead.",
+              },
+            ]);
+            break;
+
+          default:
+            // Generic error message
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                text: "There was an error with speech recognition. Please try again or type your message.",
+              },
+            ]);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        setTranscribing(false);
+
+        // If we got some input and recognition ended normally, keep recording state active
+        // so the user can see what was transcribed before sending
+        if (input.trim() === "") {
+          setIsRecording(false);
+        }
+      };
+
+      // Start recognition
+      recognition.start();
+    } catch (error) {
+      console.error("Error initializing speech recognition:", error);
+      setIsRecording(false);
+      setIsListening(false);
+      setTranscribing(false);
+    }
+  };
+
+  const stopRecording = () => {
+    if (speechRecognition) {
+      speechRecognition.stop();
+    }
+    setIsRecording(false);
+    setIsListening(false);
+    // Don't reset transcribing here to allow user to see final transcript
+  };
+
+  const handleLanguageSelect = (langCode) => {
+    setSelectedLanguage(langCode);
+    setShowLanguageSelector(false);
   };
 
   const [utmParams, setUtmParams] = useState({
@@ -179,7 +358,9 @@ const ChatbotWidget = () => {
       // Show form first if not submitted
       setFormVisible(true);
       // Optionally, you can show a message indicating they need to fill the form first
-      setMsgFromResponse("Please fill out your information before rating our chat service.");
+      setMsgFromResponse(
+        "Please fill out your information before rating our chat service."
+      );
     }
     setIsOpen(false);
   };
@@ -210,11 +391,13 @@ const ChatbotWidget = () => {
         // If form not submitted, show form
         setShowRating(false);
         setFormVisible(true);
-        setMsgFromResponse("Please fill out your information before rating our chat service.");
+        setMsgFromResponse(
+          "Please fill out your information before rating our chat service."
+        );
       }
     }
   }, [rating, formSubmitted]);
-  
+
   const handleFeedbackSubmit = async (feedback) => {
     const feedbackRating = feedback?.rating;
     const feedbackReview = feedback?.review;
@@ -929,13 +1112,13 @@ const ChatbotWidget = () => {
                   ref={chatWindowRef}
                 >
                   {showRating && (
-  <ChatbotRating
-    isFullScreen={isFullScreen}
-    onSubmit={handleFeedbackSubmit}
-    onClose={() => setShowRating(false)}
-    formSubmitted={formSubmitted}
-  />
-)}
+                    <ChatbotRating
+                      isFullScreen={isFullScreen}
+                      onSubmit={handleFeedbackSubmit}
+                      onClose={() => setShowRating(false)}
+                      formSubmitted={formSubmitted}
+                    />
+                  )}
 
                   {messages?.map((message, index) => {
                     const hasContent =
@@ -1073,29 +1256,118 @@ const ChatbotWidget = () => {
                 <div className="typing-area window_bg_pink">
                   <div className="typing-form">
                     <div className="input-wrapper form-control chat-input d-flex align-items-center">
-                      <button
-                        onClick={handleRecord}
-                        className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
-                          isRecording ? "bg-red-500" : "bg-gray-200"
-                        }`}
-                      >
-                        <Mic className="w-4 h-4 text-gray-700" />
-                      </button>
-                      <input
-                        type="text"
-                        placeholder="Enter a prompt here"
-                        className="typing-input"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        required
-                      />
+                      <div className="position-relative">
+                        {/* Mic button with language selector toggle */}
+                        <button
+                          onClick={handleRecord}
+                          className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
+                            isRecording ? "bg-red-100" : "bg-gray-200"
+                          }`}
+                          title={
+                            isRecording ? "Stop recording" : "Start recording"
+                          }
+                        >
+                          <Mic
+                            className={`w-4 h-4 ${
+                              isListening
+                                ? "text-red-500 animate-pulse"
+                                : "text-gray-700"
+                            }`}
+                          />
+                        </button>
+
+                        {/* Language selector button */}
+                        <button
+                          onClick={() =>
+                            setShowLanguageSelector(!showLanguageSelector)
+                          }
+                          className="p-1 ml-1 mt-0 bg-transparent text-dark rounded-full"
+                          title="Select language"
+                        >
+                          <Languages className="w-4 h-4 text-gray-700" />
+                        </button>
+
+                        {/* Language dropdown */}
+                        {showLanguageSelector && (
+                          <div
+                            className="position-absolute bg-white shadow-lg rounded p-2 z-10"
+                            style={{
+                              bottom: "40px",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                              minWidth: "200px",
+                            }}
+                          >
+                            <div className="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+                              <span className="font-weight-bold">
+                                Select Language
+                              </span>
+                              <button
+                                onClick={() => setShowLanguageSelector(false)}
+                                className="bg-transparent border-0 p-0"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                            {indianLanguages.map((lang) => (
+                              <div
+                                key={lang.code}
+                                className={`p-1 cursor-pointer hover:bg-gray-100 ${
+                                  selectedLanguage === lang.code
+                                    ? "bg-light font-weight-bold"
+                                    : ""
+                                }`}
+                                onClick={() => handleLanguageSelect(lang.code)}
+                              >
+                                {lang.name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Input field with transcription status indicator */}
+                      <div className="flex-grow-1 position-relative">
+                        <input
+                          type="text"
+                          placeholder={
+                            isListening
+                              ? "Listening..."
+                              : "Enter a message here"
+                          }
+                          className={`typing-input ${
+                            transcribing ? "text-primary" : ""
+                          }`}
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          disabled={isListening}
+                          required
+                        />
+                        {isListening && (
+                          <div className="position-absolute top-0 end-0 pe-3 pt-2">
+                            <div
+                              className="typing-animation"
+                              style={{ transform: "scale(0.6)" }}
+                            >
+                              <span className="dot"></span>
+                              <span className="dot"></span>
+                              <span className="dot"></span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Send button */}
                       <a
                         id="send-message-button"
                         className="icon material-symbols-rounded send-button p-0"
                         onClick={handleSendMessage}
                       >
-                        <button className="p-1 mt- bg-black rounded-5 bg_pink text-dark">
+                        <button
+                          className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
+                          disabled={isListening || input.trim() === ""}
+                        >
                           <Send className="w-2 h-2" />
                         </button>
                       </a>

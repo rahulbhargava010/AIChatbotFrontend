@@ -35,7 +35,7 @@ const LeadsTable = () => {
         { days, chatbot: chatbotId, startDate: start, endDate: end },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log(response.data);
+      // console.log(response.data);
       setLeads(response.data);
       setFilteredLeads(response.data);
 

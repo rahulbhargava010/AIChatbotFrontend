@@ -20,7 +20,7 @@ const TestChatbot = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { chatbotId } = useParams();
   const [messages, setMessages] = useState([]);
-  const [embedScript, setEmbedScript] = useState('');
+  const [embedScript, setEmbedScript] = useState("");
   const [webhook, setWebhook] = useState("");
   const [projectLogo, setProjectLogo] = useState([]);
   const [projectImages, setProjectImages] = useState([]);
@@ -48,7 +48,7 @@ const TestChatbot = () => {
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
-  const [formSubmitted, setFormSubmitted] = useState(false);  // Add this state
+  const [formSubmitted, setFormSubmitted] = useState(false); // Add this state
   const [checkedItems, setCheckedItems] = useState({
     option1: false,
     option2: false,
@@ -103,7 +103,6 @@ const TestChatbot = () => {
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
 
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (!formVisible && !isTyping) {
@@ -114,7 +113,6 @@ const TestChatbot = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [formVisible, isTyping]);
-
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -130,7 +128,6 @@ const TestChatbot = () => {
     console.log("Current URL Path:", window.location.href);
     console.log("UTM Parameters:", newUtmParams); // Use the newUtmParams object here
   }, []);
-
 
   const [showRating, setShowRating] = useState(false);
 
@@ -190,42 +187,40 @@ const TestChatbot = () => {
   //   setInput("");
   // };
 
-
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-  
+
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-  
+
     try {
       setIsTyping(true);
       const response = await api.post("/aichatbots/respond", {
         chatbotId,
         message: input,
       });
-  
+
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-  
+
       // Ensure period stays on the same line
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
-  
+
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: formattedReply, score },
       ]);
-  
+
       setIsTyping(false);
-  
+
       await api.post("analytics/saveEvent", {
         eventType: "chat_message",
         sessionId: uniqueSessionId,
         messages,
         chatbotId,
       });
-  
     } catch (err) {
       console.error("Failed to send message:", err);
       setMessages((prevMessages) => [
@@ -233,12 +228,11 @@ const TestChatbot = () => {
         { sender: "Bot", text: "Sorry, something went wrong." },
       ]);
     }
-  
+
     saveConversation(sessionId);
     setInput("");
   };
 
-  
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default form submission behavior
@@ -264,8 +258,8 @@ const TestChatbot = () => {
     sessionStorage.setItem("chatbotSessionId", storedSessionId);
     // Auto-save conversation every 10 seconds
     const interval = setInterval(() => {
-      const hasUserMessage = messages.some(msg => msg.sender === "User")
-      if(hasUserMessage) {
+      const hasUserMessage = messages.some((msg) => msg.sender === "User");
+      if (hasUserMessage) {
         saveConversation(storedSessionId);
       }
     }, 10000);
@@ -286,7 +280,6 @@ const TestChatbot = () => {
     }
   };
 
-
   // const callLeadSubmit = (e, leadData,
   //   chatbotId,
   //   conversation,
@@ -294,7 +287,7 @@ const TestChatbot = () => {
   //   messages,
   //   api) => {
   //   e.preventDefault();
-  
+
   //   console.log("leadData", leadData);
   //   console.log("chatbotId", chatbotId);
   //   console.log("conversation", conversation);
@@ -305,7 +298,7 @@ const TestChatbot = () => {
   //   // Simulate API call success
   //   setTimeout(() => {
   //     setFormSubmitted(true);
-  
+
   //     setLeadData({
   //       name: "",
   //       phone: "",
@@ -315,8 +308,7 @@ const TestChatbot = () => {
   //       option1: false,
   //       option2: false,
   //     });
-      
-      
+
   //     // Hide success message after 3 seconds
   //     setTimeout(() => {
   //       setFormSubmitted(false);
@@ -325,7 +317,6 @@ const TestChatbot = () => {
   //     }, 3000);
   //   }, 1000);
   // };
-  
 
   //   const handleLeadSubmit = async (e) => {
   //     e.preventDefault();
@@ -402,11 +393,11 @@ const TestChatbot = () => {
   //   };
 
   useEffect(() => {
-      const timer = setTimeout(() => {
-          setChatVisible(true);
-      }, 500);
+    const timer = setTimeout(() => {
+      setChatVisible(true);
+    }, 500);
 
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleChange = (e) => {
@@ -450,13 +441,14 @@ const TestChatbot = () => {
     }
   };
 
- 
   const dummyData = {
     greeting: "Hello! Welcome to our chatbot.",
     chatbotGreeting: "How can I assist you today?",
     projectHighlights: "We offer the best real estate solutions.",
     webhook: "",
-    projectImages: ["https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53wlrm7yizlva.jpg"],
+    projectImages: [
+      "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53wlrm7yizlva.jpg",
+    ],
     chatbotName: "PropBot",
     projectLogo: "/default-logo.png",
     buttons: [
@@ -465,12 +457,12 @@ const TestChatbot = () => {
       { label: "Location Map", action: "get_callback" },
     ],
   };
-  
+
   useEffect(() => {
     const fetchWelcomeData = async () => {
       try {
         const token = localStorage.getItem("token");
-  
+
         const response = await api.post(
           "/aichatbots/welcome",
           { chatbotId },
@@ -480,25 +472,28 @@ const TestChatbot = () => {
             },
           }
         );
-  
+
         // ✅ If API response is empty or missing, use dummyData
-        const data = response?.data && Object.keys(response.data).length > 0 ? response.data : dummyData;
-  
+        const data =
+          response?.data && Object.keys(response.data).length > 0
+            ? response.data
+            : dummyData;
+
         console.log("Welcome in project greeting 12: ", response);
-  
+
         setWebhook(data.webhook);
         setProjectLogo(data.projectLogo);
         setProjectImages(data.projectImages);
         setChatbotData(data);
         setButtonContent(data.buttons || {});
-  
+
         const buttonMap = {};
         (data.buttons || []).forEach((btn) => {
           buttonMap[btn.action] = btn.data || {};
         });
-  
+
         setButtonContent(buttonMap);
-  
+
         setMessages([
           { sender: "Bot", text: data.greeting?.trim() || "" },
           { sender: "Bot", text: data.chatbotGreeting?.trim() || "" },
@@ -506,17 +501,16 @@ const TestChatbot = () => {
           { images: data.projectImages || [] },
           { buttons: data.buttons || [] },
         ]);
-        
       } catch (err) {
         console.error("Error fetching welcome data:", err);
-  
+
         // ✅ If API fails, set dummy data
         setWebhook(dummyData.webhook);
         setProjectLogo(dummyData.projectLogo);
         setProjectImages(dummyData.projectImages);
         setChatbotData(dummyData);
         setButtonContent(dummyData.buttons || {});
-  
+
         setMessages([
           { sender: "Bot", text: dummyData.greeting },
           { sender: "Bot", text: dummyData.chatbotGreeting },
@@ -526,17 +520,15 @@ const TestChatbot = () => {
         ]);
       }
     };
-  
+
     fetchWelcomeData();
   }, [chatbotId]);
-  
-  
+
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages]);
-
 
   const formatTimestamp = (timestamp) => {
     const now = new Date();
@@ -633,195 +625,212 @@ const TestChatbot = () => {
                     </div>
                 )}
             </div> */}
-     <div
-      className={`test-chatbot-container1 chatbot-container ${
-        isFullScreen ? "full-screen" : ""
-      }`}
-    >
-      {/* Full-screen button (Visible only on mobile) */}
-     
-      
-            {formVisible && (
-  <div className="chatbot-form-overlay1" style={{ zIndex: "10" , width: "fit-content"}}>
-    <div className="chatbot-form-container1 vh-100 window_bg_pink">
-      <button
-        className="close-button1"
-        onClick={() => {
-          setFormVisible(false);
-          setChatVisible(true);
-        }}
+      <div
+        className={`test-chatbot-container1 chatbot-container ${
+          isFullScreen ? "full-screen" : ""
+        }`}
       >
-        ×
-      </button>
+        {/* Full-screen button (Visible only on mobile) */}
 
-      {formSubmitted ? (
-        <div className="text-center">
-          <div className="chatbot_wrapper">
-          <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-              <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-            </svg>
-            <h4>THANK YOU!</h4>
-          <p>We've received your submission, and we'll be in touch soon!</p>
-            
-          </div>
-         
-        </div>
-      ) : (
-        <>
-          <div className="text-center mt-4 mobile">
-            <svg
-              width="50"
-              height="50"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="12" cy="12" r="10" fill="#6a11cb" />
-              <path
-                d="M16 14H8M16 10L12 7L8 10"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <h3 className="text-center">Please Introduce Yourself:</h3>
-          </div>
-
-          <form
-            className="chatbot-form my-4"
-            onSubmit={async (e) =>
-             handleLeadSubmit(
-                e,
-                leadData,
-                chatbotId,
-                conversation,
-                setMessages,
-                setFormVisible,
-                setFormSubmitted,
-                setChatVisible,
-                setIsTyping,
-                uniqueSessionId,
-                messages,
-                api,
-                
-              )
-            }
-            onFocus={() => setIsTyping(true)}
-            onBlur={() => setIsTyping(false)}
+        {formVisible && (
+          <div
+            className="chatbot-form-overlay1"
+            style={{ zIndex: "10", width: "fit-content" }}
           >
-            {/* Name Input */}
-            <div className="icondiv">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#6a11cb"
-                width="32"
-                height="32"
+            <div className="chatbot-form-container1 vh-100 window_bg_pink">
+              <button
+                className="close-button1"
+                onClick={() => {
+                  setFormVisible(false);
+                  setChatVisible(true);
+                }}
               >
-                <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
-              </svg>
-              <input
-                type="text"
-                name="name"
-                placeholder="Your Name"
-                className="form-control"
-                required
-                value={leadData.name}
-                onChange={(e) =>
-                  setLeadData({ ...leadData, name: e.target.value })
-                }
-              />
-            </div>
+                ×
+              </button>
 
-            {/* Phone Input */}
-            <div className="icondiv">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#6a11cb"
-                width="32"
-                height="32"
-              >
-                <path d="M6.62 10.79a15.72 15.72 0 006.59 6.59l2.2-2.2a1 1 0 011.09-.23 11.36 11.36 0 003.58.6 1 1 0 011 1v3.79a1 1 0 01-1 1A18 18 0 012 4a1 1 0 011-1h3.79a1 1 0 011 1 11.36 11.36 0 00.6 3.58 1 1 0 01-.23 1.09l-2.2 2.2z" />
-              </svg>
-              <input
-                type="tel"
-                name="phone"
-                className="form-control"
-                placeholder="Mobile Number"
-                pattern="[0-9]{10}"
-                required
-                value={leadData.phone} // ✅ Corrected
-                onChange={(e) =>
-                  setLeadData({ ...leadData, phone: e.target.value })
-                }
-              />
-            </div>
+              {formSubmitted ? (
+                <div className="text-center">
+                  <div className="chatbot_wrapper">
+                    <svg
+                      className="checkmark"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 52 52"
+                    >
+                      <circle
+                        className="checkmark__circle"
+                        cx="26"
+                        cy="26"
+                        r="25"
+                        fill="none"
+                      />
+                      <path
+                        className="checkmark__check"
+                        fill="none"
+                        d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                      />
+                    </svg>
+                    <h4>THANK YOU!</h4>
+                    <p>
+                      We've received your submission, and we'll be in touch
+                      soon!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center mt-4 mobile">
+                    <svg
+                      width="50"
+                      height="50"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle cx="12" cy="12" r="10" fill="#6a11cb" />
+                      <path
+                        d="M16 14H8M16 10L12 7L8 10"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <h3 className="text-center">Please Introduce Yourself:</h3>
+                  </div>
 
-            {/* Email Input */}
-            <div className="icondiv">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#6a11cb"
-                width="32"
-                height="32"
-              >
-                <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" />
-              </svg>
-              <input
-                type="email"
-                name="email"
-                className="form-control"
-                placeholder="Email Address"
-                required
-                value={leadData.email} // ✅ Corrected
-                onChange={(e) =>
-                  setLeadData({ ...leadData, email: e.target.value })
-                }
-              />
-            </div>
+                  <form
+                    className="chatbot-form my-4"
+                    onSubmit={async (e) =>
+                      handleLeadSubmit(
+                        e,
+                        leadData,
+                        setLeadData,
+                        chatbotId,
+                        conversation,
+                        setMessages,
+                        setFormVisible,
+                        setFormSubmitted,
+                        setShowRating,
+                        setChatVisible,
+                        setIsTyping,
+                        uniqueSessionId,
+                        messages
+                      )
+                    }
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
+                  >
+                    {/* Name Input */}
+                    <div className="icondiv">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="#6a11cb"
+                        width="32"
+                        height="32"
+                      >
+                        <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+                      </svg>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        className="form-control"
+                        required
+                        value={leadData.name}
+                        onChange={(e) =>
+                          setLeadData({ ...leadData, name: e.target.value })
+                        }
+                      />
+                    </div>
 
-            {/* Checkboxes */}
-            <div className="align-items-center">
-              <Form.Check
-                type="checkbox"
-                id="checkbox1"
-                name="option1"
-                label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this number for  \u00A0\u00A0sales and support activities`}
-                checked={checkedItems.option1}
-                onChange={handleChange}
-              />
-            </div>
+                    {/* Phone Input */}
+                    <div className="icondiv">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="#6a11cb"
+                        width="32"
+                        height="32"
+                      >
+                        <path d="M6.62 10.79a15.72 15.72 0 006.59 6.59l2.2-2.2a1 1 0 011.09-.23 11.36 11.36 0 003.58.6 1 1 0 011 1v3.79a1 1 0 01-1 1A18 18 0 012 4a1 1 0 011-1h3.79a1 1 0 011 1 11.36 11.36 0 00.6 3.58 1 1 0 01-.23 1.09l-2.2 2.2z" />
+                      </svg>
+                      <input
+                        type="tel"
+                        name="phone"
+                        className="form-control"
+                        placeholder="Mobile Number"
+                        pattern="[0-9]{10}"
+                        required
+                        value={leadData.phone} // ✅ Corrected
+                        onChange={(e) =>
+                          setLeadData({ ...leadData, phone: e.target.value })
+                        }
+                      />
+                    </div>
 
-            <div>
-              <Form.Check
-                type="checkbox"
-                id="checkbox2"
-                name="option2"
-                label={`\u00A0 Sign up for our newsletter`}
-                checked={checkedItems.option2}
-                onChange={handleChange}
-              />
-            </div>
+                    {/* Email Input */}
+                    <div className="icondiv">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="#6a11cb"
+                        width="32"
+                        height="32"
+                      >
+                        <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" />
+                      </svg>
+                      <input
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Email Address"
+                        required
+                        value={leadData.email} // ✅ Corrected
+                        onChange={(e) =>
+                          setLeadData({ ...leadData, email: e.target.value })
+                        }
+                      />
+                    </div>
 
-            {/* Submit Button */}
-            <button type="submit" className="btn btn-primary w-100">
-              SUBMIT
-            </button>
-          </form>
-        </>
-      )}
-    </div>
-  </div>
-)}
+                    {/* Checkboxes */}
+                    <div className="align-items-center">
+                      <Form.Check
+                        type="checkbox"
+                        id="checkbox1"
+                        name="option1"
+                        label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this number for  \u00A0\u00A0sales and support activities`}
+                        checked={checkedItems.option1}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div>
+                      <Form.Check
+                        type="checkbox"
+                        id="checkbox2"
+                        name="option2"
+                        label={`\u00A0 Sign up for our newsletter`}
+                        checked={checkedItems.option2}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* Submit Button */}
+                    <button type="submit" className="btn btn-primary w-100">
+                      SUBMIT
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {chatVisible && (
           <>
             {showFirstScreen ? (
-              <FirstScreen setShowFirstScreen={setShowFirstScreen}/>
+              <FirstScreen setShowFirstScreen={setShowFirstScreen} />
             ) : (
               <>
                 {/* <button
@@ -830,7 +839,12 @@ const TestChatbot = () => {
 >
   ×
 </button> */}
- {showRating && <ChatbotRating onSubmit={handleFeedbackSubmit} onClose={() => setShowRating(false)} />}
+                {showRating && (
+                  <ChatbotRating
+                    onSubmit={handleFeedbackSubmit}
+                    onClose={() => setShowRating(false)}
+                  />
+                )}
                 <div className="d-flex header p-2 justify-content-between align-items-start">
                   {/* <div>
                 <img
@@ -853,62 +867,64 @@ const TestChatbot = () => {
                         width="60"
                       />
 
-<div className="py-2 text-left ms-2">
-                    <h4 className="title">
-                    {chatbotData?.chatbotName} Help Desk
-                    </h4>
-                    <small>
-                      <span className="d-block pt-2">
-                        {" "}
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="8"
-                            cy="8"
-                            r="6"
-                            fill="#198754"
-                            stroke="#28C840"
-                            strokeWidth="2"
-                          />
-                        </svg>{" "}
-                        We are online to assist you
-                      </span>
-                    </small>
+                      <div className="py-2 text-left ms-2">
+                        <h4 className="title">
+                          {chatbotData?.chatbotName} Help Desk
+                        </h4>
+                        <small>
+                          <span className="d-block pt-2">
+                            {" "}
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <circle
+                                cx="8"
+                                cy="8"
+                                r="6"
+                                fill="#198754"
+                                stroke="#28C840"
+                                strokeWidth="2"
+                              />
+                            </svg>{" "}
+                            We are online to assist you
+                          </span>
+                        </small>
 
-                    {/* <p className="subtitle">
+                        {/* <p className="subtitle">
                     How can I help you today {chatbotData?.name}?
                   </p> */}
-                  </div>
+                      </div>
                     </div>
                   )}
-                
 
                   <div className="relative py-2">
-                  {isMobile && (
-        <button className="fullscreen-toggle1" onClick={toggleFullScreen}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="black"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
-        </svg>
-      </button>
-        // <button className="fullscreen-toggle1" onClick={toggleFullScreen}>
-        //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
-        // </button>
-      )}
+                    {isMobile && (
+                      <button
+                        className="fullscreen-toggle1"
+                        onClick={toggleFullScreen}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="black"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
+                        </svg>
+                      </button>
+                      // <button className="fullscreen-toggle1" onClick={toggleFullScreen}>
+                      //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
+                      // </button>
+                    )}
                     {/* Menu Icon */}
                     <div
                       className="menu-toggle1 cursor-pointer rounded-md hover:bg-gray-200 transition align-items-center"
@@ -930,9 +946,20 @@ const TestChatbot = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          <li onClick={() => setIsOpen(false)}>Talk to Human</li>
-                          <li onClick={() => { handleRateChat(); setIsOpen(false); }}>Rate this Chat</li>
-                          <li onClick={() => setIsOpen(false)}>Send details over WhatsApp</li>
+                          <li onClick={() => setIsOpen(false)}>
+                            Talk to Human
+                          </li>
+                          <li
+                            onClick={() => {
+                              handleRateChat();
+                              setIsOpen(false);
+                            }}
+                          >
+                            Rate this Chat
+                          </li>
+                          <li onClick={() => setIsOpen(false)}>
+                            Send details over WhatsApp
+                          </li>
                         </ul>
                       </div>
                     )}
@@ -959,102 +986,124 @@ const TestChatbot = () => {
                     </svg>
                   </div> */}
                 </div>
-              
-                <div className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8" ref={chatWindowRef}>
-      {messages?.map((message, index) => {
-        const hasContent =
-          message.text ||
-          message.images?.length ||
-          message.buttons?.length; 
 
-        return hasContent ? (
-           <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }} // Start slightly below
-                    animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
-                    transition={{ duration: 0.3, ease: "linear" }} // Instant response
-                    className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}
-                  >
-        
-            <div className={`message ${message.sender === "User" ? "user-message" : "bot-message"}`}>
-              
-              {/* ✅ Text Message */}
-              {message.text && (
-                <div className="message-bubble"
-                  style={{
-                    backgroundColor: "rgb(231 218 243 / 51%)",
-                    boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                    borderRadius: "10px",
-                    padding: "10px",
-                    maxWidth: "80%",
-                    width: "100%",
-                    margin: "5px 0",
-                    border: "2px solid rgb(255, 255, 255)",
-                    fontSize: "14px",
-                    textAlign: "left",
-                  }}>
-                  {message.text.split('.').filter(sentence => sentence.trim() !== "").map((sentence, idx) => (
-  <p key={idx}>{sentence.trim()}</p>
-))}
+                <div
+                  className="chat-window p-4 mb-3 border rounded scrollbar"
+                  id="style-8"
+                  ref={chatWindowRef}
+                >
+                  {messages?.map((message, index) => {
+                    const hasContent =
+                      message.text ||
+                      message.images?.length ||
+                      message.buttons?.length;
 
+                    return hasContent ? (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }} // Start slightly below
+                        animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
+                        transition={{ duration: 0.3, ease: "linear" }} // Instant response
+                        className={`message ${
+                          message.sender === "User"
+                            ? "user-message"
+                            : "bot-message"
+                        }`}
+                      >
+                        <div
+                          className={`message ${
+                            message.sender === "User"
+                              ? "user-message"
+                              : "bot-message"
+                          }`}
+                        >
+                          {/* ✅ Text Message */}
+                          {message.text && (
+                            <div
+                              className="message-bubble"
+                              style={{
+                                backgroundColor: "rgb(231 218 243 / 51%)",
+                                boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                                borderRadius: "10px",
+                                padding: "10px",
+                                maxWidth: "80%",
+                                width: "100%",
+                                margin: "5px 0",
+                                border: "2px solid rgb(255, 255, 255)",
+                                fontSize: "14px",
+                                textAlign: "left",
+                              }}
+                            >
+                              {message.text
+                                .split(".")
+                                .filter((sentence) => sentence.trim() !== "")
+                                .map((sentence, idx) => (
+                                  <p key={idx}>{sentence.trim()}</p>
+                                ))}
+                            </div>
+                          )}
+
+                          {/* ✅ Image Message */}
+                          {message?.images && message?.images?.length > 0 && (
+                            <div className="image-container">
+                              {message.images.map((img, idx) => (
+                                <img
+                                  key={idx}
+                                  className="chatbot-logo-img"
+                                  src={`https://assist-ai.propstory.com/${img}`}
+                                  alt="Project Image"
+                                  height="200"
+                                  width="200"
+                                  style={{
+                                    borderRadius: "10%",
+                                    marginRight: "10px",
+                                    marginBottom: "2rem",
+                                  }}
+                                  onError={(e) =>
+                                    (e.target.style.display = "none")
+                                  } // Hide broken images
+                                />
+                              ))}
+                            </div>
+                          )}
+
+                          {/* ✅ Buttons */}
+                          {/* ✅ Buttons */}
+                          {message?.buttons && (
+                            <div className="d-flex flex-wrap justify-content-evenly text-center gap-2">
+                              {message.buttons.map((button, idx) => (
+                                <a
+                                  key={idx}
+                                  onClick={() =>
+                                    handleButtonClick(
+                                      button.action,
+                                      button.label
+                                    )
+                                  }
+                                  className="button-53"
+                                  style={{ minWidth: "150px" }} // Ensures buttons don’t shrink too much
+                                >
+                                  {button.label}
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ) : null;
+                  })}
+
+                  {/* ✅ Typing Animation */}
+                  {isTyping && (
+                    <div className="message bot-message">
+                      <div className="message-bubble typing-animation">
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* ✅ Image Message */}
-              {message?.images && message?.images?.length > 0 && (
-                <div className="image-container">
-                  {message.images.map((img, idx) => (
-                    <img
-                      key={idx}
-                      className="chatbot-logo-img"
-                      src={`https://assist-ai.propstory.com/${img}`}
-                      alt="Project Image"
-                      height="200"
-                      width="200"
-                      style={{
-                        borderRadius: "10%",
-                        marginRight: "10px",
-                        marginBottom: "2rem",
-                      }}
-                      onError={(e) => (e.target.style.display = "none")} // Hide broken images
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* ✅ Buttons */}
-              {/* ✅ Buttons */}
-{message?.buttons && (
-  <div className="d-flex flex-wrap justify-content-evenly text-center gap-2">
-    {message.buttons.map((button, idx) => (
-      <a
-        key={idx}
-        onClick={() => handleButtonClick(button.action, button.label)}
-        className="button-53"
-        style={{ minWidth: "150px" }} // Ensures buttons don’t shrink too much
-      >
-        {button.label}
-      </a>
-    ))}
-  </div>
-)}
-
-            </div>
-          </motion.div>
-        ) : null;
-      })}
-
-      {/* ✅ Typing Animation */}
-      {isTyping && (
-        <div className="message bot-message">
-          <div className="message-bubble typing-animation">
-            <span className="dot"></span>
-            <span className="dot"></span>
-            <span className="dot"></span>
-          </div>
-        </div>
-      )}
-    </div>
 
                 {/* <div
                 className="chat-window p-4 mb-3 border rounded scrollbar" id="style-8"

@@ -58,7 +58,7 @@ const Dashboard = () => {
           { headers }
         );
 
-        console.log("DATA:", analyticsRes.data);
+        // console.log("DATA:", analyticsRes.data);
 
         if (analyticsRes.data) {
           setAnalyticsData(analyticsRes.data); // Set the actual data array
@@ -104,7 +104,7 @@ const Dashboard = () => {
     ],
   };
 
-  console.log(analyticsData);
+  // console.log(analyticsData);
 
   return (
     <Container fluid>
