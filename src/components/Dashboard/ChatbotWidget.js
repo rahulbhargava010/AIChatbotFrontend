@@ -533,35 +533,71 @@ const ChatbotWidget = () => {
   const handleButtonClick = async (action, label) => {
     try {
       const token = localStorage.getItem("token");
-
-      if (
-        ["schedule_site_visit", "get_callback", "brochure"].includes(action)
-      ) {
+      const icon = "🔹"; // Replace this with any emoji or HTML entity
+  
+      if (["schedule_site_visit", "get_callback", "brochure"].includes(action)) {
         setFormType(action);
-
         setFormVisible(true);
-
-        // setFormAction(webhook)
-
-        // setChatVisible(false);
       } else {
         setFormVisible(false);
-
         setChatVisible(true);
-
-        if (buttonContent[action])
+  
+        if (buttonContent[action]) {
           setMessages((prevMessages) => [
             ...prevMessages,
             { sender: "User", text: label },
-            { sender: "Bot", text: buttonContent[action] },
+            {
+              sender: "Bot",
+              text: buttonContent[action]
+                .split("\n")
+                .map((line) =>
+                  line.trim().endsWith(".") ? `${icon} ${line}` : line
+                )
+                .join("\n"),
+            },
           ]);
+        }
       }
-
+  
       saveConversation(storedSessionId);
     } catch (err) {
       console.error("Error fetching content:", err);
     }
   };
+
+  
+  // const handleButtonClick = async (action, label) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+
+  //     if (
+  //       ["schedule_site_visit", "get_callback", "brochure"].includes(action)
+  //     ) {
+  //       setFormType(action);
+
+  //       setFormVisible(true);
+
+  //       // setFormAction(webhook)
+
+  //       // setChatVisible(false);
+  //     } else {
+  //       setFormVisible(false);
+
+  //       setChatVisible(true);
+
+  //       if (buttonContent[action])
+  //         setMessages((prevMessages) => [
+  //           ...prevMessages,
+  //           { sender: "User", text: label },
+  //           { sender: "Bot", text: buttonContent[action] },
+  //         ]);
+  //     }
+
+  //     saveConversation(storedSessionId);
+  //   } catch (err) {
+  //     console.error("Error fetching content:", err);
+  //   }
+  // };
 
   const dummyData = {
     greeting: "Hello! Welcome to our chatbot.",
@@ -1011,7 +1047,7 @@ const ChatbotWidget = () => {
                         className="fullscreen-toggle"
                         onClick={toggleFullScreen}
                       >
-                        <svg
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
                           height="20"
@@ -1023,7 +1059,7 @@ const ChatbotWidget = () => {
                           strokeLinejoin="round"
                         >
                           <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
-                        </svg>
+                        </svg> */}
                       </button>
                       // <button className="fullscreen-toggle" onClick={toggleFullScreen}>
                       //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
