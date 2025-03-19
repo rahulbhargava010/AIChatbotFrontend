@@ -29,6 +29,7 @@ import { NewDash } from "../Dashboard/NewDash";
 import ChatbotCard from "../Dashboard/ChatbotCard";
 import LeadDetails from "../Dashboard/LeadDetails";
 import ChatbotList from "../Dashboard/ChatbotList";
+import ModernChatbotWidget from "../Dashboard/ModernChatbotWidget";
 
 const AppRoutes = () => {
   return (
@@ -40,6 +41,10 @@ const AppRoutes = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
+      <Route
+        path="/chatbot-new-widget/:chatbotId"
+        element={<ModernChatbotWidget />}
+      />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<ProtectedLayout />}>

@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("userRole", user.roles);
     localStorage.setItem("userId", user._id);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setUser({ token, role: user.role });
+    setUser({ token, role: user.roles });
   };
 
   const logout = () => {
