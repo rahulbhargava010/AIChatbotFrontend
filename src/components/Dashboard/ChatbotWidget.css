@@ -659,7 +659,7 @@ body {
   }
 
   .user-message {
-    justify-content: center;
+    justify-content: end !important;
   }
   .sidebar {
     z-index: -1 !important;

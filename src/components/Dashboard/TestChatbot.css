@@ -145,7 +145,7 @@
 }
 
 .message-bubble {
-  max-width: 70% !important;
+  max-width: 88% !important;
   padding: 10px;
   border-radius: 10px;
   border-top-left-radius: 0 !important;
@@ -728,11 +728,7 @@ button{
   .chatbot-form-overlay1 .window_bg_pink{
     height: 100vh !important;
   }
-  .user-message {
-    width: 24rem;
-    margin-right: -7rem;
-    text-align: end;
-}
+
 .mobile{
   display: none;
 }
