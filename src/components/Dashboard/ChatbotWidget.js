@@ -673,9 +673,11 @@ const ChatbotWidget = () => {
         setMsgFromResponse("Please Provide Your Information, We Are Happy To Help!");
         setFormType(action);
         setFormVisible(true);
+        
       } else {
         setFormVisible(false);
         setChatVisible(true);
+        // setFormAction(webhook)
   
         if (buttonContent[action]) {
           setMessages((prevMessages) => [
@@ -1303,7 +1305,7 @@ const ChatbotWidget = () => {
                                 boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
                                 borderRadius: "10px",
                                 padding: "10px",
-                                maxWidth: "100%", // Ensures message doesn't stretch too much
+                                Width: "100%", // Ensures message doesn't stretch too much
                                 width: "auto", // Adapts width to content
                                 lineHeight: "21px",
                                 margin: "5px 0",
