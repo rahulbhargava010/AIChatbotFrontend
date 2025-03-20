@@ -53,6 +53,7 @@ const ChatbotWidget = () => {
   const [formAction, setFormAction] = useState("");
   const [buttonContent, setButtonContent] = useState({});
   const [isTyping, setIsTyping] = useState(false);
+  const [whileTyping, setWhileTyping] = useState(false);
   const [leadData, setLeadData] = useState({
     name: "",
     phone: "",
@@ -73,6 +74,11 @@ const ChatbotWidget = () => {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+
+
+
 
   const indianLanguages = [
     { code: "en-IN", name: "English (India)" },
@@ -108,32 +114,31 @@ const ChatbotWidget = () => {
 
   // Toggle full-screen mode (only for mobile)
   const toggleFullScreen = () => {
-    const chatbotIframe = document.getElementById("chatbot-widget");
+    console.log("coming in toggle sceen")
+
+    const chatbotIframe = document.querySelector(".chat-window");
+    console.log("coming in toggle sceen class", isFullScreen)
     if (chatbotIframe) {
-      if (!isFullScreen) {
+      if (isFullScreen) {
+        console.log("coming in if")
         // Enter fullscreen mode
-        chatbotIframe.style.width = "100vw";
-        chatbotIframe.style.height = "100vh";
-        chatbotIframe.style.left = "0";
-        chatbotIframe.style.top = "0";
-        chatbotIframe.style.transform = "none";
-        chatbotIframe.style.borderRadius = "0";
-        chatbotIframe.style.zIndex = "999999999";
+       
+        // chatbotIframe.style.width = "95%";
+        chatbotIframe.style.height = "75%";
+        // chatbotIframe.style.left = "0";
+        // chatbotIframe.style.top = "0";
+        // chatbotIframe.style.transform = "none";
+        // chatbotIframe.style.borderRadius = "0";
+        // chatbotIframe.style.zIndex = "999999999";
       } else {
+        console.log("coming in else")
         // Exit fullscreen mode
-        chatbotIframe.style.width = window.innerWidth <= 768 ? "90%" : "300px";
-        chatbotIframe.style.height = window.innerWidth <= 768 ? "70%" : "400px";
-        chatbotIframe.style.borderRadius = "10px";
-        if (window.innerWidth <= 768) {
-          chatbotIframe.style.left = "50%";
-          chatbotIframe.style.top = "50%";
-          chatbotIframe.style.transform = "translate(-50%, -50%)";
-        } else {
-          chatbotIframe.style.bottom = "20px";
-          chatbotIframe.style.right = "20px";
-          chatbotIframe.style.left = "auto";
-          chatbotIframe.style.top = "auto";
-        }
+        // chatbotIframe.style.bottom = window.innerWidth <= 768 ? '13%' : '85px';
+        // chatbotIframe.style.right = window.innerWidth <= 768 ? '3%' : '40px';
+        // chatbotIframe.style.width = "100vw";
+        chatbotIframe.style.height = "100%";
+
+        
       }
       setIsFullScreen(!isFullScreen);
     }
@@ -326,13 +331,26 @@ const ChatbotWidget = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!formVisible && !isTyping) {
+        console.log("comming after every 10 second", formVisible, isTyping)
         setFormVisible(true);
-        // setChatVisible(false);
       }
-    }, 30000); // Runs every 10 seconds
-
+    }, 10000); // Runs every 10 seconds
+  
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [formVisible, isTyping]);
+  }, [formVisible, isTyping]); // Dependencies
+  
+  
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (formVisible && isTyping) {
+  //       setFormVisible(true);
+  //       // setChatVisible(false);
+  //     }
+  //   }, 10000); // Runs every 10 seconds
+
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, [formVisible, isTyping]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -421,46 +439,116 @@ const ChatbotWidget = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
+  // const handleSendMessage = async () => {
+  //   if (!input.trim()) return;
 
+  //   setMessages((prevMessages) => [
+  //     ...prevMessages,
+  //     { sender: "User", text: input },
+  //   ]);
+
+  //   const userSenderCount = messages.filter(
+  //     (message) => message.sender === "User"
+  //   ).length;
+  //   if (userSenderCount >= 10) {
+  //     setFormVisible(true);
+  //     return;
+  //   }
+  //   try {
+  //     setIsTyping(true);
+  //     const token = localStorage.getItem("token");
+  //     const response = await api.post("/aichatbots/respond", {
+  //       chatbotId,
+  //       message: input,
+  //     });
+  //     console.log("chatbot response from Test Chatbot", response);
+  //     const { reply, score } = response.data;
+  //     if (reply == "form") {
+  //       setFormVisible(true);
+  //       setMsgFromResponse(
+  //         "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
+  //       );
+  //       return;
+  //     }
+  //     // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
+  //     const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: formattedReply, score },
+  //     ]);
+
+  //     setIsTyping(false);
+
+  //     await api.post("analytics/saveEvent", {
+  //       eventType: "chat_message",
+  //       sessionId: uniqueSessionId,
+  //       messages,
+  //       chatbotId,
+  //     });
+  //   } catch (err) {
+  //     console.error("Failed to send message:", err);
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { sender: "Bot", text: "Sorry, something went wrong." },
+  //     ]);
+  //   }
+
+  //   saveConversation(sessionId);
+  //   setInput("");
+  // };
+
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || isButtonDisabled) return;
+  
+    setIsButtonDisabled(true); // Disable button
+  
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-
+  
     const userSenderCount = messages.filter(
       (message) => message.sender === "User"
     ).length;
+  
     if (userSenderCount >= 10) {
       setFormVisible(true);
+      setIsButtonDisabled(false); // Re-enable button immediately if form is shown
       return;
     }
+  
     try {
       setIsTyping(true);
+      setWhileTyping(true);
       const token = localStorage.getItem("token");
       const response = await api.post("/aichatbots/respond", {
         chatbotId,
         message: input,
       });
+  
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-      if (reply == "form") {
+  
+      if (reply === "form") {
         setFormVisible(true);
         setMsgFromResponse(
           "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
         );
+        setIsButtonDisabled(false);
         return;
       }
-      // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
+  
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: formattedReply, score },
       ]);
-
+  
       setIsTyping(false);
+      setWhileTyping(false);
 
+  
       await api.post("analytics/saveEvent", {
         eventType: "chat_message",
         sessionId: uniqueSessionId,
@@ -468,17 +556,27 @@ const ChatbotWidget = () => {
         chatbotId,
       });
     } catch (err) {
+      setIsTyping(false);
+      setWhileTyping(false);
       console.error("Failed to send message:", err);
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: "Sorry, something went wrong." },
       ]);
+      
     }
-
+  
     saveConversation(sessionId);
     setInput("");
+  
+    // Re-enable the button after 3 seconds
+    setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 3000);
+
   };
 
+  
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default form submission behavior
@@ -517,7 +615,7 @@ const ChatbotWidget = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setChatVisible(true);
-    }, 500);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -611,7 +709,7 @@ const ChatbotWidget = () => {
     projectLogo: "/default-logo.png",
     buttons: [
       { label: "Site Visit Schedule", action: "schedule_site_visit" },
-      { label: "Brochure", action: "brochure" },
+      { label: "Download Brochure", action: "brochure" },
       { label: "Location Map", action: "get_callback" },
     ],
   };
@@ -648,6 +746,7 @@ const ChatbotWidget = () => {
         } = response.data;
 
         console.log("Welcome in project greeting 12: ", response);
+        
 
         setWebhook(webhook);
         setProjectLogo(projectLogo);
@@ -670,7 +769,7 @@ const ChatbotWidget = () => {
           {
             buttons: [
               { label: "Site Visit Schedule", action: "schedule_site_visit" },
-              { label: "Brochure", action: "brochure" },
+              { label: "Download Brochure", action: "brochure" },
               { label: "Location Map", action: "get_callback" },
             ],
           },
@@ -738,7 +837,7 @@ const ChatbotWidget = () => {
 
         {formVisible && (
           <div className="chatbot-form-overlay" style={{ zIndex: "10" }}>
-            <div className="chatbot-form-container vh-100 window_bg_pink p-3">
+            <div className="chatbot-form-container vh-100 window_bg_pink p-3 position-relative">
               <button
                 className="close-button"
                 onClick={() => {
@@ -779,7 +878,7 @@ const ChatbotWidget = () => {
                 </div>
               ) : (
                 <>
-                  <div className="text-center mt-4 mobile">
+                  <div className="text-center mt-4">
                     <svg
                       width="50"
                       height="50"
@@ -807,7 +906,7 @@ const ChatbotWidget = () => {
 
                   <form
                     className="chatbot-form my-4"
-                    onSubmit={async (e) =>
+                    onSubmit={(e) => 
                       handleLeadSubmit(
                         e,
                         leadData,
@@ -817,17 +916,16 @@ const ChatbotWidget = () => {
                         setMessages,
                         setFormVisible,
                         setFormSubmitted,
-                        setChatVisible,
                         setShowRating,
+                        setChatVisible,
                         setIsTyping,
                         uniqueSessionId,
                         messages,
-                        api
+                        setIsSubmitDisabled // ✅ Pass it here
                       )
                     }
-                    onFocus={() => setIsTyping(true)}
-                    onBlur={() => setIsTyping(false)}
                   >
+
                     {/* Name Input */}
                     <div className="icondiv">
                       <svg
@@ -902,7 +1000,7 @@ const ChatbotWidget = () => {
                     </div>
 
                     {/* Checkboxes */}
-                    <div className="align-items-center">
+                    {/* <div className="align-items-center">
                       <Form.Check
                         type="checkbox"
                         id="checkbox1"
@@ -911,9 +1009,9 @@ const ChatbotWidget = () => {
                         checked={checkedItems.option1}
                         onChange={handleChange}
                       />
-                    </div>
+                    </div> */}
 
-                    <div>
+                    {/* <div>
                       <Form.Check
                         type="checkbox"
                         id="checkbox2"
@@ -922,12 +1020,17 @@ const ChatbotWidget = () => {
                         checked={checkedItems.option2}
                         onChange={handleChange}
                       />
-                    </div>
+                    </div> */}
 
                     {/* Submit Button */}
-                    <button type="submit" className="btn btn-primary w-100">
-                      SUBMIT
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary w-100" 
+                      disabled={isSubmitDisabled}
+                    >
+                      {isSubmitDisabled ? "Processing..." : "SUBMIT"}
                     </button>
+
                   </form>
                 </>
               )}
@@ -996,9 +1099,10 @@ const ChatbotWidget = () => {
                     </div>
                   )} */}
 
+
                   {chatbotData?.projectLogo && (
                     <div className="chatbot-logo d-flex justify-content-center align-items-start">
-                      <img
+                      {/* <img
                         key={chatbotData?.projectLogo}
                         className="chatbot-logo-img"
                         src={chatbotData?.projectLogo}
@@ -1010,11 +1114,28 @@ const ChatbotWidget = () => {
                         //   e.target.src =
                         //     "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
                         // }}
-                      />
+                      /> */}
+
+                        <img
+                          key={chatbotData?.projectLogo}
+                          className="chatbot-logo-img"
+                          src={`https://assist-ai.propstory.com/${chatbotData?.projectLogo}`} // Corrected
+                          alt="Project Logo"
+                          height="50"
+                          width="60"
+                          onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src ="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                              }}
+                              />
+
 
                       <div className="py-2 text-left ms-2">
                         <h4 className="title">
-                          {chatbotData?.chatbotName} Help Desk
+                          {/* {chatbotData?.chatbotName} Help Desk */}
+                          {chatbotData?.chatbotName
+                              ?.toLowerCase()
+                              .replace(/\b\w/g, (char) => char.toUpperCase())} Help Desk
                         </h4>
                         <small>
                           <span className="d-block pt-2">
@@ -1042,12 +1163,12 @@ const ChatbotWidget = () => {
                   )}
 
                   <div className="relative py-2">
-                    {isMobile && (
+                    {/* {isMobile && (
                       <button
                         className="fullscreen-toggle"
                         onClick={toggleFullScreen}
                       >
-                        {/* <svg
+                        <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
                           height="20"
@@ -1059,12 +1180,9 @@ const ChatbotWidget = () => {
                           strokeLinejoin="round"
                         >
                           <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
-                        </svg> */}
+                        </svg>
                       </button>
-                      // <button className="fullscreen-toggle" onClick={toggleFullScreen}>
-                      //   {isFullScreen ? "Exit Fullscreen" : "Full Screen"}
-                      // </button>
-                    )}
+                    )} */}
                     {/* Menu Icon */}
                     <div
                       className="menu-toggle1 cursor-pointer rounded-md hover:bg-gray-200 transition align-items-center"
@@ -1086,9 +1204,9 @@ const ChatbotWidget = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          <li onClick={() => setIsOpen(false)}>
+                          {/* <li onClick={() => setIsOpen(false)}>
                             Talk to Human
-                          </li>
+                          </li> */}
                           <li
                             onClick={() => {
                               handleRateChat();
@@ -1097,9 +1215,9 @@ const ChatbotWidget = () => {
                           >
                             Rate this Chat
                           </li>
-                          <li onClick={() => setIsOpen(false)}>
+                          {/* <li onClick={() => setIsOpen(false)}>
                             Send details over WhatsApp
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
                     )}
@@ -1107,7 +1225,7 @@ const ChatbotWidget = () => {
                 </div>
 
                 <div
-                  className="chat-window p-4 mb-3 border rounded scrollbar"
+                  className="chat-window p-4 border rounded scrollbar"
                   id="style-8"
                   ref={chatWindowRef}
                 >
@@ -1220,7 +1338,7 @@ const ChatbotWidget = () => {
                   })}
 
                   {/* ✅ Typing Animation */}
-                  {isTyping && (
+                  {isTyping && whileTyping &&(
                     <div className="message bot-message">
                       <div className="message-bubble typing-animation">
                         <span className="dot"></span>
@@ -1253,139 +1371,55 @@ const ChatbotWidget = () => {
                   </div>
                 </div>
 
-                <div className="typing-area window_bg_pink">
-                  <div className="typing-form">
-                    <div className="input-wrapper form-control chat-input d-flex align-items-center">
-                      <div className="position-relative">
-                        {/* Mic button with language selector toggle */}
-                        <button
-                          onClick={handleRecord}
-                          className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
-                            isRecording ? "bg-red-100" : "bg-gray-200"
-                          }`}
-                          title={
-                            isRecording ? "Stop recording" : "Start recording"
-                          }
-                        >
-                          <Mic
-                            className={`w-4 h-4 ${
-                              isListening
-                                ? "text-red-500 animate-pulse"
-                                : "text-gray-700"
-                            }`}
-                          />
-                        </button>
-
-                        {/* Language selector button */}
-                        <button
-                          onClick={() =>
-                            setShowLanguageSelector(!showLanguageSelector)
-                          }
-                          className="p-1 ml-1 mt-0 bg-transparent text-dark rounded-full"
-                          title="Select language"
-                        >
-                          <Languages className="w-4 h-4 text-gray-700" />
-                        </button>
-
-                        {/* Language dropdown */}
-                        {showLanguageSelector && (
-                          <div
-                            className="position-absolute bg-white shadow-lg rounded p-2 z-10"
-                            style={{
-                              bottom: "40px",
-                              maxHeight: "200px",
-                              overflowY: "auto",
-                              minWidth: "200px",
-                            }}
-                          >
-                            <div className="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
-                              <span className="font-weight-bold">
-                                Select Language
-                              </span>
-                              <button
-                                onClick={() => setShowLanguageSelector(false)}
-                                className="bg-transparent border-0 p-0"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                            {indianLanguages.map((lang) => (
-                              <div
-                                key={lang.code}
-                                className={`p-1 cursor-pointer hover:bg-gray-100 ${
-                                  selectedLanguage === lang.code
-                                    ? "bg-light font-weight-bold"
-                                    : ""
-                                }`}
-                                onClick={() => handleLanguageSelect(lang.code)}
-                              >
-                                {lang.name}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Input field with transcription status indicator */}
-                      <div className="flex-grow-1 position-relative">
-                        <input
-                          type="text"
-                          placeholder={
-                            isListening
-                              ? "Listening..."
-                              : "Enter a message here"
-                          }
-                          className={`typing-input ${
-                            transcribing ? "text-primary" : ""
-                          }`}
-                          value={input}
-                          onChange={(e) => setInput(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          disabled={isListening}
-                          required
-                        />
-                        {isListening && (
-                          <div className="position-absolute top-0 end-0 pe-3 pt-2">
-                            <div
-                              className="typing-animation"
-                              style={{ transform: "scale(0.6)" }}
-                            >
-                              <span className="dot"></span>
-                              <span className="dot"></span>
-                              <span className="dot"></span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Send button */}
-                      <a
-                        id="send-message-button"
-                        className="icon material-symbols-rounded send-button p-0"
-                        onClick={handleSendMessage}
-                      >
-                        <button
-                          className="p-1 mt-0 bg-black rounded-5 bg_pink text-dark"
-                          disabled={isListening || input.trim() === ""}
-                        >
-                          <Send className="w-2 h-2" />
-                        </button>
-                      </a>
-                    </div>
-                  </div>
-                  <div>
-                    <small>
-                      Powered by{" "}
-                      <Link
-                        className="text-primary fw-bold ps-1"
-                        to="https://propstory.in/"
-                        target="_blank"
-                      >
-                        Propstory
-                      </Link>
-                    </small>
-                  </div>
-                </div>
+               <div className="typing-area window_bg_pink">
+                                 <div className="typing-form">
+                                   <div className="input-wrapper py-0 form-control chat-input d-flex align-items-center">
+                                     {/* <button
+                                       onClick={handleRecord}
+                                       className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
+                                         isRecording ? "bg-red-500" : "bg-gray-200"
+                                       }`}
+                                     >
+                                       <Mic className="w-4 h-4 text-gray-700" />
+                                     </button> */}
+                                     <input
+                                       type="text"
+                                       placeholder="Enter a prompt here"
+                                       className="typing-input"
+                                       value={input}
+                                       onChange={(e) =>  {
+                                        setInput(e.target.value);
+                                        setIsTyping(true);
+                                       }}
+                                       onKeyDown={handleKeyDown}
+                                       required
+                                     />
+                                     <a
+                                       id="send-message-button"
+                                       className="icon material-symbols-rounded send-button p-0"
+                                       onClick={handleSendMessage}
+                                       disabled={isButtonDisabled} 
+                                     >
+                                       <button className="p-1 mt- bg-black rounded-5 bg_pink text-dark">
+                                         <Send className="w-2 h-2" />
+                                       </button>
+                                     </a>
+                                   </div>
+                                 </div>
+                                 <div>
+                                   <small>
+                                     Powered by{" "}
+                                     <Link
+                                       className="text-primary fw-bold ps-1"
+                                       to="https://propstory.in/"
+                                       target="_blank"
+                                     >
+                                       Propstory
+                                     </Link>
+                                   </small>
+                                 </div>
+                               </div>
+                
               </>
             )}
           </>

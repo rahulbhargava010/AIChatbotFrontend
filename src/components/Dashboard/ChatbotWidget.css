@@ -72,7 +72,7 @@ body {
   transform: scale(0);
   background: transparent;
   transition: transform 0.2s ease;
-  margin-top: -21px;
+  margin-top: 0px;
 }
 .typing-form .typing-input:valid ~ #send-message-button {
   transform: scale(1);
@@ -565,7 +565,6 @@ body {
   /* Chatbot default container */
   .test-chatbot-container {
     /* width: 324px; */
-    height: 482px;
     background: white;
     position: relative;
     border-radius: 10px;

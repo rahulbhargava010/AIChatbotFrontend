@@ -15,27 +15,28 @@ const handleLeadSubmit = async (
   setChatVisible,
   setIsTyping,
   uniqueSessionId,
-  messages
+  messages,
+  setIsSubmitDisabled 
 ) => {
   e.preventDefault();
   console.log("handleLeadSubmit function called");
+
+  setIsSubmitDisabled(true); // ✅ Disable submit button
 
   try {
     const userAgent = navigator.userAgent;
     const device = /mobile/i.test(userAgent) ? "Mobile" : "Desktop";
 
-    // console.log("Fetching IP address...");
+    // Get IP address
     const ipResponse = await axios.get("https://api.ipify.org?format=json");
     console.log("IP Response:", ipResponse.data);
-
     const ipAddress = ipResponse.data.ip;
 
+    // Get Geolocation
     let location = {};
     try {
       console.log("Fetching Geolocation...");
-      const geoResponse = await axios.get(
-        `https://ipapi.co/${ipAddress}/json/`
-      );
+      const geoResponse = await axios.get(`https://ipapi.co/${ipAddress}/json/`);
       console.log("Geolocation Response:", geoResponse.data);
 
       location = {
@@ -49,6 +50,7 @@ const handleLeadSubmit = async (
       console.error("Error fetching geolocation data:", error);
     }
 
+    // Prepare lead data
     const updatedLeadData = {
       ...leadData,
       ipAddress,
@@ -59,23 +61,21 @@ const handleLeadSubmit = async (
 
     console.log("LeadData:", updatedLeadData);
 
-    // console.log("Saving lead data...");
+    // Save lead data
     const leadResponse = await api.post("/leads/save", {
       chatbotId,
       leadData: updatedLeadData,
       conversation,
     });
+
     setLeadData({ ...leadData, id: leadResponse?.data?.lead?._id });
     const leadName = leadData?.name?.toUpperCase();
     setMessages((prevMessages) => [
       ...prevMessages,
-      {
-        sender: "Bot",
-        text: `Thank you! ${leadName}, for submitting your enquiry!`,
-      },
+      { sender: "Bot", text: `Thank you! ${leadName}, for submitting your enquiry!` },
     ]);
-    // setFormVisible(false);
 
+    // Save analytics event
     console.log("Saving analytics event...");
     await api.post("analytics/saveEvent", {
       eventType: "form_submission",
@@ -96,6 +96,12 @@ const handleLeadSubmit = async (
     console.error("Error in handleLeadSubmit:", error);
     alert("Failed to save lead.");
   }
+
+  // ✅ Re-enable submit button after 3 seconds
+  setTimeout(() => {
+    setIsSubmitDisabled(false);
+  }, 3000);
 };
+
 
 export default handleLeadSubmit;
