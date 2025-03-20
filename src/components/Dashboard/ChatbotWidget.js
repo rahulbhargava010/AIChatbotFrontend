@@ -63,7 +63,8 @@ const ChatbotWidget = () => {
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
-  const [msgFromResponse, setMsgFromResponse] = useState("");
+  const [msgFromResponse, setMsgFromResponse] = useState("Please Introduce Yourself");
+  const [msgRatingFromResponse, setRatingFromResponse] = useState("Please Provide Your Rating");
   const [formSubmitted, setFormSubmitted] = useState(false); // Add this state
   const [checkedItems, setCheckedItems] = useState({
     option1: false,
@@ -530,14 +531,37 @@ const ChatbotWidget = () => {
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
   
-      if (reply === "form") {
+      if (reply.toLowerCase().includes("form")) {
         setFormVisible(true);
+        if (reply.toLowerCase().includes("sitevisit")) {
+          setMsgFromResponse(
+            "To Book The Site Visit Please Fill Out the Form."
+          );
+        }
+        else if (reply.toLowerCase().includes("brochure")){
+          setMsgFromResponse(
+             "To Download The Brouchure Please Fill Out the Form."
+          );
+        }
+        else if (reply.toLowerCase().includes("payments")){
+          setMsgFromResponse(
+              "To Know More About The Payment Plan Please Fill Out the Form."
+          );
+        }
+        else if (reply.toLowerCase().includes("sorry")){
+          setMsgFromResponse(
+            "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
+          );
+        }
+       else{
         setMsgFromResponse(
-          "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
+          "Hi, How Can I Help You?"
         );
+       }
         setIsButtonDisabled(false);
         return;
       }
+      
   
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
       setMessages((prevMessages) => [
@@ -555,16 +579,28 @@ const ChatbotWidget = () => {
         messages,
         chatbotId,
       });
-    } catch (err) {
-      setIsTyping(false);
-      setWhileTyping(false);
-      console.error("Failed to send message:", err);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "Bot", text: "Sorry, something went wrong." },
-      ]);
+    } 
+    // catch (err) {
+    //   setIsTyping(false);
+    //   setWhileTyping(false);
+    //   console.error("Failed to send message:", err);
+    //   setMessages((prevMessages) => [
+    //     ...prevMessages,
+    //     { sender: "Bot", text: "Sorry, something went wrong." },
+    //   ]);
       
+    // }
+    catch (err) {
+      console.error("Failed to send message:", err);
+    
+      // Show the form instead of displaying an error message
+      setFormVisible(true);
+       setIsTyping(false);
+      setMsgFromResponse(
+        "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
+      );
     }
+
   
     saveConversation(sessionId);
     setInput("");
@@ -634,6 +670,7 @@ const ChatbotWidget = () => {
       const icon = "🔹"; // Replace this with any emoji or HTML entity
   
       if (["schedule_site_visit", "get_callback", "brochure"].includes(action)) {
+        setMsgFromResponse("Please Provide Your Information, We Are Happy To Help!");
         setFormType(action);
         setFormVisible(true);
       } else {
@@ -895,13 +932,7 @@ const ChatbotWidget = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    {msgFromResponse ? (
-                      <h3 className="text-center mt-4">{msgFromResponse}</h3>
-                    ) : (
-                      <h3 className="text-center mt-4">
-                        Please Introduce Yourself:
-                      </h3>
-                    )}
+                    <h3 className="text-center mt-4">{msgFromResponse}</h3>
                   </div>
 
                   <form
