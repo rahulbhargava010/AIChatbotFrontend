@@ -42,6 +42,7 @@ const ModernChatbotWidget = () => {
   const [formType, setFormType] = useState("");
   const [buttonContent, setButtonContent] = useState({});
   const [isTyping, setIsTyping] = useState(false);
+  const [whileTyping, setWhileTyping] = useState(false);
   const [leadData, setLeadData] = useState({
     name: "",
     phone: "",
@@ -51,12 +52,16 @@ const ModernChatbotWidget = () => {
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
-  const [msgFromResponse, setMsgFromResponse] = useState("");
+  const [msgFromResponse, setMsgFromResponse] = useState(
+    "Please Introduce Yourself"
+  );
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [checkedItems, setCheckedItems] = useState({
     option1: false,
     option2: false,
   });
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
   // Speech recognition states
   const [speechRecognition, setSpeechRecognition] = useState(null);
@@ -118,23 +123,34 @@ const ModernChatbotWidget = () => {
     };
   }, [speechRecognition]);
 
+  // Automatically hide the first screen after 5 seconds
+  useEffect(() => {
+    if (showFirstScreen) {
+      const timer = setTimeout(() => {
+        setShowFirstScreen(false);
+        setChatInitialized(true);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showFirstScreen]);
+
   // Hide the first screen immediately when Get Started is clicked
   const handleGetStarted = () => {
     setShowFirstScreen(false);
-    // Ensure the chat is initialized and visible
     setChatInitialized(true);
   };
 
   // Show form after a certain time if not interacting
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!formVisible && !isTyping && messages.length > 5) {
+      if (!formVisible && !isTyping && messages.length > 5 && !formSubmitted) {
         setFormVisible(true);
       }
     }, 180000); // 3 minutes
 
     return () => clearInterval(interval);
-  }, [formVisible, isTyping, messages.length]);
+  }, [formVisible, isTyping, messages.length, formSubmitted]);
 
   // Track UTM parameters
   useEffect(() => {
@@ -153,17 +169,24 @@ const ModernChatbotWidget = () => {
   useEffect(() => {
     if (rating) {
       if (formSubmitted) {
-        api.post("/conversations/addRating", {
-          leadId: leadData.id,
-          chatbotId,
-          rating,
-          sessionId,
-          review,
-        });
-        setRating("");
-        setTimeout(() => {
-          setShowRating(false);
-        }, 3000);
+        const submitRating = async () => {
+          try {
+            await api.post("/conversations/addRating", {
+              leadId: leadData.id,
+              chatbotId,
+              rating,
+              sessionId,
+              review,
+            });
+            setRating("");
+            setTimeout(() => {
+              setShowRating(false);
+            }, 3000);
+          } catch (error) {
+            console.error("Error submitting rating:", error);
+          }
+        };
+        submitRating();
       } else {
         setShowRating(false);
         setFormVisible(true);
@@ -231,6 +254,8 @@ const ModernChatbotWidget = () => {
           projectLogo,
         } = response.data;
 
+        console.log("Welcome response data:", response.data);
+
         setWebhook(webhook || "");
         setProjectLogo(projectLogo || "");
         setProjectImages(projectImages || []);
@@ -246,20 +271,21 @@ const ModernChatbotWidget = () => {
         }
 
         // Prepare messages but don't show them until first screen is dismissed
+        // Removed interior buttons as requested
         const initialMessages = [
           { sender: "Bot", text: greeting, timestamp: new Date() },
           { sender: "Bot", text: chatbotGreeting, timestamp: new Date() },
           { sender: "Bot", text: projectHighlights, timestamp: new Date() },
-          { images: projectImages, timestamp: new Date() },
-          {
-            buttons: buttons || [
-              { label: "Features", action: "features" },
-              { label: "Location", action: "location" },
-              { label: "Contact Us", action: "schedule_site_visit" },
-            ],
-            timestamp: new Date(),
-          },
         ];
+
+        if (projectImages && projectImages.length > 0) {
+          initialMessages.push({
+            images: projectImages,
+            timestamp: new Date(),
+          });
+        }
+
+        // Buttons removed from initial messages as requested
 
         setMessages(initialMessages);
       } catch (err) {
@@ -303,10 +329,7 @@ const ModernChatbotWidget = () => {
             timestamp: new Date(),
           },
           { images: dummyData.projectImages, timestamp: new Date() },
-          {
-            buttons: dummyData.buttons,
-            timestamp: new Date(),
-          },
+          // Buttons removed as requested
         ]);
       }
     };
@@ -504,7 +527,9 @@ const ModernChatbotWidget = () => {
 
   // Handle sending messages
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isButtonDisabled) return;
+
+    setIsButtonDisabled(true); // Disable button to prevent multiple submissions
 
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -518,11 +543,13 @@ const ModernChatbotWidget = () => {
     // If more than 10 user messages and no form submitted yet, show form
     if (userSenderCount >= 10 && !formSubmitted) {
       setFormVisible(true);
+      setIsButtonDisabled(false); // Re-enable button
       return;
     }
 
     try {
       setIsTyping(true);
+      setWhileTyping(true);
       const currentInput = input;
       setInput("");
 
@@ -533,12 +560,32 @@ const ModernChatbotWidget = () => {
 
       const { reply, score } = response.data;
 
-      if (reply === "form") {
+      if (reply && reply.toLowerCase().includes("form")) {
         setFormVisible(true);
-        setMsgFromResponse(
-          "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
-        );
+        if (reply.toLowerCase().includes("sitevisit")) {
+          setMsgFromResponse(
+            "To Book The Site Visit Please Fill Out the Form."
+          );
+        } else if (reply.toLowerCase().includes("brochure")) {
+          setMsgFromResponse(
+            "To Download The Brouchure Please Fill Out the Form."
+          );
+        } else if (reply.toLowerCase().includes("payments")) {
+          setMsgFromResponse(
+            "To Know More About The Payment Plan Please Fill Out the Form."
+          );
+        } else if (reply.toLowerCase().includes("sorry")) {
+          setMsgFromResponse(
+            "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
+          );
+        } else {
+          setMsgFromResponse(
+            "Please Fill Out the Form Below and We'll Get Back to You"
+          );
+        }
         setIsTyping(false);
+        setWhileTyping(false);
+        setIsButtonDisabled(false);
         return;
       }
 
@@ -550,6 +597,7 @@ const ModernChatbotWidget = () => {
           { sender: "Bot", text: formattedReply, score, timestamp: new Date() },
         ]);
         setIsTyping(false);
+        setWhileTyping(false);
       }, 800);
 
       await api.post("analytics/saveEvent", {
@@ -560,18 +608,20 @@ const ModernChatbotWidget = () => {
       });
     } catch (err) {
       console.error("Failed to send message:", err);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          sender: "Bot",
-          text: "Sorry, something went wrong. Please try again.",
-          timestamp: new Date(),
-        },
-      ]);
+      setFormVisible(true);
+      setMsgFromResponse(
+        "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
+      );
       setIsTyping(false);
+      setWhileTyping(false);
     }
 
     saveConversation(sessionId);
+
+    // Re-enable button after delay
+    setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 2000);
   };
 
   // Handle keyboard entry
@@ -592,6 +642,9 @@ const ModernChatbotWidget = () => {
       ) {
         setFormType(action);
         setFormVisible(true);
+        setMsgFromResponse(
+          "Please Provide Your Information, We Are Happy To Help!"
+        );
       } else {
         setFormVisible(false);
         setChatVisible(true);
@@ -603,6 +656,25 @@ const ModernChatbotWidget = () => {
 
         // Show typing indicator
         setIsTyping(true);
+        setWhileTyping(true);
+
+        // Format the content with bullet points if it's a text block
+        const formatContent = (content) => {
+          if (!content) return `Information about ${label}`;
+
+          // If content has multiple lines, add bullet points
+          if (content.includes("\n")) {
+            const icon = "🔹"; // Use emoji as bullet
+            return content
+              .split("\n")
+              .map((line) => line.trim())
+              .filter((line) => line)
+              .map((line) => (line.endsWith(".") ? `${icon} ${line}` : line))
+              .join("\n");
+          }
+
+          return content;
+        };
 
         // Simulate response delay
         setTimeout(() => {
@@ -610,18 +682,20 @@ const ModernChatbotWidget = () => {
             ...prevMessages,
             {
               sender: "Bot",
-              text:
-                buttonContent[action] || `Here's information about ${label}...`,
+              text: formatContent(buttonContent[action]),
               timestamp: new Date(),
             },
           ]);
           setIsTyping(false);
+          setWhileTyping(false);
         }, 800);
       }
 
       saveConversation(storedSessionId);
     } catch (err) {
       console.error("Error fetching content:", err);
+      setIsTyping(false);
+      setWhileTyping(false);
     }
   };
 
@@ -685,14 +759,22 @@ const ModernChatbotWidget = () => {
   // Placeholder for the logo
   const renderLogo = () => {
     if (projectLogo) {
+      let logoUrl = projectLogo;
+
+      // If the logo path doesn't start with http, prepend the base URL
+      if (!projectLogo.startsWith("http")) {
+        logoUrl = `https://assist-ai.propstory.com/${projectLogo}`;
+      }
+
       return (
         <img
-          src={projectLogo}
+          src={logoUrl}
           alt="Logo"
           className="modern-chatbot-logo"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "https://via.placeholder.com/150x60?text=Logo";
+            e.target.src =
+              "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
           }}
         />
       );
@@ -815,7 +897,7 @@ const ModernChatbotWidget = () => {
 
                     <form
                       className="modern-contact-form"
-                      onSubmit={async (e) =>
+                      onSubmit={(e) =>
                         handleLeadSubmit(
                           e,
                           leadData,
@@ -825,16 +907,14 @@ const ModernChatbotWidget = () => {
                           setMessages,
                           setFormVisible,
                           setFormSubmitted,
-                          setChatVisible,
                           setShowRating,
+                          setChatVisible,
                           setIsTyping,
                           uniqueSessionId,
                           messages,
-                          api
+                          setIsSubmitDisabled
                         )
                       }
-                      onFocus={() => setIsTyping(true)}
-                      onBlur={() => setIsTyping(false)}
                     >
                       <div className="modern-form-group">
                         <label htmlFor="name">Full Name</label>
@@ -900,12 +980,15 @@ const ModernChatbotWidget = () => {
                         } call center to contact me for sales and support`}
                         checked={checkedItems.option1}
                         onChange={handleChange}
-                        required
                         className="modern-form-checkbox"
                       /> */}
 
-                      <button type="submit" className="modern-form-submit">
-                        SUBMIT
+                      <button
+                        type="submit"
+                        className="modern-form-submit"
+                        disabled={isSubmitDisabled}
+                      >
+                        {isSubmitDisabled ? "PROCESSING..." : "SUBMIT"}
                       </button>
                     </form>
                   </div>
@@ -964,7 +1047,10 @@ const ModernChatbotWidget = () => {
                       </button>
                       <button
                         onClick={() => {
-                          window.open("https://wa.me/+919999999999", "_blank");
+                          // Use the actual phone number from API if available
+                          const phoneNumber =
+                            chatbotData?.phoneNumber || "+919999999999";
+                          window.open(`https://wa.me/${phoneNumber}`, "_blank");
                           setIsOpen(false);
                         }}
                       >
@@ -1125,7 +1211,7 @@ const ModernChatbotWidget = () => {
                 })}
 
                 {/* Typing Indicator */}
-                {isTyping && (
+                {isTyping && whileTyping && (
                   <div className="modern-message modern-bot-message">
                     <div className="modern-typing-indicator">
                       <span></span>
@@ -1164,7 +1250,7 @@ const ModernChatbotWidget = () => {
             <div className="modern-input-area">
               <div className="modern-input-container">
                 {/* Optional mic button */}
-                <button
+                {/* <button
                   className={`modern-mic-button ${
                     isRecording ? "recording" : ""
                   }`}
@@ -1174,7 +1260,7 @@ const ModernChatbotWidget = () => {
                   }
                 >
                   <Mic size={20} />
-                </button>
+                </button> */}
 
                 <input
                   type="text"
@@ -1187,10 +1273,10 @@ const ModernChatbotWidget = () => {
 
                 <button
                   className={`modern-send-button ${
-                    !input.trim() ? "disabled" : ""
+                    !input.trim() || isButtonDisabled ? "disabled" : ""
                   }`}
                   onClick={handleSendMessage}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isButtonDisabled}
                   aria-label="Send message"
                 >
                   <Send size={20} />

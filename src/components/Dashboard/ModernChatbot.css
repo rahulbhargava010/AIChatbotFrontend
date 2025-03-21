@@ -1,4 +1,4 @@
-/* Modern Chatbot CSS */
+/* Modern Chatbot CSS - Improved for Responsiveness */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 /* Animation keyframes */
@@ -35,15 +35,6 @@
     opacity: 0;
   }
   to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInSmooth {
-  0% {
-    opacity: 0;
-  }
-  100% {
     opacity: 1;
   }
 }
@@ -91,6 +82,10 @@
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   transition: all 0.3s ease-in-out;
+  width: 380px;
+  max-width: calc(
+    100vw - 40px
+  ); /* Ensure it doesn't overflow on small screens */
 }
 
 .modern-chatbot-hidden {
@@ -100,7 +95,7 @@
 }
 
 .modern-chatbot-container {
-  width: 380px;
+  width: 100%;
   height: 600px;
   background: #ffffff;
   border-radius: 16px;
@@ -110,6 +105,7 @@
   overflow: hidden;
   transition: all 0.3s ease-in-out;
   position: relative;
+  max-height: 80vh; /* Prevent excessive height on small screens */
 }
 
 /* Header styles */
@@ -117,7 +113,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 12px 16px;
   background: linear-gradient(to right, #6a11cb, #2575fc);
   color: white;
   animation: fadeIn 0.3s ease-in-out;
@@ -141,6 +137,7 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ffffff;
+  flex-shrink: 0;
 }
 
 .modern-placeholder-logo {
@@ -154,12 +151,16 @@
   border: 2px solid #ffffff;
   font-size: 18px;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .modern-header-info h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modern-status {
@@ -175,6 +176,7 @@
   height: 8px;
   border-radius: 50%;
   background: #4caf50;
+  flex-shrink: 0;
 }
 
 .modern-header-actions {
@@ -186,14 +188,15 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: white;
   transition: background 0.2s ease;
+  flex-shrink: 0;
 }
 
 .modern-icon-button:hover {
@@ -213,7 +216,7 @@
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   width: 200px;
-  z-index: 10;
+  z-index: 100; /* Increased z-index to ensure visibility */
   animation: fadeIn 0.2s ease-in-out;
 }
 
@@ -246,6 +249,7 @@
   gap: 16px;
   background: #f5f7fb;
   position: relative;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .modern-chat-window::-webkit-scrollbar {
@@ -265,6 +269,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .modern-message {
@@ -289,10 +294,10 @@
   line-height: 1.5;
   white-space: pre-line;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  word-break: break-word; /* Ensure long words don't overflow */
 }
 
 .modern-user-message .modern-message-bubble {
-  background: #6a11cb;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
   border-top-right-radius: 4px;
@@ -309,17 +314,8 @@
   color: #999;
   margin-top: 2px;
   align-self: flex-end;
-  width: 100%;
+  width: auto; /* Changed from 100% to auto */
   text-align: right;
-}
-
-.modern-user-message .modern-message-time {
-  align-self: flex-end;
-}
-
-/* All timestamps should be right-aligned */
-.modern-bot-message .modern-message-time {
-  align-self: flex-end;
 }
 
 .modern-image-gallery {
@@ -405,6 +401,7 @@
   overflow-x: auto;
   background: white;
   border-top: 1px solid #eee;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .modern-quick-buttons::-webkit-scrollbar {
@@ -438,7 +435,7 @@
 
 /* Input area */
 .modern-input-area {
-  padding: 16px;
+  padding: 12px 16px 16px;
   background: white;
   border-top: 1px solid #eee;
 }
@@ -449,7 +446,7 @@
   gap: 8px;
   background: #f5f7fb;
   border-radius: 24px;
-  padding: 0 8px;
+  padding: 4px 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
 }
 
@@ -457,10 +454,10 @@
   background: none;
   border: none;
   border-radius: 50%;
-  min-width: 40px;
-  min-height: 40px;
-  width: 40px;
-  height: 40px;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -482,7 +479,7 @@
 .modern-chat-input {
   flex: 1;
   border: none;
-  padding: 12px 8px;
+  padding: 10px 8px;
   outline: none;
   font-size: 15px;
   background: transparent;
@@ -490,13 +487,13 @@
 }
 
 .modern-send-button {
-  background: #6a11cb;
+  background: #6a11cb !important;
   border: none;
   border-radius: 50%;
-  min-width: 40px;
-  min-height: 40px;
-  width: 40px;
-  height: 40px;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -538,25 +535,27 @@
   right: 0;
   bottom: 0;
   background: white;
-  z-index: 5;
+  z-index: 50;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .modern-form-container {
   padding: 20px;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  max-height: 90vh;
+  max-height: 100%;
+  position: relative;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .modern-close-form {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: none;
+  background: rgba(0, 0, 0, 0.1);
   border: none;
   cursor: pointer;
   font-size: 24px;
@@ -564,20 +563,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   transition: background 0.2s ease;
-  z-index: 10;
+  z-index: 60;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .modern-close-form:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .modern-form-success {
   text-align: center;
-  padding: 40px 0;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -627,13 +627,15 @@
 .modern-form-header {
   margin-bottom: 20px;
   text-align: left;
+  position: relative;
 }
 
 .modern-form-header h3 {
   font-size: 18px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  position: relative;
 }
 
 .modern-form-header h3::after {
@@ -738,7 +740,7 @@
 }
 
 .modern-form-submit {
-  background: #7629c8;
+  background: #7629c8 !important;
   color: white;
   border: none;
   border-radius: 8px;
@@ -753,7 +755,7 @@
 }
 
 .modern-form-submit:hover {
-  background: #6922b4;
+  background: #6922b4 !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(118, 41, 200, 0.3);
 }
@@ -814,7 +816,7 @@
 }
 
 .modern-start-button {
-  background: white;
+  background: white !important;
   color: #6a11cb;
   border: none;
   border-radius: 24px;
@@ -839,7 +841,7 @@
   right: 0;
   bottom: 0;
   background: rgba(245, 247, 251, 0.95);
-  z-index: 10;
+  z-index: 60;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -945,116 +947,6 @@ textarea:focus {
   box-shadow: 0 0 0 1px rgba(106, 17, 203, 0.3);
 }
 
-/* Responsive styles */
-@media (max-width: 480px) {
-  .modern-chatbot-container {
-    width: 100%;
-    max-width: 380px;
-    height: 90vh;
-    margin: 0 auto;
-  }
-
-  .modern-chatbot-wrapper {
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .modern-header {
-    padding: 12px;
-  }
-
-  .modern-chat-window {
-    padding: 12px;
-  }
-
-  .modern-message {
-    max-width: 85%;
-  }
-
-  .modern-input-area {
-    padding: 12px;
-  }
-
-  .modern-form-container {
-    padding: 16px;
-    overflow-y: auto;
-  }
-
-  .modern-form-fields {
-    max-height: calc(90vh - 100px);
-    overflow-y: auto;
-    padding-right: 10px;
-    margin-bottom: 20px;
-  }
-
-  .modern-rating-content {
-    width: 95%;
-  }
-
-  .modern-emoji {
-    transform: scale(0.9);
-  }
-
-  .modern-emoji.selected {
-    transform: scale(1.1);
-  }
-
-  .modern-emoji-icon {
-    font-size: 24px;
-  }
-
-  .modern-emoji span {
-    font-size: 10px;
-  }
-
-  /* Improve form styling on mobile */
-  .modern-form-group input,
-  .phone-input,
-  .modern-review-input {
-    font-size: 16px !important; /* Prevent iOS zoom on focus */
-  }
-
-  .modern-form-submit {
-    margin-bottom: 16px;
-  }
-
-  /* Ensure checkbox is easily clickable on mobile */
-  .form-check-input {
-    min-width: 20px;
-    min-height: 20px;
-  }
-
-  .form-check-label {
-    padding-left: 5px;
-  }
-}
-
-@media (max-width: 320px) {
-  .modern-chatbot-container {
-    height: 85vh;
-  }
-
-  .modern-form-header h3 {
-    font-size: 18px;
-  }
-
-  .modern-emoji-rating {
-    gap: 5px;
-  }
-
-  .modern-emoji-icon {
-    font-size: 20px;
-  }
-
-  .modern-emoji span {
-    font-size: 9px;
-  }
-}
-
 /* Fix for React-Bootstrap Form elements */
 .form-check {
   display: flex;
@@ -1116,6 +1008,7 @@ textarea:focus {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
   padding-left: 50px !important;
   transition: all 0.2s ease-in-out !important;
+  box-sizing: border-box !important;
 }
 
 .react-tel-input .form-control:focus {
@@ -1145,51 +1038,254 @@ textarea:focus {
   margin: 10px 0 !important;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
   border-radius: 8px !important;
-  z-index: 20 !important;
+  z-index: 70 !important;
 }
 
+/* Responsive styles - Mobile devices */
 @media (max-width: 480px) {
+  .modern-chatbot-wrapper {
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    max-width: calc(100vw - 40px);
+    height: auto;
+  }
+
   .modern-chatbot-container {
     width: 100%;
-    height: 100vh;
-    border-radius: 0;
+    height: 500px; /* Fixed height instead of full screen */
+    max-height: 80vh; /* Limit height on smaller screens */
+    border-radius: 16px; /* Keep rounded corners */
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15); /* Keep shadow */
   }
 
-  .modern-form-container {
-    padding: 16px;
-    max-height: calc(100vh - 100px);
+  .modern-header {
+    padding: 12px 16px;
   }
 
-  .modern-form-group input,
-  .modern-form-group textarea {
-    font-size: 16px;
+  .modern-header-left {
+    gap: 8px;
   }
 
-  .modern-form-submit {
-    margin-bottom: 16px;
+  .modern-header-info h3 {
+    font-size: 15px;
   }
 
-  .modern-input-area {
+  .modern-chat-window {
     padding: 12px;
   }
 
-  .modern-send-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #6a11cb;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  .modern-message {
+    max-width: 85%;
   }
 
-  .modern-send-button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  .modern-message-bubble {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .modern-image-gallery {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modern-chat-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    aspect-ratio: 16/9;
+  }
+
+  .modern-input-area {
+    padding: 10px;
+  }
+
+  .modern-input-container {
+    padding: 4px 10px;
+  }
+
+  /* Increase button size for better visibility on mobile */
+  .modern-mic-button,
+  .modern-send-button {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modern-mic-button svg,
+  .modern-send-button svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modern-icon-button {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modern-icon-button svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modern-form-overlay {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modern-form-container {
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Make close button more visible */
+  .modern-close-form {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+
+  .modern-close-form svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modern-form-fields {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    padding-top: 10px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding-right: 30px; /* Make room for close button */
+  }
+
+  .modern-form-group {
+    margin-bottom: 20px;
+  }
+
+  .modern-form-group label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .modern-form-group input,
+  .modern-form-group textarea,
+  .phone-input {
+    font-size: 16px !important; /* Prevent zooming on iOS */
+    padding: 12px !important;
+    height: 50px !important;
+  }
+
+  .modern-form-submit {
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  .modern-rating-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modern-emoji-rating {
+    margin: 15px 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.9);
+  }
+
+  .modern-emoji-icon {
+    font-size: 28px; /* Larger emoji for better visibility */
+  }
+
+  .modern-emoji span {
+    font-size: 12px;
+  }
+
+  /* Fix form inputs for iOS */
+  .modern-form-group input,
+  .phone-input,
+  .modern-review-input {
+    font-size: 16px !important;
+  }
+
+  /* Ensure checkboxes are easily tappable */
+  .form-check-input {
+    min-width: 20px;
+    min-height: 20px;
+  }
+
+  /* Make phone input more visible */
+  .react-tel-input .form-control {
+    height: 50px !important;
+    font-size: 16px !important;
+  }
+
+  .react-tel-input .selected-flag {
+    height: 48px !important;
+    padding: 0 15px 0 15px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-emoji-rating {
+    gap: 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.8);
+  }
+
+  .modern-emoji-icon {
+    font-size: 20px;
+  }
+
+  .modern-emoji span {
+    font-size: 9px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 15px;
+  }
+
+  .modern-quick-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* iPhone-specific form fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Target iOS devices */
+  .modern-form-group input,
+  .phone-input,
+  .modern-chat-input,
+  .modern-review-input {
+    font-size: 16px !important; /* Prevent auto zooming */
+  }
+
+  .modern-form-overlay {
+    /* Fix scrolling issues on iOS */
+    height: 100%;
+    position: fixed;
+  }
+
+  .modern-chat-window {
+    /* Fix momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 }
