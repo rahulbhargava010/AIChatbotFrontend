@@ -39,6 +39,15 @@
   }
 }
 
+@keyframes fadeInSmooth {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(20px);
@@ -103,18 +112,6 @@
   position: relative;
 }
 
-.modern-full-screen {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  width: 100vw !important;
-  height: 100vh !important;
-  border-radius: 0;
-  z-index: 10000;
-}
-
 /* Header styles */
 .modern-header {
   display: flex;
@@ -123,6 +120,8 @@
   padding: 16px;
   background: linear-gradient(to right, #6a11cb, #2575fc);
   color: white;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 10;
 }
 
 .modern-header-left {
@@ -142,6 +141,19 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ffffff;
+}
+
+.modern-placeholder-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #ffffff;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .modern-header-info h3 {
@@ -292,6 +304,24 @@
   border-top-left-radius: 4px;
 }
 
+.modern-message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+  align-self: flex-end;
+  width: 100%;
+  text-align: right;
+}
+
+.modern-user-message .modern-message-time {
+  align-self: flex-end;
+}
+
+/* All timestamps should be right-aligned */
+.modern-bot-message .modern-message-time {
+  align-self: flex-end;
+}
+
 .modern-image-gallery {
   display: flex;
   flex-wrap: wrap;
@@ -327,11 +357,14 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .modern-option-button:hover {
   background: #f0f0f0;
   border-color: #ccc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .modern-typing-indicator {
@@ -393,10 +426,14 @@
   cursor: pointer;
   border: none;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .modern-quick-button:hover {
   background: #e5e5e5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 /* Input area */
@@ -413,20 +450,24 @@
   background: #f5f7fb;
   border-radius: 24px;
   padding: 0 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
 }
 
 .modern-mic-button {
   background: none;
   border: none;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: #6a11cb;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .modern-mic-button:hover {
@@ -441,16 +482,19 @@
 .modern-chat-input {
   flex: 1;
   border: none;
-  padding: 12px 0;
+  padding: 12px 8px;
   outline: none;
   font-size: 15px;
   background: transparent;
+  min-width: 0;
 }
 
 .modern-send-button {
   background: #6a11cb;
   border: none;
   border-radius: 50%;
+  min-width: 40px;
+  min-height: 40px;
   width: 40px;
   height: 40px;
   display: flex;
@@ -459,15 +503,18 @@
   cursor: pointer;
   color: white;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .modern-send-button:hover {
   background: #5a0fb6;
+  transform: scale(1.05);
 }
 
 .modern-send-button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .modern-powered-by {
@@ -497,20 +544,12 @@
 }
 
 .modern-form-container {
-  flex: 1;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  position: relative;
-  background: linear-gradient(
-    100deg,
-    #f8dfe3,
-    #e6d9f3,
-    #fcf6f8,
-    #f0cbd2,
-    #e6d9f3
-  );
+  max-height: 90vh;
 }
 
 .modern-close-form {
@@ -529,6 +568,7 @@
   height: 32px;
   border-radius: 50%;
   transition: background 0.2s ease;
+  z-index: 10;
 }
 
 .modern-close-form:hover {
@@ -585,20 +625,32 @@
 }
 
 .modern-form-header {
-  margin-bottom: 24px;
-  text-align: center;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .modern-form-header h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  margin-bottom: 8px;
   color: #333;
+  margin-bottom: 12px;
+}
+
+.modern-form-header h3::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #7629c8;
+  border-radius: 2px;
 }
 
 .modern-form-header p {
   font-size: 14px;
   color: #666;
+  margin-bottom: 20px;
 }
 
 .modern-contact-form {
@@ -608,30 +660,60 @@
 }
 
 .modern-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .modern-form-group label {
   font-size: 14px;
   font-weight: 500;
   color: #333;
+  margin-bottom: 8px;
+  display: block;
 }
 
-.modern-form-group input {
-  padding: 12px 16px;
+.modern-form-group input,
+.modern-form-group textarea {
+  width: 100%;
+  padding: 12px;
   border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  transition: border-color 0.2s ease;
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  box-sizing: border-box;
 }
 
-.modern-form-group input:focus {
-  border-color: #6a11cb;
+.modern-form-group input:focus,
+.modern-form-group textarea:focus {
+  border-color: #7629c8;
   outline: none;
-  background: white;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1);
+}
+
+/* Phone Input */
+.phone-input-container {
+  width: 100%;
+}
+
+.phone-input {
+  width: 100% !important;
+  height: 45px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  padding-left: 60px !important;
+}
+
+.phone-select-button {
+  background-color: transparent !important;
+  border: none !important;
+  border-right: 1px solid #e0e0e0 !important;
+}
+
+.phone-dropdown {
+  max-height: 200px !important;
+  overflow-y: auto !important;
 }
 
 .modern-form-checkbox {
@@ -640,17 +722,23 @@
   gap: 8px;
   font-size: 14px;
   color: #555;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .modern-form-checkbox input {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   margin-top: 3px;
 }
 
+.modern-form-checkbox label {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.3;
+}
+
 .modern-form-submit {
-  background: #6a11cb;
+  background: #7629c8;
   color: white;
   border: none;
   border-radius: 8px;
@@ -658,25 +746,34 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
-  margin-top: 8px;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(118, 41, 200, 0.2);
 }
 
 .modern-form-submit:hover {
-  background: #5a0fb6;
+  background: #6922b4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(118, 41, 200, 0.3);
 }
 
 /* First screen */
 .modern-first-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   padding: 24px;
   text-align: center;
   background: linear-gradient(to right, #6a11cb, #2575fc);
   color: white;
+  z-index: 20;
 }
 
 .modern-first-screen-content {
@@ -693,6 +790,14 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid white;
+}
+
+.modern-first-screen .modern-placeholder-logo {
+  width: 80px;
+  height: 80px;
+  font-size: 36px;
+  border: 3px solid white;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .modern-first-screen h2 {
@@ -829,21 +934,33 @@
   background: #5a0fb6;
 }
 
+/* Accessibility improvements */
+button:focus {
+  outline: 2px solid rgba(106, 17, 203, 0.3);
+  outline-offset: 2px;
+}
+
+textarea:focus {
+  outline: 2px solid rgba(106, 17, 203, 0.3);
+  box-shadow: 0 0 0 1px rgba(106, 17, 203, 0.3);
+}
+
 /* Responsive styles */
 @media (max-width: 480px) {
   .modern-chatbot-container {
     width: 100%;
-    height: 100%;
-    border-radius: 0;
-    bottom: 0;
-    right: 0;
-    position: fixed;
+    max-width: 380px;
+    height: 90vh;
+    margin: 0 auto;
   }
 
   .modern-chatbot-wrapper {
     bottom: 0;
     right: 0;
+    left: 0;
     width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   .modern-header {
@@ -864,93 +981,215 @@
 
   .modern-form-container {
     padding: 16px;
+    overflow-y: auto;
+  }
+
+  .modern-form-fields {
+    max-height: calc(90vh - 100px);
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 20px;
   }
 
   .modern-rating-content {
     width: 95%;
   }
 
-  .modern-form-checkbox {
-    align-items: flex-start;
+  .modern-emoji {
+    transform: scale(0.9);
   }
 
-  .modern-form-checkbox input {
-    margin-top: 3px;
+  .modern-emoji.selected {
+    transform: scale(1.1);
+  }
+
+  .modern-emoji-icon {
+    font-size: 24px;
+  }
+
+  .modern-emoji span {
+    font-size: 10px;
+  }
+
+  /* Improve form styling on mobile */
+  .modern-form-group input,
+  .phone-input,
+  .modern-review-input {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+
+  .modern-form-submit {
+    margin-bottom: 16px;
+  }
+
+  /* Ensure checkbox is easily clickable on mobile */
+  .form-check-input {
+    min-width: 20px;
+    min-height: 20px;
+  }
+
+  .form-check-label {
+    padding-left: 5px;
   }
 }
 
-/* Compatibility with existing styles */
-.form-control {
-  display: block;
-  width: 100%;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #ced4da;
-  appearance: none;
-  border-radius: 0.25rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+@media (max-width: 320px) {
+  .modern-chatbot-container {
+    height: 85vh;
+  }
+
+  .modern-form-header h3 {
+    font-size: 18px;
+  }
+
+  .modern-emoji-rating {
+    gap: 5px;
+  }
+
+  .modern-emoji-icon {
+    font-size: 20px;
+  }
+
+  .modern-emoji span {
+    font-size: 9px;
+  }
 }
 
-.btn-primary {
-  background: #6a11cb !important;
-  border: none;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 8px;
-  width: 100%;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #5a0fb6 !important;
-}
-
-/* Overrides for Bootstrap form elements */
+/* Fix for React-Bootstrap Form elements */
 .form-check {
   display: flex;
   align-items: flex-start;
   min-height: 1.5rem;
-  margin-bottom: 0.125rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.8rem;
+  margin-top: 15px;
 }
 
 .form-check-input {
-  width: 1em;
-  height: 1em;
-  margin-top: 0.25em;
-  margin-right: 0.5rem;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  margin-left: -1.8rem;
+  margin-right: 0.8rem;
   vertical-align: top;
   background-color: #fff;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
   border: 1px solid rgba(0, 0, 0, 0.25);
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
+  border-radius: 3px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #7629c8;
+  border-color: #7629c8;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+  box-shadow: 0 1px 3px rgba(118, 41, 200, 0.2);
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(118, 41, 200, 0.15);
+  border-color: #7629c8;
 }
 
 .form-check-label {
   font-size: 14px;
-  color: #555;
+  color: #444;
+  line-height: 1.4;
+  user-select: none;
 }
 
-/* Make sure original Bootstrap classes don't override our modern styles */
-.modern-chatbot-container .btn,
-.modern-chatbot-container .form-control {
-  border-radius: 8px;
+/* Add proper styling for react-phone-input-2 */
+.react-tel-input .form-control {
+  width: 100% !important;
+  height: 45px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  background-color: white !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
+  padding-left: 50px !important;
+  transition: all 0.2s ease-in-out !important;
 }
 
-.modern-chatbot-container .btn-primary {
-  background: #6a11cb !important;
+.react-tel-input .form-control:focus {
+  box-shadow: 0 2px 8px rgba(118, 41, 200, 0.1) !important;
+  border-color: #7629c8 !important;
 }
 
-.modern-chatbot-container .form-check-input:checked {
-  background-color: #6a11cb;
-  border-color: #6a11cb;
+.react-tel-input .flag-dropdown {
+  border-radius: 8px 0 0 8px !important;
+  border-color: #e0e0e0 !important;
+  background-color: white !important;
+  border-right: 1px solid #e0e0e0 !important;
+}
+
+.react-tel-input .selected-flag {
+  padding: 0 12px 0 12px !important;
+  border-radius: 8px 0 0 8px !important;
+}
+
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.react-tel-input .country-list {
+  max-height: 200px !important;
+  margin: 10px 0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  z-index: 20 !important;
+}
+
+@media (max-width: 480px) {
+  .modern-chatbot-container {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .modern-form-container {
+    padding: 16px;
+    max-height: calc(100vh - 100px);
+  }
+
+  .modern-form-group input,
+  .modern-form-group textarea {
+    font-size: 16px;
+  }
+
+  .modern-form-submit {
+    margin-bottom: 16px;
+  }
+
+  .modern-input-area {
+    padding: 12px;
+  }
+
+  .modern-send-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #6a11cb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .modern-send-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
