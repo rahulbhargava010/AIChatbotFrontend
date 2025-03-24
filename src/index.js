@@ -9,22 +9,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
-        <HelmetProvider>
-            <App />
-        </HelmetProvider>
-    </React.StrictMode>
+
+    <HelmetProvider>
+        <App />
+    </HelmetProvider>
+  
 );
 
-// ReactDOM.render(
-//     <HelmetProvider>
-//         <React.StrictMode>
-//           <App />
-//         </React.StrictMode>
-//     </HelmetProvider>,
-//     document.getElementById("root")
-// );
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
