@@ -1271,104 +1271,110 @@ const ChatbotWidget = () => {
                     />
                   )}
 
-                  {messages?.map((message, index) => {
-                    const hasContent =
-                      message.text ||
-                      message.images?.length ||
-                      message.buttons?.length;
+{messages?.map((message, index) => {
+  const hasContent =
+    message.text ||
+    message.images?.length ||
+    message.buttons?.length;
 
-                    return hasContent ? (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }} // Start slightly below
-                        animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
-                        transition={{ duration: 0.3, ease: "linear" }} // Instant response
-                        className={`message ${
-                          message.sender === "User"
-                            ? "user-message"
-                            : "bot-message"
-                        }`}
-                      >
-                        <div
-                          className={`message ${
-                            message.sender === "User"
-                              ? "user-message"
-                              : "bot-message"
-                          }`}
-                        >
-                          {/* ✅ Text Message */}
-                          {message.text && (
-                            <div
-                              className="message-bubble"
-                              style={{
-                                backgroundColor: "rgb(231 218 243 / 51%)",
-                                boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-                                borderRadius: "10px",
-                                padding: "10px",
-                                Width: "100%", // Ensures message doesn't stretch too much
-                                width: "auto", // Adapts width to content
-                                lineHeight: "21px",
-                                margin: "5px 0",
-                                border: "2px solid rgb(255, 255, 255)",
-                                fontSize: "14px",
-                                textAlign: "left",
-                                whiteSpace: "pre-line",
-                                display: "inline-block", // Ensures width adapts to content
-                                wordWrap: "break-word", // Prevents long words from overflowing
-                              }}
-                            >
-                              {message.text}
-                            </div>
-                          )}
+  return hasContent ? (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, y: 10 }} // Start slightly below
+      animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
+      transition={{ duration: 0.3, ease: "linear" }} // Instant response
+      className={`message ${
+        message.sender === "User"
+          ? "user-message"
+          : "bot-message"
+      }`}
+    >
+      <div
+        className={`message ${
+          message.sender === "User"
+            ? "user-message"
+            : "bot-message"
+        }`}
+      >
+        {/* ✅ Text Message */}
+        {message.text && (
+          <div
+            className="message-bubble"
+            style={{
+              backgroundColor: "rgb(231 218 243 / 51%)",
+              boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+              borderRadius: "10px",
+              padding: "10px",
+              width: "auto !important", // Adapts width to content
+              lineHeight: "21px",
+              margin: "5px 0",
+              border: "2px solid rgb(255, 255, 255)",
+              fontSize: "14px",
+              textAlign: "left",
+              whiteSpace: "pre-wrap", // Ensures correct spacing
+              wordBreak: "break-word", // Prevents unwanted breaks
+            }}
+          >
+            {message.text
+              .replace(/\.{2,}/g, ".") // Replaces multiple dots with a single dot
+              .split("\n")
+              .map((line, idx) => (
+                <span key={idx}>
+                  {line}
+                  {idx !== message.text.split("\n").length - 1 && <br />}
+                </span>
+              ))}
+          </div>
+        )}
 
-                          {/* ✅ Image Message */}
-                          {message?.images && (
-                            <div className="image-container">
-                              {message.images.map((img, idx) => (
-                                <img
-                                  key={idx}
-                                  className="chatbot-logo-img"
-                                  src={`https://assist-ai.propstory.com/${img}`}
-                                  alt="Project Image"
-                                  height="200"
-                                  width="200"
-                                  style={{
-                                    borderRadius: "10%",
-                                    marginRight: "10px",
-                                    marginBottom: "2rem",
-                                  }}
-                                  onError={(e) =>
-                                    (e.target.style.display = "none")
-                                  } // Hide broken images
-                                />
-                              ))}
-                            </div>
-                          )}
+        {/* ✅ Image Message */}
+        {message?.images && (
+          <div className="image-container">
+            {message.images.map((img, idx) => (
+              <img
+                key={idx}
+                className="chatbot-logo-img"
+                src={`https://assist-ai.propstory.com/${img}`}
+                alt="Project Image"
+                height="200"
+                width="200"
+                style={{
+                  borderRadius: "10%",
+                  marginRight: "10px",
+                  marginBottom: "2rem",
+                }}
+                onError={(e) => (e.target.style.display = "none")} // Hide broken images
+              />
+            ))}
+          </div>
+        )}
 
-                          {/* ✅ Buttons */}
-                          {message?.buttons &&
-                            message?.buttons?.map((button, idx) => (
-                              <div
-                                className="d-flex flex-wrap justify-content-evenly text-center gap-2"
-                                key={idx}
-                              >
-                                <a
-                                  onClick={() =>
-                                    handleButtonClick(
-                                      button.action,
-                                      button.label
-                                    )
-                                  }
-                                  className="button-52"
-                                >
-                                  {button.label}
-                                </a>
-                              </div>
-                            ))}
-                        </div>
-                      </motion.div>
-                    ) : null;
-                  })}
+        {/* ✅ Buttons */}
+        {message?.buttons &&
+          message?.buttons?.map((button, idx) => (
+            <div
+              className="d-flex flex-wrap justify-content-evenly text-center gap-2"
+              key={idx}
+            >
+              <a
+                onClick={() =>
+                  handleButtonClick(
+                    button.action,
+                    button.label
+                  )
+                }
+                className="button-52"
+              >
+                {button.label}
+              </a>
+            </div>
+          ))}
+      </div>
+    </motion.div>
+  ) : null;
+})}
+
+
 
                   {/* ✅ Typing Animation */}
                   {isTyping && whileTyping &&(
@@ -1439,7 +1445,7 @@ const ChatbotWidget = () => {
                                      </a>
                                    </div>
                                  </div>
-                                 <div>
+                                 {/* <div>
                                    <small>
                                      Powered by{" "}
                                      <Link
@@ -1450,7 +1456,7 @@ const ChatbotWidget = () => {
                                        Propstory
                                      </Link>
                                    </small>
-                                 </div>
+                                 </div> */}
                                </div>
                 
               </>
