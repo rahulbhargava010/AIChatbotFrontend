@@ -647,7 +647,7 @@ body {
     width: 100%;
   }
   .user-message {
-    /* width: -webkit-fill-available; */
+    width: -webkit-fill-available;
     /* margin-right: -6rem; */
   }
   .mobile {
