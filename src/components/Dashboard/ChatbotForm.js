@@ -8,10 +8,13 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [gtm, setGTM] = useState("");
+  // const [gtm, setGTM] = useState("");
   const [conversation, setConversation] = useState("");
   const [chatbotId, setChatbotId] = useState("");
   const [webhook, setWebhook] = useState("");
+  const [website, setWebsite] = useState("");
+  const [conversion, setConversion] = useState("");
+  const [GTM, setGTM] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [buttonContent, setButtonContent] = useState({
@@ -81,6 +84,9 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     formData.append("name", name);
     formData.append("webhook", webhook);
     formData.append("phone", phone);
+    formData.append("website", website);
+    formData.append("conversion", conversion);
+    formData.append("GTM", GTM);
     // formData.append("button_content", JSON.stringify(buttonContent));
     if (buttonContent && typeof buttonContent === "object") {
       formData.append("buttonContent", JSON.stringify(buttonContent));
@@ -132,7 +138,11 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
         if (mode === "update" && Object.keys(initialData).length > 0) {
           setChatbotId(initialData?.chatbotDetails._id);
           setName(initialData?.chatbotDetails.name);
+          setPhone(initialData?.chatbotDetails.phone);
           setWebhook(initialData?.chatbotDetails.webhook);
+          setWebsite(initialData?.chatbotDetails.website);
+          setGTM(initialData?.chatbotDetails.GTM);
+          setConversion(initialData?.chatbotDetails.conversion);
           const prevContent = initialData?.chatbotDetails.button_content;
           setButtonContent(prevContent);
           // setProjectImages(initialData?.chatbotDetails.projectImages);
@@ -193,6 +203,40 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 onChange={(e) => setWebhook(e.target.value)}
                 className="form-control"
               />
+
+              <label htmlFor="chatbot-name" className="form-label">
+                Website
+              </label>
+              <input
+                // id="chatbot-name"
+                type="text"
+                placeholder="Enter Website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="form-control"
+              />
+              <label htmlFor="chatbot-name" className="form-label">
+                GTM Account ID
+              </label>
+              <input
+                // id="chatbot-name"
+                type="text"
+                placeholder="Enter GTM Account"
+                value={GTM}
+                onChange={(e) => setGTM(e.target.value)}
+                className="form-control"
+              />
+              <label htmlFor="chatbot-name" className="form-label">
+                Conversation ID
+              </label>
+              <input
+                // id="chatbot-name"
+                type="text"
+                placeholder="Enter Conversation ID"
+                value={conversion}
+                onChange={(e) => setConversion(e.target.value)}
+                className="form-control"
+              />
               <button
                 onClick={() => setStep(2)}
                 className="btn btn-primary w-100"
@@ -206,8 +250,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
             <div className="multi-step-form">
               <div className="mb-3">
                 <label>Map:</label>
-                <text
+                <input
+                  id="chatbot-map"
                   type="text"
+                  placeholder="Insert Map Iframe"
                   name="map"
                   value={buttonContent.map}
                   onChange={handleInputChange}
@@ -218,6 +264,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 <textarea
                   type="textarea"
                   name="highlight"
+                  placeholder="Insert Project Highlight keep it small"
                   value={buttonContent.highlight}
                   onChange={handleInputChange}
                   className="form-control"
@@ -227,6 +274,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 <textarea
                   type="text"
                   name="location"
+                  placeholder="Insert only project location details"
                   value={buttonContent.location}
                   onChange={handleInputChange}
                   className="form-control"
@@ -236,6 +284,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 <textarea
                   type="text"
                   name="amenities"
+                  placeholder="Insert All Amenities, can be separated by dot or pipe"
                   value={buttonContent.amenities}
                   onChange={handleInputChange}
                   className="form-control"
