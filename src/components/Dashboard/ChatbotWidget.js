@@ -331,14 +331,18 @@ const ChatbotWidget = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!formVisible && !isTyping) {
-        console.log("comming after every 10 second", formVisible, isTyping)
-        setFormVisible(true);
+      const userSenderCount = messages.filter(
+        (message) => message.sender === "User"
+      ).length;
+
+      if (isTyping == false && userSenderCount > 0) {
+          // console.log("comming after every 10 second", isTyping)
+          setFormVisible(true);
       }
     }, 10000); // Runs every 10 seconds
   
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [formVisible, isTyping]); // Dependencies
+  }, [isTyping]); // Dependencies
   
   
 
