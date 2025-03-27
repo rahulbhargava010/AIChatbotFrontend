@@ -810,8 +810,8 @@ const ModernChatbotWidget = () => {
                   {chatbotData?.chatbotName || "AI Assistant"}
                 </h2>
                 <p>
-                  👋 Hi there! I'm here to help answer your questions and
-                  provide information.
+                  Hi there! I'm an AI assistant designed to help you discover
+                  the perfect property.
                 </p>
                 <motion.button
                   className="modern-start-button"
@@ -1009,7 +1009,7 @@ const ModernChatbotWidget = () => {
                   <h3>{chatbotData?.chatbotName || "AI Assistant"}</h3>
                   <span className="modern-status">
                     <span className="modern-status-dot"></span>
-                    We are online to assist you
+                    Online
                   </span>
                 </div>
               </div>
@@ -1020,7 +1020,7 @@ const ModernChatbotWidget = () => {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Menu"
                   >
-                    <MoreVertical size={18} />
+                    <MoreVertical size={24} />
                   </button>
                   {isOpen && (
                     <div className="modern-dropdown-menu">
@@ -1036,7 +1036,7 @@ const ModernChatbotWidget = () => {
                         <MessageSquare size={16} />
                         <span>Talk to Human</span>
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => {
                           handleRateChat();
                           setIsOpen(false);
@@ -1044,7 +1044,7 @@ const ModernChatbotWidget = () => {
                       >
                         <Star size={16} />
                         <span>Rate this Chat</span>
-                      </button>
+                      </button> */}
                       <button
                         onClick={() => {
                           // Use the actual phone number from API if available
@@ -1060,13 +1060,6 @@ const ModernChatbotWidget = () => {
                     </div>
                   )}
                 </div>
-                <button
-                  className="modern-icon-button"
-                  onClick={handleClose}
-                  aria-label="Close chatbot"
-                >
-                  <X size={18} />
-                </button>
               </div>
             </div>
 
