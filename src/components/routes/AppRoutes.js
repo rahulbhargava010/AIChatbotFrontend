@@ -10,6 +10,8 @@ import LeadsTable from "../Dashboard/LeadsTable";
 import Conversations from "../Dashboard/Conversations";
 import UpdateChatbot from "../Dashboard/UpdateChatbot";
 import ChatbotWidget from "../Dashboard/ChatbotWidget";
+import ChatbotWidget2 from "../Dashboard/ChatbotWidget2";
+
 import TemplateSelection from "../Dashboard/TemplateSelection";
 import AdminAnalytics from "../Dashboard/AdminAnalytics";
 import ChatStats from "../Dashboard/ChatStats";
@@ -29,7 +31,7 @@ import { NewDash } from "../Dashboard/NewDash";
 import ChatbotCard from "../Dashboard/ChatbotCard";
 import LeadDetails from "../Dashboard/LeadDetails";
 import ChatbotList from "../Dashboard/ChatbotList";
-import ModernChatbotWidget from "../Dashboard/ModernChatbotWidget";
+// import ModernChatbotWidget from "../Dashboard/ModernChatbotWidget";
 
 const AppRoutes = () => {
   return (
@@ -41,10 +43,11 @@ const AppRoutes = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       <Route path="/chatbot-widget/:chatbotId" element={<ChatbotWidget />} />
-      <Route
+      <Route path="/chatbot-widget2/:chatbotId" element={<ChatbotWidget2 />} />
+      {/* <Route
         path="/chatbot-new-widget/:chatbotId"
         element={<ModernChatbotWidget />}
-      />
+      /> */}
 
       <Route element={<ProtectedRoute />}>
         <Route element={<ProtectedLayout />}>

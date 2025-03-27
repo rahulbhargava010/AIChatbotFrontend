@@ -488,6 +488,7 @@ const ChatbotWidget = () => {
 
 
   const handleSendMessage = async () => {
+    const icon = "🔹";
     if (!input.trim() || isButtonDisabled) return;
   
     setIsButtonDisabled(true); // Disable button
@@ -552,6 +553,11 @@ const ChatbotWidget = () => {
       
   
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
+      // reply.replace(/\.{2,}/g, ".") // Replace multiple dots with a single dot
+      // .split(/(?<!\d)\.(?!\d|\s?(cr|l|lakh|crore|k|m|b|rs))/gi) // Split only when dot is not in number/unit format
+      // .map((line) =>
+      //   line?.trim().endsWith(".") ? `${icon} ${line}` : line
+      // )
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: formattedReply, score },
@@ -678,7 +684,7 @@ const ChatbotWidget = () => {
                 .replace(/\.{2,}/g, ".") // Replace multiple dots with a single dot
                 .split(/(?<!\d)\.(?!\d|\s?(cr|l|lakh|crore|k|m|b|rs))/gi) // Split only when dot is not in number/unit format
                 .map((line) =>
-                  line.trim().endsWith(".") ? `${icon} ${line}` : line
+                  line?.trim().endsWith(".") ? `${icon} ${line}` : line
                 )
                 .join("\n"),
             },
@@ -750,6 +756,22 @@ const ChatbotWidget = () => {
   }, [messages]);
 
   useEffect(() => {
+    console.log('Iframe title checking');
+    console.log('Iframe title checking chatWindowRef useEffect', chatWindowRef);
+    if (chatWindowRef?.current) {
+      const title = chatWindowRef.current.getAttribute('title');
+      console.log('Iframe title:', title); // "Iframe Example"
+      // alert(Iframe title: ${title});
+    }
+    const iframe = document.getElementById('chatbot-widget-2');
+    if (iframe) {
+      const title = iframe.getAttribute('title');
+      console.log('Iframe title Direct:', title); // Should show "Rahul Propstory" or updated title
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    
     const fetchWelcomeData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -1319,14 +1341,22 @@ const ChatbotWidget = () => {
                               }}
                             >
                               {message?.text
-                                .replace(/\.{2,}/g, ".") // Replace multiple dots with a single dot
-                                .split(/(?<!\d)\.(?!\d|\s?(cr|l|lakh|crore|k|m|b|rs))/gi) // Split only when dot is not in number/unit format
-                                .flatMap((line, idx, arr) => [
+                                .replace(/\.{2,}/g, ".") // Replaces multiple dots with a single dot
+                                .split("\n")
+                                .map((line, idx) => (
                                   <span key={idx}>
-                                    {line?.trim()}
-                                    {idx !== arr?.length - 1 && <br />}
-                                  </span>,
-                              ])}
+                                    {line}
+                                    {idx !== message.text.split("\n").length - 1 && <br />}
+                                  </span>
+                              ))}
+                              {/* //   .replace(/\.{2,}/g, ".") // Replace multiple dots with a single dot
+                              //   .split(/(?<!\d)\.(?!\d|\s?(cr|l|lakh|crore|k|m|b|rs))/gi) // Split only when dot is not in number/unit format
+                              //   .flatMap((line, idx, arr) => [
+                              //     <span key={idx}>
+                              //       {line?.trim()}
+                              //       {idx !== arr?.length - 1 && <br />}
+                              //     </span>,
+                              // ])} */}
                               {/* {parse(formattedText(message.text))} */}
                             </div>
                           )}

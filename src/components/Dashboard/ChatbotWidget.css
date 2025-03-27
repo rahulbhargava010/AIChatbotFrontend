@@ -296,7 +296,7 @@ body {
   font-size: 13px;
 }
 .user-message {
-  /* width: -webkit-fill-available; */
+  width: -webkit-fill-available;
   /* margin-right: -1rem; */
 }
 .close_button {
