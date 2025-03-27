@@ -143,16 +143,23 @@
   justify-content: flex-start;
   width: 100%;
 }
-
-.message-bubble {
-  max-width: 88% !important;
+.bot-message .message-bubble{
+  max-width: 100% !important;
   padding: 10px;
   border-radius: 10px;
   border-top-left-radius: 0 !important;
   font-size: 12px;
   text-align: left;
   line-height: 1.4;
-  word-wrap: break-word;
+}
+.message-bubble {
+  max-width: 80% !important;
+  padding: 10px;
+  border-radius: 10px;
+  border-top-left-radius: 0 !important;
+  font-size: 12px;
+  text-align: left;
+  line-height: 1.4;
 }
 
 .user-message .message-bubble {

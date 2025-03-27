@@ -7,8 +7,8 @@ const generateEmbedScript = (chatbotId) => {
          iframe.style.position = 'fixed';
         iframe.style.bottom = window.innerWidth <= 768 ? '13%' : '85px';
      iframe.style.right = window.innerWidth <= 768 ? '3%' : '40px';
-     iframe.style.width = window.innerWidth <= 768 ? '95%' : '400px';
-     iframe.style.height = window.innerWidth <= 768 ? '85%' : '550px';
+     iframe.style.width = window.innerWidth <= 768 ? '95%' : '365px';
+     iframe.style.height = window.innerWidth <= 768 ? '85%' : '500px';
         iframe.style.border = 'none';
         iframe.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
         iframe.style.borderRadius = '10px';
@@ -63,8 +63,8 @@ const generateEmbedScript = (chatbotId) => {
                 chatbotIframe.style.display = 'block';
                 // toggleButton.innerText = 'Close';
                toggleImage.src = "http://assist-ai.propstory.com/uploads/letter-x-gif.gif"; 
-                chatbotIframe.style.width = window.innerWidth <= 768 ? '95%' : '400px';
-             chatbotIframe.style.height = window.innerWidth <= 768 ? '85%' : '550px';
+                chatbotIframe.style.width = window.innerWidth <= 768 ? '95%' : '365px';
+             chatbotIframe.style.height = window.innerWidth <= 768 ? '85%' : '500px';
              chatbotIframe.style.bottom = window.innerWidth <= 768 ? '13%' : '85px';
              chatbotIframe.style.right = window.innerWidth <= 768 ? '3%' : '40px';
                 console.log("width set to 550");
