@@ -1337,7 +1337,7 @@ const ChatbotWidget = () => {
                                 fontSize: "14px",
                                 textAlign: "left",
                                 whiteSpace: "pre-wrap", // Ensures correct spacing
-                                wordBreak: "break-word", // Prevents unwanted breaks
+                                wordBreak: "normal", // Prevents unwanted breaks
                               }}
                             >
                               {message?.text
