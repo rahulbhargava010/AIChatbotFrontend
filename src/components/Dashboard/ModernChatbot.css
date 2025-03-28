@@ -1285,7 +1285,7 @@ body {
   }
 }
 
-/* Make form appear in center of conversation */
+/* Inline form styles - UPDATED */
 .modern-fullwidth-form-container {
   width: 100%;
   display: flex;
@@ -1476,25 +1476,25 @@ body {
     padding: 10px; /* Further reduced for mobile */
     max-width: 260px; /* Even smaller on mobile */
   }
-
+  
   .modern-inline-form .modern-form-header h3 {
     font-size: 13px;
     margin-bottom: 8px;
   }
-
+  
   .modern-inline-form .modern-form-group {
     margin-bottom: 6px;
   }
-
+  
   .modern-inline-form label {
     font-size: 11px;
   }
-
+  
   .modern-inline-submit-button {
     padding: 8px;
     font-size: 12px;
   }
-
+  
   /* Ensure messages are more compact on mobile */
   .modern-messages {
     gap: 8px;
