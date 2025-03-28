@@ -1277,3 +1277,435 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 }
+/* Inline form styles */
+.modern-fullwidth-form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.modern-inline-form {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modern-inline-form .modern-form-header {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.modern-inline-form .modern-form-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 0;
+  border-bottom: none;
+  line-height: 1.4;
+}
+
+.modern-inline-form .modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modern-inline-form .modern-form-group {
+  margin-bottom: 12px;
+}
+
+.modern-inline-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modern-inline-form input,
+.modern-inline-form .react-tel-input .form-control {
+  width: 100%;
+  padding: 10px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  box-sizing: border-box;
+  height: 42px !important;
+}
+
+.modern-inline-form input:focus,
+.modern-inline-form .react-tel-input .form-control:focus {
+  border-color: #7629c8 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: #8a3ff7 !important;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.modern-inline-submit-button:hover {
+  background: #7629c8 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #b08ae0 !important;
+  cursor: not-allowed;
+}
+
+/* Phone input in inline form */
+.modern-inline-form .phone-input-container {
+  width: 100%;
+}
+
+.modern-inline-form .phone-input {
+  width: 100% !important;
+  height: 42px !important;
+  font-size: 14px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  padding-left: 52px !important;
+}
+
+.modern-inline-form .react-tel-input .selected-flag {
+  padding: 0 8px 0 8px !important;
+  border-radius: 4px 0 0 4px !important;
+  height: 42px !important;
+}
+
+.modern-inline-form .react-tel-input .flag-dropdown {
+  border-radius: 4px 0 0 4px !important;
+}
+
+.modern-success-message .modern-message-bubble {
+  background: #e6f7e6 !important;
+  color: #2e7d32 !important;
+  border-left: 4px solid #2e7d32;
+}
+
+/* Responsive styles for inline form */
+@media (max-width: 480px) {
+  .modern-inline-form {
+    padding: 12px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .modern-inline-form label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .modern-inline-form input,
+  .modern-inline-form .react-tel-input .form-control {
+    padding: 8px !important;
+    font-size: 16px !important; /* Prevent zooming on iOS */
+  }
+
+  .modern-inline-form .modern-form-submit {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-inline-form {
+    padding: 10px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 14px;
+  }
+
+  .modern-form-message {
+    max-width: 100% !important;
+  }
+}
+
+/* Success message with checkmark animation */
+.modern-success-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.modern-success-wrapper {
+  width: 100%;
+  max-width: 320px;
+  background: white;
+  border-radius: 10px;
+  padding: 25px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.modern-success-wrapper h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 15px 0 10px;
+  color: #333;
+}
+
+.modern-success-wrapper p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+/* Checkmark animation */
+.modern-checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 0 auto 15px;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: modern-fill 0.4s ease-in-out 0.4s forwards,
+    modern-scale 0.3s ease-in-out 0.9s both;
+}
+
+.modern-checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: modern-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.modern-checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: modern-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes modern-stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes modern-scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes modern-fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
+}
+
+/* Inline form styles */
+.modern-fullwidth-form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.modern-inline-form {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modern-inline-form .modern-form-header {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.modern-inline-form .modern-form-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 0;
+  border-bottom: none;
+  line-height: 1.4;
+}
+
+.modern-inline-form .modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modern-inline-form .modern-form-group {
+  margin-bottom: 12px;
+}
+
+.modern-inline-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modern-inline-form input,
+.modern-inline-form .react-tel-input .form-control {
+  width: 100%;
+  padding: 10px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  box-sizing: border-box;
+  height: 42px !important;
+}
+
+.modern-inline-form input:focus,
+.modern-inline-form .react-tel-input .form-control:focus {
+  border-color: #7629c8 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: #8a3ff7 !important;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.modern-inline-submit-button:hover {
+  background: #7629c8 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #b08ae0 !important;
+  cursor: not-allowed;
+}
+
+/* Phone input in inline form */
+.modern-inline-form .phone-input-container {
+  width: 100%;
+}
+
+.modern-inline-form .phone-input {
+  width: 100% !important;
+  height: 42px !important;
+  font-size: 14px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  padding-left: 52px !important;
+}
+
+.modern-inline-form .react-tel-input .selected-flag {
+  padding: 0 8px 0 8px !important;
+  border-radius: 4px 0 0 4px !important;
+  height: 42px !important;
+}
+
+.modern-inline-form .react-tel-input .flag-dropdown {
+  border-radius: 4px 0 0 4px !important;
+}
+
+.modern-success-message .modern-message-bubble {
+  background: #e6f7e6 !important;
+  color: #2e7d32 !important;
+  border-left: 4px solid #2e7d32;
+}
+
+/* Responsive styles for inline form */
+@media (max-width: 480px) {
+  .modern-inline-form {
+    padding: 12px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .modern-inline-form label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .modern-inline-form input,
+  .modern-inline-form .react-tel-input .form-control {
+    padding: 8px !important;
+    font-size: 16px !important; /* Prevent zooming on iOS */
+  }
+
+  .modern-inline-form .modern-form-submit {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-inline-form {
+    padding: 10px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 14px;
+  }
+
+  .modern-form-message {
+    max-width: 100% !important;
+  }
+}
