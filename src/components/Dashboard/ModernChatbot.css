@@ -1285,8 +1285,6 @@ body {
   }
 }
 
-/* NEW UPDATED STYLES FOR INLINE FORM */
-
 /* Make form appear in center of conversation */
 .modern-fullwidth-form-container {
   width: 100%;
@@ -1349,6 +1347,12 @@ body {
   padding-right: 20px; /* Make room for close button */
 }
 
+.modern-inline-form .modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* Make form fields smaller and more compact */
 .modern-inline-form .modern-form-group {
   margin-bottom: 8px; /* Reduced from 12px */
@@ -1373,6 +1377,13 @@ body {
   background: white;
   box-sizing: border-box;
   height: 36px !important; /* Reduced from 42px */
+}
+
+.modern-inline-form input:focus,
+.modern-inline-form .react-tel-input .form-control:focus {
+  border-color: #7629c8 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
 }
 
 /* Make submit button smaller */
