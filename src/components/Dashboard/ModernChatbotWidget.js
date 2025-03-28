@@ -1,1376 +1,1607 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
-import {
-  Mic,
-  Send,
-  X,
-  MoreVertical,
-  MessageSquare,
-  Star,
-  ExternalLink,
-} from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
-import { Form } from "react-bootstrap";
-import { motion, AnimatePresence } from "framer-motion";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import api from "../config/axios";
-import handleLeadSubmit from "../config/handleLeadSubmit";
-import "./ModernChatbot.css";
-
-const ModernChatbotWidget = () => {
-  // State variables
-  const [isOpen, setIsOpen] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const { chatbotId } = useParams();
-  const [messages, setMessages] = useState([]);
-  const [rating, setRating] = useState("");
-  const [review, setReview] = useState("");
-  const [webhook, setWebhook] = useState("");
-  const [projectLogo, setProjectLogo] = useState("");
-  const [projectImages, setProjectImages] = useState([]);
-  const [input, setInput] = useState("");
-  const chatWindowRef = useRef(null);
-  const [buttons, setButtons] = useState([
-    { label: "Location", action: "location" },
-    { label: "Amenities", action: "amenities" },
-    { label: "Get a Call Back", action: "get_callback" },
-    { label: "Site Visit Schedule", action: "schedule_site_visit" },
-    { label: "Download Brochure", action: "brochure" },
-  ]);
-  const [isMobile, setIsMobile] = useState(false);
-  const [formVisible, setFormVisible] = useState(false);
-  const [inlineFormVisible, setInlineFormVisible] = useState(false);
-  const [chatVisible, setChatVisible] = useState(true);
-  const [formType, setFormType] = useState("");
-  const [buttonContent, setButtonContent] = useState({});
-  const [isTyping, setIsTyping] = useState(false);
-  const [whileTyping, setWhileTyping] = useState(false);
-  const [leadData, setLeadData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    id: "",
-  });
-  const [chatbotData, setChatbotData] = useState(null);
-  const [sessionId, setSessionId] = useState("");
-  const [conversation, setConversation] = useState("");
-  const [msgFromResponse, setMsgFromResponse] = useState(
-    "Please Introduce Yourself"
-  );
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [checkedItems, setCheckedItems] = useState({
-    option1: false,
-    option2: false,
-  });
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
-
-  // Speech recognition states
-  const [speechRecognition, setSpeechRecognition] = useState(null);
-  const [isListening, setIsListening] = useState(false);
-  const [transcribing, setTranscribing] = useState(false);
-
-  // First screen animation state
-  const [showFirstScreen, setShowFirstScreen] = useState(true);
-  const [chatInitialized, setChatInitialized] = useState(false);
-
-  // Rating system
-  const [showRating, setShowRating] = useState(false);
-
-  // UTM params for tracking
-  const [utmParams, setUtmParams] = useState({
-    utmSource: "",
-    utmMedium: "",
-    utmCampaign: "",
-  });
-  const [currentUrl, setCurrentUrl] = useState("");
-
-  // Session and unique IDs
-  const storedSessionId =
-    sessionStorage.getItem("chatbotSessionId") || uuidv4();
-  const uniqueSessionId = localStorage.getItem("uniqueSessionId") || uuidv4();
-
-  // Rating emojis data
-  const emojis = [
-    { value: "1", icon: "😠", label: "Poor" },
-    { value: "2", icon: "😕", label: "Bad" },
-    { value: "3", icon: "😐", label: "Average" },
-    { value: "4", icon: "🙂", label: "Good" },
-    { value: "5", icon: "😍", label: "Excellent" },
-  ];
-
-  // Check if device is mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    // Store uniqueSessionId in localStorage if not already present
-    if (!localStorage.getItem("uniqueSessionId")) {
-      localStorage.setItem("uniqueSessionId", uniqueSessionId);
-    }
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, [uniqueSessionId]);
-
-  // Stop speech recognition when component unmounts
-  useEffect(() => {
-    return () => {
-      if (speechRecognition) {
-        speechRecognition.stop();
-      }
-    };
-  }, [speechRecognition]);
-
-  // Automatically hide the first screen after 5 seconds
-  useEffect(() => {
-    if (showFirstScreen) {
-      const timer = setTimeout(() => {
-        setShowFirstScreen(false);
-        setChatInitialized(true);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showFirstScreen]);
-
-  // Hide the first screen immediately when Get Started is clicked
-  const handleGetStarted = () => {
-    setShowFirstScreen(false);
-    setChatInitialized(true);
-  };
-
-  // Show form after a certain time if not interacting
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const userSenderCount = messages.filter(
-        (message) => message.sender === "User"
-      ).length;
-
-      if (isTyping === false && userSenderCount > 0) {
-        if (!formSubmitted) {
-          // Show the form inline in the chat instead of overlay
-          addInlineForm();
-        }
-      }
-    }, 20000); // Runs every 20 seconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [isTyping]);
-
-  // Track UTM parameters
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmSource = urlParams.get("utm_source") || "";
-    const utmMedium = urlParams.get("utm_medium") || "";
-    const utmCampaign = urlParams.get("utm_campaign") || "";
-
-    const newUtmParams = { utmSource, utmMedium, utmCampaign };
-
-    setUtmParams(newUtmParams);
-    setCurrentUrl(window.location.href);
-  }, []);
-
-  // Handle rating submission
-  useEffect(() => {
-    // Rating functionality disabled
-    if (rating) {
-      setRating("");
-      setShowRating(false);
-    }
-  }, [rating]);
-
-  // Auto-save session and conversations
-  useEffect(() => {
-    setSessionId(storedSessionId);
-    sessionStorage.setItem("chatbotSessionId", storedSessionId);
-
-    const interval = setInterval(() => {
-      const hasUserMessage = messages.some((msg) => msg.sender === "User");
-      if (hasUserMessage) {
-        saveConversation(storedSessionId);
-      }
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, [messages, storedSessionId]);
-
-  // Auto-scroll to latest message
-  useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  // Ensure chat is visible once first screen is hidden
-  useEffect(() => {
-    if (!showFirstScreen) {
-      setChatVisible(true);
-      setChatInitialized(true);
-    }
-  }, [showFirstScreen]);
-
-  // Fetch welcome data
-  useEffect(() => {
-    const fetchWelcomeData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const response = await api.post(
-          "/aichatbots/welcome",
-          { chatbotId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const {
-          greeting,
-          projectHighlights,
-          buttons,
-          webhook,
-          projectImages,
-          chatbotGreeting,
-          chatbotName,
-          projectLogo,
-        } = response.data;
-
-        console.log("Welcome response data:", response.data);
-
-        setWebhook(webhook || "");
-        setProjectLogo(projectLogo || "");
-        setProjectImages(projectImages || []);
-        setChatbotData(response.data);
-
-        if (buttons && buttons.length > 0) {
-          // Merge the API buttons with our custom buttons
-          const customButtons = [
-            { label: "Get a Call Back", action: "get_callback" },
-            { label: "Site Visit Schedule", action: "schedule_site_visit" },
-            { label: "Download Brochure", action: "brochure" },
-          ];
-
-          // Filter out duplicates based on action
-          const mergedButtons = [
-            ...buttons,
-            ...customButtons.filter(
-              (cBtn) => !buttons.some((btn) => btn.action === cBtn.action)
-            ),
-          ];
-
-          const buttonMap = {};
-          mergedButtons.forEach((btn) => {
-            buttonMap[btn.action] = btn.data;
-          });
-          setButtonContent(buttonMap);
-          setButtons(mergedButtons);
-        }
-
-        // Prepare messages but don't show them until first screen is dismissed
-        const initialMessages = [
-          { sender: "Bot", text: greeting, timestamp: new Date() },
-          { sender: "Bot", text: chatbotGreeting, timestamp: new Date() },
-          { sender: "Bot", text: projectHighlights, timestamp: new Date() },
-        ];
-
-        if (projectImages && projectImages.length > 0) {
-          initialMessages.push({
-            images: projectImages,
-            timestamp: new Date(),
-          });
-        }
-
-        setMessages(initialMessages);
-      } catch (err) {
-        console.error("Error fetching welcome data:", err);
-
-        // Fallback to dummy data if API fails
-        const dummyData = {
-          greeting: "Welcome to our chatbot! 👋",
-          chatbotGreeting:
-            "I'm here to help you with any questions you might have.",
-          projectHighlights:
-            "Our project offers exceptional features, prime location, and attractive amenities. How may I assist you today?",
-          projectImages: [
-            "https://via.placeholder.com/400x200?text=Project+Image",
-          ],
-          chatbotName: "AI Assistant",
-          projectLogo: "https://via.placeholder.com/150x60?text=Logo",
-          buttons: [
-            { label: "Features", action: "features" },
-            { label: "Location", action: "location" },
-            { label: "Contact Us", action: "schedule_site_visit" },
-          ],
-        };
-
-        setWebhook(null);
-        setProjectLogo(dummyData.projectLogo);
-        setProjectImages(dummyData.projectImages);
-        setChatbotData(dummyData);
-        setButtonContent({});
-
-        setMessages([
-          { sender: "Bot", text: dummyData.greeting, timestamp: new Date() },
-          {
-            sender: "Bot",
-            text: dummyData.chatbotGreeting,
-            timestamp: new Date(),
-          },
-          {
-            sender: "Bot",
-            text: dummyData.projectHighlights,
-            timestamp: new Date(),
-          },
-          { images: dummyData.projectImages, timestamp: new Date() },
-        ]);
-      }
-    };
-
-    fetchWelcomeData();
-  }, [chatbotId]);
-
-  // Handle rating
-  const handleRateChat = () => {
-    if (formSubmitted) {
-      // Rating functionality is disabled for now
-      // setShowRating(true);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          sender: "Bot",
-          text: "Thank you for your interest in providing feedback. This feature is currently being updated.",
-          timestamp: new Date(),
-        },
-      ]);
-    } else {
-      addInlineForm();
-      setMsgFromResponse("Please share your details:");
-    }
-    setIsOpen(false);
-  };
-
-  // Handle form checkbox changes
-  const handleChange = (e) => {
-    const { name, checked } = e.target;
-    setCheckedItems((prevState) => ({
-      ...prevState,
-      [name]: checked,
-    }));
-  };
-
-  // Function to add the form inline in the chat
-  const addInlineForm = () => {
-    // Remove existing inline forms first
-    setMessages((prevMessages) =>
-      prevMessages.filter((msg) => !msg.isInlineForm)
-    );
-
-    // Now add the new inline form
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        isInlineForm: true,
-        // Don't include a timestamp for the form
-      },
-    ]);
-
-    setInlineFormVisible(true);
-
-    // Scroll to the form after it renders
-    setTimeout(() => {
-      if (chatWindowRef.current) {
-        chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-      }
-    }, 100);
-  };
-
-  // Handle feedback submission
-  const handleFeedbackSubmit = (feedback) => {
-    const feedbackRating = feedback?.rating;
-    const feedbackReview = feedback?.review;
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        sender: "User",
-        text: `You rated chat as ${feedbackRating}`,
-        timestamp: new Date(),
-      },
-    ]);
-
-    if (feedback?.review) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          sender: "User",
-          text: `Your review is ${feedbackReview}`,
-          timestamp: new Date(),
-        },
-      ]);
-      setReview(feedback?.review);
-    }
-
-    setRating(feedback?.rating);
-    saveConversation(storedSessionId);
-  };
-
-  // Handle successful form submission
-  const handleFormSuccess = () => {
-    try {
-      // First remove the form from messages
-      const filteredMessages = messages.filter((msg) => !msg.isInlineForm);
-
-      // Then add success message
-      const updatedMessages = [
-        ...filteredMessages,
-        {
-          sender: "Bot",
-          text: "Thank you! We've received your information and will get back to you soon.",
-          timestamp: new Date(),
-          isSuccess: true,
-        },
-      ];
-
-      // Update messages state with the new array
-      setMessages(updatedMessages);
-
-      // Update other states
-      setInlineFormVisible(false);
-      setFormSubmitted(true);
-
-      // Reset form values
-      setLeadData({
-        name: "",
-        phone: "",
-        email: "",
-        id: "",
-      });
-
-      // Make sure rating doesn't show
-      setShowRating(false);
-
-      // Add a follow-up message after a delay
-      setTimeout(() => {
-        setMessages((currentMessages) => [
-          ...currentMessages,
-          {
-            sender: "Bot",
-            text: "Is there anything else I can help you with?",
-            timestamp: new Date(),
-          },
-        ]);
-      }, 1000);
-    } catch (error) {
-      console.error("Error in handleFormSuccess:", error);
-    }
-  };
-
-  // Handle inline form submission
-  const handleInlineFormSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitDisabled(true);
-
-    try {
-      // Create a dummy setMessages function that won't affect our chat
-      // but will satisfy the handleLeadSubmit function's requirements
-      const dummySetMessages = (msgs) => {
-        console.log("Form submission processed");
-        return msgs;
-      };
-
-      // Call the lead submit handler with proper parameters
-      const result = await handleLeadSubmit(
-        e,
-        leadData,
-        setLeadData,
-        chatbotId,
-        conversation,
-        dummySetMessages, // Provide a dummy function that won't modify our messages
-        () => {}, // Dummy function for setFormVisible
-        setFormSubmitted,
-        () => {}, // Disable showing the rating by providing a no-op function
-        setChatVisible,
-        setIsTyping,
-        uniqueSessionId,
-        messages,
-        setIsSubmitDisabled
-      );
-
-      // Handle success in our own way
-      if (!e.defaultPrevented) {
-        handleFormSuccess();
-
-        // Reset form values
-        setLeadData({
-          name: "",
-          phone: "",
-          email: "",
-          id: "",
-        });
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setIsSubmitDisabled(false);
-    }
-  };
-
-  // Speech recognition functions
-  const startRecording = () => {
-    try {
-      // Initialize SpeechRecognition
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        console.error("Speech recognition not supported in this browser.");
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            sender: "Bot",
-            text: "Speech recognition is not supported in your browser. Please type your message instead.",
-            timestamp: new Date(),
-          },
-        ]);
-        return;
-      }
-
-      const recognition = new SpeechRecognition();
-      setSpeechRecognition(recognition);
-
-      // Configure recognition
-      recognition.continuous = false;
-      recognition.interimResults = true;
-      recognition.lang = "en-IN"; // Default to English (India)
-
-      // Set up event handlers
-      recognition.onstart = () => {
-        setIsRecording(true);
-        setIsListening(true);
-        setTranscribing(false);
-        // Clear input when starting new recording
-        setInput("");
-      };
-
-      recognition.onresult = (event) => {
-        setTranscribing(true);
-        const transcript = Array.from(event.results)
-          .map((result) => result[0].transcript)
-          .join("");
-
-        setInput(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Speech recognition error", event.error);
-        setIsRecording(false);
-        setIsListening(false);
-        setTranscribing(false);
-
-        // Handle different error types
-        switch (event.error) {
-          case "network":
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              {
-                sender: "Bot",
-                text: "Network error occurred with speech recognition. Please check your internet connection and try again.",
-                timestamp: new Date(),
-              },
-            ]);
-            break;
-          case "not-allowed":
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              {
-                sender: "Bot",
-                text: "Please allow microphone access to use speech recognition.",
-                timestamp: new Date(),
-              },
-            ]);
-            break;
-          case "audio-capture":
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              {
-                sender: "Bot",
-                text: "Unable to capture audio. Please check your microphone settings.",
-                timestamp: new Date(),
-              },
-            ]);
-            break;
-          default:
-            // Don't show error for no-speech or aborted
-            if (event.error !== "no-speech" && event.error !== "aborted") {
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                  sender: "Bot",
-                  text: "There was an error with speech recognition. Please try again or type your message.",
-                  timestamp: new Date(),
-                },
-              ]);
-            }
-        }
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-        setTranscribing(false);
-
-        // If we got some input and recognition ended normally, keep recording state active
-        // so the user can see what was transcribed before sending
-        if (input.trim() === "") {
-          setIsRecording(false);
-        }
-      };
-
-      // Start recognition
-      recognition.start();
-    } catch (error) {
-      console.error("Error initializing speech recognition:", error);
-      setIsRecording(false);
-      setIsListening(false);
-      setTranscribing(false);
-    }
-  };
-
-  const stopRecording = () => {
-    if (speechRecognition) {
-      speechRecognition.stop();
-    }
-    setIsRecording(false);
-    setIsListening(false);
-  };
-
-  const handleRecord = () => {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  };
-
-  // Handle sending messages
-  const handleSendMessage = async () => {
-    if (!input.trim() || isButtonDisabled) return;
-
-    setIsButtonDisabled(true); // Disable button to prevent multiple submissions
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { sender: "User", text: input, timestamp: new Date() },
-    ]);
-
-    const userSenderCount = messages.filter(
-      (message) => message.sender === "User"
-    ).length;
-
-    // If more than 10 user messages and no form submitted yet, show form
-    if (userSenderCount >= 10 && !formSubmitted) {
-      addInlineForm();
-      setIsButtonDisabled(false); // Re-enable button
-      return;
-    }
-
-    try {
-      setIsTyping(true);
-      setWhileTyping(true);
-      const currentInput = input;
-      setInput("");
-
-      const response = await api.post("/aichatbots/respond", {
-        chatbotId,
-        message: currentInput,
-      });
-
-      const { reply, score } = response.data;
-
-      if (reply && reply.toLowerCase().includes("form")) {
-        addInlineForm();
-
-        if (reply.toLowerCase().includes("sitevisit")) {
-          setMsgFromResponse(
-            "To Book The Site Visit Please Fill Out the Form."
-          );
-        } else if (reply.toLowerCase().includes("brochure")) {
-          setMsgFromResponse(
-            "To Download The Brochure Please Fill Out the Form."
-          );
-        } else if (reply.toLowerCase().includes("payments")) {
-          setMsgFromResponse(
-            "To Know More About The Payment Plan Please Fill Out the Form."
-          );
-        } else if (reply.toLowerCase().includes("sorry")) {
-          setMsgFromResponse(
-            "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
-          );
-        } else {
-          setMsgFromResponse(
-            "Please Fill Out the Form Below and We'll Get Back to You"
-          );
-        }
-        setIsTyping(false);
-        setWhileTyping(false);
-        setIsButtonDisabled(false);
-        return;
-      }
-
-      // Add a slight delay to simulate natural typing
-      setTimeout(() => {
-        const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "Bot", text: formattedReply, score, timestamp: new Date() },
-        ]);
-        setIsTyping(false);
-        setWhileTyping(false);
-      }, 800);
-
-      await api.post("analytics/saveEvent", {
-        eventType: "chat_message",
-        sessionId: uniqueSessionId,
-        messages,
-        chatbotId,
-      });
-    } catch (err) {
-      console.error("Failed to send message:", err);
-      addInlineForm();
-      setMsgFromResponse(
-        "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
-      );
-      setIsTyping(false);
-      setWhileTyping(false);
-    }
-
-    saveConversation(sessionId);
-
-    // Re-enable button after delay
-    setTimeout(() => {
-      setIsButtonDisabled(false);
-    }, 2000);
-  };
-
-  // Handle keyboard entry
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  // Handle button clicks
-  const handleButtonClick = async (action, label) => {
-    try {
-      if (
-        ["schedule_site_visit", "get_callback", "brochure", "contact"].includes(
-          action
-        )
-      ) {
-        setFormType(action);
-
-        // Set appropriate message for the form
-        if (action === "schedule_site_visit") {
-          setMsgFromResponse("Please share your details for a site visit:");
-        } else if (action === "get_callback") {
-          setMsgFromResponse(
-            "Please share your details for a call back from our team:"
-          );
-        } else if (action === "brochure") {
-          setMsgFromResponse(
-            "Please share your details to download our brochure:"
-          );
-        } else {
-          setMsgFromResponse("Please provide your information:");
-        }
-
-        // Add user's request as a message
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "User", text: label, timestamp: new Date() },
-        ]);
-
-        // First remove any existing inline form
-        setMessages((prevMessages) =>
-          prevMessages.filter((msg) => !msg.isInlineForm)
-        );
-
-        setInlineFormVisible(false);
-
-        // Wait a bit before adding the new form
-        setTimeout(() => {
-          // Add bot response and form
-          addInlineForm();
-        }, 300);
-      } else {
-        setFormVisible(false);
-        setChatVisible(true);
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "User", text: label, timestamp: new Date() },
-        ]);
-
-        // Show typing indicator
-        setIsTyping(true);
-        setWhileTyping(true);
-
-        // Format the content with bullet points if it's a text block
-        const formatContent = (content) => {
-          if (!content) return `Information about ${label}`;
-
-          // If content has multiple lines, add bullet points
-          if (content.includes("\n")) {
-            const icon = "🔹"; // Use emoji as bullet
-            return content
-              .split("\n")
-              .map((line) => line.trim())
-              .filter((line) => line)
-              .map((line) => (line.endsWith(".") ? `${icon} ${line}` : line))
-              .join("\n");
-          }
-
-          return content;
-        };
-
-        // Simulate response delay
-        setTimeout(() => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              sender: "Bot",
-              text: formatContent(buttonContent[action]),
-              timestamp: new Date(),
-            },
-          ]);
-          setIsTyping(false);
-          setWhileTyping(false);
-        }, 800);
-      }
-
-      saveConversation(storedSessionId);
-    } catch (err) {
-      console.error("Error fetching content:", err);
-      setIsTyping(false);
-      setWhileTyping(false);
-    }
-  };
-
-  // Handle rating submission
-  const handleSubmitRating = () => {
-    if (!rating) {
-      alert("⚠️ Please select a rating!");
-      return;
-    }
-
-    handleFeedbackSubmit({ rating, review });
-    setShowRating(false);
-  };
-
-  // Save conversation to backend
-  const saveConversation = async (sessionId) => {
-    try {
-      const response = await api.post("/conversations/save", {
-        chatbotId,
-        messages,
-        sessionId,
-      });
-      setConversation(response.data.conversation._id);
-    } catch (err) {
-      console.error("Error saving message:", err);
-    }
-  };
-
-  // Format timestamp display
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "";
-
-    const now = new Date();
-    const messageDate = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - messageDate) / 1000);
-
-    if (diffInSeconds < 60) {
-      return "Just now";
-    } else if (diffInSeconds < 3600) {
-      return `${Math.floor(diffInSeconds / 60)}m ago`;
-    } else if (diffInSeconds < 86400) {
-      return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    } else {
-      return messageDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
-  };
-
-  // Close chatbot
-  const handleClose = () => {
-    // For iframe implementation, send message to parent window
-    if (window.parent && window !== window.parent) {
-      window.parent.postMessage({ type: "closeChatbot" }, "*");
-    }
-    // Fallback if not in iframe
-    setChatVisible(false);
-  };
-
-  // Placeholder for the logo
-  const renderLogo = () => {
-    if (projectLogo) {
-      let logoUrl = projectLogo;
-
-      // If the logo path doesn't start with http, prepend the base URL
-      if (!projectLogo.startsWith("http")) {
-        logoUrl = `https://assist-ai.propstory.com/${projectLogo}`;
-      }
-
-      return (
-        <img
-          src={logoUrl}
-          alt="Logo"
-          className="modern-chatbot-logo"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src =
-              "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
-          }}
-        />
-      );
-    } else {
-      return (
-        <div className="modern-placeholder-logo">
-          <span>{chatbotData?.chatbotName?.charAt(0) || "A"}</span>
-        </div>
-      );
-    }
-  };
-
-  // Render inline form component
-  const renderInlineForm = () => {
-    return (
-      <div className="modern-inline-form">
-        <div className="modern-form-header">
-          <h3>
-            {msgFromResponse ||
-              "Please share your details for a call back from our team:"}
-          </h3>
-        </div>
-
-        <form
-          className="modern-contact-form"
-          onSubmit={(e) =>
-            handleLeadSubmit(
-              e,
-              leadData,
-              setLeadData,
-              chatbotId,
-              conversation,
-              setMessages,
-              setFormVisible,
-              setFormSubmitted,
-              setShowRating,
-              setChatVisible,
-              setIsTyping,
-              uniqueSessionId,
-              messages,
-              setIsSubmitDisabled // ✅ Pass it here
-            )
-          }
-        >
-          <div className="modern-form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              placeholder="Enter your name"
-              required
-              value={leadData.name}
-              onChange={(e) =>
-                setLeadData({ ...leadData, name: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="modern-form-group">
-            <label htmlFor="phone">Phone Number</label>
-            <PhoneInput
-              country={"in"}
-              value={leadData.phone}
-              onChange={(phone) => setLeadData({ ...leadData, phone })}
-              inputProps={{
-                required: true,
-                id: "phone",
-                placeholder: "Enter your mobile number",
-              }}
-              containerClass="phone-input-container"
-              inputClass="phone-input"
-              buttonClass="phone-select-button"
-              dropdownClass="phone-dropdown"
-            />
-          </div>
-
-          <div className="modern-form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              required
-              value={leadData.email}
-              onChange={(e) =>
-                setLeadData({
-                  ...leadData,
-                  email: e.target.value,
-                })
-              }
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="modern-inline-submit-button"
-            disabled={isSubmitDisabled}
-          >
-            {isSubmitDisabled ? "PROCESSING..." : "SUBMIT"}
-          </button>
-        </form>
-      </div>
-    );
-  };
-
-  return (
-    <div
-      className={`modern-chatbot-wrapper ${
-        !chatVisible ? "modern-chatbot-hidden" : ""
-      }`}
-    >
-      <div className="modern-chatbot-container">
-        {/* First Screen / Welcome Screen */}
-        <AnimatePresence mode="wait">
-          {showFirstScreen && chatVisible && (
-            <motion.div
-              className="modern-first-screen"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="modern-first-screen-content">
-                <div className="modern-logo-container">{renderLogo()}</div>
-                <h2 className="text-white">
-                  {chatbotData?.chatbotName || "AI Assistant"}
-                </h2>
-                <p>
-                  Hi there! I'm an AI assistant designed to help you discover
-                  the perfect property.
-                </p>
-                <motion.button
-                  className="modern-start-button"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleGetStarted}
-                >
-                  Get Started
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Main Chat Interface */}
-        {chatVisible && (!showFirstScreen || chatInitialized) && (
-          <>
-            {/* Header */}
-            <div className="modern-header">
-              <div className="modern-header-left">
-                {renderLogo()}
-                <div className="modern-header-info">
-                  <h3>{chatbotData?.chatbotName || "AI Assistant"}</h3>
-                  <span className="modern-status">
-                    <span className="modern-status-dot"></span>
-                    Online
-                  </span>
-                </div>
-              </div>
-              <div className="modern-header-actions">
-                <div className="modern-dropdown">
-                  <button
-                    className="modern-icon-button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    aria-label="Menu"
-                  >
-                    <MoreVertical size={24} />
-                  </button>
-                  {isOpen && (
-                    <div className="modern-dropdown-menu">
-                      <button
-                        onClick={() => {
-                          handleButtonClick(
-                            "schedule_site_visit",
-                            "Talk to Human"
-                          );
-                          setIsOpen(false);
-                        }}
-                      >
-                        <MessageSquare size={16} />
-                        <span>Talk to Human</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          // Use the actual phone number from API if available
-                          const phoneNumber =
-                            chatbotData?.phoneNumber || "+919999999999";
-                          window.open(`https://wa.me/${phoneNumber}`, "_blank");
-                          setIsOpen(false);
-                        }}
-                      >
-                        <ExternalLink size={16} />
-                        <span>Send details via WhatsApp</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Chat Window */}
-            <div className="modern-chat-window" ref={chatWindowRef}>
-              {/* Rating Modal */}
-              <AnimatePresence>
-                {showRating && (
-                  <motion.div
-                    className="modern-rating-modal"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                  >
-                    <div className="modern-rating-content">
-                      <button
-                        className="modern-close-button"
-                        onClick={() => setShowRating(false)}
-                        aria-label="Close"
-                      >
-                        <X size={20} />
-                      </button>
-                      <h3>How was your experience?</h3>
-                      <div className="modern-emoji-rating">
-                        {emojis.map((item) => (
-                          <div
-                            key={item.value}
-                            className={`modern-emoji ${
-                              rating === item.value ? "selected" : ""
-                            }`}
-                            onClick={() => setRating(item.value)}
-                          >
-                            <div className="modern-emoji-icon">{item.icon}</div>
-                            <span>{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <textarea
-                        className="modern-review-input"
-                        placeholder="Share your feedback (optional)"
-                        value={review}
-                        onChange={(e) => setReview(e.target.value)}
-                        rows="3"
-                      />
-                      <button
-                        className="modern-submit-button"
-                        onClick={handleSubmitRating}
-                      >
-                        Submit Feedback
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Messages */}
-              <div className="modern-messages">
-                {messages?.map((message, index) => {
-                  // Handle regular messages
-                  if (
-                    message.text ||
-                    message.images?.length ||
-                    message.buttons?.length
-                  ) {
-                    return (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className={`modern-message ${
-                          message.sender === "User"
-                            ? "modern-user-message"
-                            : "modern-bot-message"
-                        } ${message.isSuccess ? "modern-success-message" : ""}`}
-                      >
-                        {/* Text Message */}
-                        {message.text && (
-                          <div className="modern-message-bubble">
-                            {message.text}
-                          </div>
-                        )}
-
-                        {/* Image Message */}
-                        {message?.images && message.images.length > 0 && (
-                          <div className="modern-image-gallery">
-                            {message.images.map((img, idx) => {
-                              let imageUrl = "";
-                              try {
-                                if (img.startsWith("http")) {
-                                  imageUrl = img;
-                                } else {
-                                  imageUrl = `https://assist-ai.propstory.com/${img}`;
-                                }
-                              } catch (error) {
-                                imageUrl =
-                                  "https://via.placeholder.com/150x100?text=Project+Image";
-                              }
-                              return (
-                                <img
-                                  key={idx}
-                                  src={imageUrl}
-                                  alt={`Project image ${idx + 1}`}
-                                  className="modern-chat-image"
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src =
-                                      "https://via.placeholder.com/150x100?text=Image+Not+Found";
-                                  }}
-                                />
-                              );
-                            })}
-                          </div>
-                        )}
-
-                        {/* Button Options */}
-                        {message?.buttons && message.buttons.length > 0 && (
-                          <div className="modern-button-options">
-                            {message.buttons.map((button, idx) => (
-                              <motion.button
-                                key={idx}
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.97 }}
-                                className="modern-option-button"
-                                onClick={() =>
-                                  handleButtonClick(button.action, button.label)
-                                }
-                              >
-                                {button.label}
-                              </motion.button>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Message timestamp */}
-                        {message.timestamp && (
-                          <div className="modern-message-time">
-                            {formatTimestamp(message.timestamp)}
-                          </div>
-                        )}
-                      </motion.div>
-                    );
-                  }
-                  // Handle inline form
-                  else if (message.isInlineForm) {
-                    return (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="modern-fullwidth-form-container"
-                      >
-                        {renderInlineForm()}
-                      </motion.div>
-                    );
-                  }
-
-                  return null;
-                })}
-
-                {/* Typing Indicator */}
-                {isTyping && whileTyping && (
-                  <div className="modern-message modern-bot-message">
-                    <div className="modern-typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Buttons above input area */}
-            <div className="modern-quick-buttons">
-              {/* Filter out duplicate buttons based on action */}
-              {buttons
-                .filter(
-                  (button, index, self) =>
-                    index === self.findIndex((b) => b.action === button.action)
-                )
-                .map((button, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="modern-quick-button"
-                    onClick={() =>
-                      handleButtonClick(button.action, button.label)
-                    }
-                  >
-                    {button.label}
-                  </motion.button>
-                ))}
-            </div>
-
-            {/* Input Area */}
-            <div className="modern-input-area">
-              <div className="modern-input-container">
-                <input
-                  type="text"
-                  className="modern-chat-input"
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                />
-
-                <button
-                  className={`modern-send-button ${
-                    !input.trim() || isButtonDisabled ? "disabled" : ""
-                  }`}
-                  onClick={handleSendMessage}
-                  disabled={!input.trim() || isButtonDisabled}
-                  aria-label="Send message"
-                >
-                  <Send size={20} />
-                </button>
-              </div>
-              <div className="modern-powered-by">
-                Powered by{" "}
-                <Link
-                  className="modern-powered-link"
-                  to="https://propstory.in/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Propstory
-                </Link>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default ModernChatbotWidget;
+/* Modern Chatbot CSS - Complete with Form Styles */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Animation keyframes */
+@keyframes typing {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
+}
+
+/* Main container styles */
+.modern-chatbot-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.modern-chatbot-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.modern-chatbot-container {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: none; /* Removed for iframe integration */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header styles */
+.modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 10;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.modern-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modern-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-chatbot-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  flex-shrink: 0;
+}
+
+.modern-placeholder-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.modern-header-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modern-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.modern-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  flex-shrink: 0;
+}
+
+.modern-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Dropdown menu */
+.modern-dropdown {
+  position: relative;
+}
+
+.modern-dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modern-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+/* Chat window styles */
+.modern-chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f5f7fb;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  height: calc(100% - 60px - 70px); /* Adjusted for header and input area */
+}
+
+.modern-chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern-chat-window::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modern-chat-window::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* UPDATED: Reduced gap between messages from 16px to 10px */
+.modern-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* UPDATED: Reduced gap within message from 4px to 2px */
+.modern-message {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modern-user-message {
+  align-self: flex-end;
+}
+
+.modern-bot-message {
+  align-self: flex-start;
+}
+
+/* UPDATED: Made bubbles more compact with smaller fonts */
+.modern-message-bubble {
+  padding: 10px 12px; /* Reduced from 12px 16px */
+  border-radius: 16px; /* Reduced from 18px */
+  font-size: 14px; /* Reduced from 15px */
+  line-height: 1.4; /* Reduced from 1.5 */
+  white-space: pre-line;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  word-break: break-word;
+}
+
+.modern-user-message .modern-message-bubble {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: #333;
+  border-top-left-radius: 4px;
+}
+
+.modern-message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+  align-self: flex-end;
+  width: auto;
+  text-align: right;
+}
+
+/* UPDATED: Reduced image gallery spacing and image sizes */
+.modern-image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* Reduced from 8px */
+  max-width: 100%;
+  margin: 5px 0; /* Add margin for spacing */
+}
+
+.modern-chat-image {
+  width: 120px; /* Reduced from 150px */
+  height: 80px; /* Reduced from 100px */
+  object-fit: cover;
+  border-radius: 6px; /* Reduced from 8px */
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.modern-chat-image:hover {
+  transform: scale(1.05);
+}
+
+.modern-button-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.modern-option-button {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.modern-option-button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.modern-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px;
+  width: fit-content;
+}
+
+.modern-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #aaa;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+.modern-typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.modern-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.modern-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Quick buttons */
+.modern-quick-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  background: white;
+  border-top: 1px solid #eee;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+
+.modern-quick-buttons::-webkit-scrollbar {
+  height: 4px;
+}
+
+.modern-quick-buttons::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modern-quick-button {
+  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: #f1f1f1;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.modern-quick-button:hover {
+  background: #e5e5e5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Input area */
+.modern-input-area {
+  padding: 12px 16px;
+  background: white;
+  border-top: 1px solid #eee;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.modern-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f7fb;
+  border-radius: 24px;
+  padding: 4px 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) inset;
+}
+
+.modern-mic-button {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6a11cb;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modern-mic-button:hover {
+  background: rgba(106, 17, 203, 0.1);
+}
+
+.modern-mic-button.recording {
+  color: #e53935;
+  animation: pulse 1.5s infinite;
+}
+
+.modern-chat-input {
+  flex: 1;
+  border: none;
+  padding: 10px 8px;
+  outline: none;
+  font-size: 15px;
+  background: transparent;
+  min-width: 0;
+}
+
+.modern-send-button {
+  background: #6a11cb !important;
+  border: none;
+  border-radius: 50%;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modern-send-button:hover {
+  background: #5a0fb6;
+  transform: scale(1.05);
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modern-powered-by {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-top: 4px;
+  padding-bottom: 4px;
+}
+
+.modern-powered-link {
+  color: #6a11cb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Form overlay - ADDED */
+.modern-form-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 16px; /* Match iframe border-radius */
+}
+
+.modern-form-container {
+  padding: 20px;
+  background: white;
+  overflow-y: auto;
+  max-height: 100%;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.modern-close-form {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+  z-index: 60;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.modern-close-form:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.modern-form-success {
+  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Checkmark styling */
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 0 auto 20px;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: fill 0.8s ease-in-out 0.8s forwards,
+    scale 0.6s ease-in-out 1.8s both;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: stroke 1.2s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) 1.8s forwards;
+}
+
+.modern-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  overflow-y: auto;
+  flex: 1;
+  padding-bottom: 20px;
+  padding-top: 10px;
+}
+
+.modern-form-header {
+  margin-bottom: 20px;
+  text-align: left;
+  position: relative;
+}
+
+.modern-form-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+  position: relative;
+  padding-right: 30px; /* Make room for close button */
+}
+
+.modern-form-header h3::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #7629c8;
+  border-radius: 2px;
+}
+
+.modern-form-header p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modern-form-group {
+  margin-bottom: 16px;
+}
+
+.modern-form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.modern-form-group input,
+.modern-form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  box-sizing: border-box;
+}
+
+.modern-form-group input:focus,
+.modern-form-group textarea:focus {
+  border-color: #7629c8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1);
+}
+
+/* Phone Input */
+.phone-input-container {
+  width: 100%;
+}
+
+.phone-input {
+  width: 100% !important;
+  height: 45px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  padding-left: 60px !important;
+}
+
+.phone-select-button {
+  background-color: transparent !important;
+  border: none !important;
+  border-right: 1px solid #e0e0e0 !important;
+}
+
+.phone-dropdown {
+  max-height: 200px !important;
+  overflow-y: auto !important;
+}
+
+.modern-form-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.modern-form-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+}
+
+.modern-form-checkbox label {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.3;
+}
+
+.modern-form-submit {
+  background: #7629c8 !important;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(118, 41, 200, 0.2);
+}
+
+.modern-form-submit:hover {
+  background: #6922b4 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(118, 41, 200, 0.3);
+}
+
+/* UPDATED: First screen with increased z-index to ensure visibility */
+.modern-first-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+  z-index: 100; /* Increased z-index to ensure visibility */
+  border-radius: 16px;
+  opacity: 1 !important; /* Force visibility */
+}
+
+.modern-first-screen-content {
+  max-width: 300px;
+}
+
+.modern-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto 24px auto;
+}
+
+.modern-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+}
+
+.modern-first-screen .modern-placeholder-logo,
+.modern-first-screen .modern-chatbot-logo {
+  margin: 0 auto;
+}
+
+.modern-first-screen h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.modern-first-screen p {
+  margin-bottom: 24px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.modern-start-button {
+  background: white !important;
+  color: #6a11cb;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.modern-start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Rating modal */
+.modern-rating-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
+  z-index: 9999;
+}
+
+.modern-rating-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.modern-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modern-emoji-rating {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.modern-emoji {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modern-emoji:hover {
+  transform: scale(1.1);
+}
+
+.modern-emoji.selected {
+  transform: scale(1.2);
+  background-color: rgba(106, 17, 203, 0.1);
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.3);
+}
+
+.modern-emoji-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+  padding: 8px;
+  transition: all 0.2s ease;
+}
+
+.modern-emoji span {
+  font-size: 12px;
+  color: #666;
+}
+
+.modern-review-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  margin-bottom: 16px;
+  resize: none;
+}
+
+.modern-emoji.selected .modern-emoji-icon {
+  background-color: rgba(106, 17, 203, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.3);
+}
+
+.modern-review-input:focus {
+  border-color: #6a11cb;
+  outline: none;
+}
+
+.modern-submit-button {
+  background: #6a11cb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modern-submit-button:hover {
+  background: #5a0fb6;
+}
+
+/* Accessibility improvements */
+button:focus {
+  outline: 2px solid rgba(106, 17, 203, 0.3);
+  outline-offset: 2px;
+}
+
+textarea:focus {
+  outline: 2px solid rgba(106, 17, 203, 0.3);
+  box-shadow: 0 0 0 1px rgba(106, 17, 203, 0.3);
+}
+
+/* Fix for React-Bootstrap Form elements */
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  min-height: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.8rem;
+  margin-top: 15px;
+}
+
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  margin-left: -1.8rem;
+  margin-right: 0.8rem;
+  vertical-align: top;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 3px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #7629c8;
+  border-color: #7629c8;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+  box-shadow: 0 1px 3px rgba(118, 41, 200, 0.2);
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(118, 41, 200, 0.15);
+  border-color: #7629c8;
+}
+
+.form-check-label {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.4;
+  user-select: none;
+}
+
+/* Add proper styling for react-phone-input-2 */
+.react-tel-input .form-control {
+  width: 100% !important;
+  height: 45px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  background-color: white !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
+  padding-left: 50px !important;
+  transition: all 0.2s ease-in-out !important;
+  box-sizing: border-box !important;
+}
+
+.react-tel-input .form-control:focus {
+  box-shadow: 0 2px 8px rgba(118, 41, 200, 0.1) !important;
+  border-color: #7629c8 !important;
+}
+
+.react-tel-input .flag-dropdown {
+  border-radius: 8px 0 0 8px !important;
+  border-color: #e0e0e0 !important;
+  background-color: white !important;
+  border-right: 1px solid #e0e0e0 !important;
+}
+
+.react-tel-input .selected-flag {
+  padding: 0 12px 0 12px !important;
+  border-radius: 8px 0 0 8px !important;
+}
+
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.react-tel-input .country-list {
+  max-height: 200px !important;
+  margin: 10px 0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 8px !important;
+  z-index: 70 !important;
+}
+
+/* Responsive styles for all devices */
+@media (max-width: 480px) {
+  .modern-chatbot-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .modern-chatbot-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .modern-chat-window {
+    padding: 10px;
+  }
+
+  .modern-message {
+    max-width: 85%;
+  }
+
+  .modern-message-bubble {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .modern-input-area {
+    padding: 8px;
+  }
+
+  .modern-input-container {
+    padding: 4px 8px;
+  }
+
+  /* Adjust button size for mobile */
+  .modern-mic-button,
+  .modern-send-button {
+    min-width: 36px;
+    min-height: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Make quick buttons smaller */
+  .modern-quick-buttons {
+    padding: 8px 12px;
+  }
+
+  .modern-quick-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Smaller header for mobile */
+  .modern-header {
+    padding: 10px 12px;
+  }
+
+  .modern-header-info h3 {
+    font-size: 14px;
+  }
+
+  .modern-chatbot-logo,
+  .modern-placeholder-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Form adjustments for mobile */
+  .modern-form-overlay {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modern-form-container {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modern-close-form {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    z-index: 100;
+  }
+
+  .modern-form-fields {
+    padding-bottom: 16px;
+    padding-top: 8px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 16px;
+    margin-bottom: 18px;
+    padding-right: 30px;
+  }
+
+  .modern-form-group {
+    margin-bottom: 14px;
+  }
+
+  .modern-form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .modern-form-group input,
+  .modern-form-group textarea,
+  .phone-input {
+    font-size: 16px !important; /* Prevent zooming on iOS */
+    padding: 10px !important;
+  }
+
+  .modern-form-submit {
+    padding: 12px;
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  /* Rating modal adjustments */
+  .modern-rating-content {
+    width: 90%;
+    padding: 16px;
+  }
+
+  .modern-emoji-rating {
+    margin: 12px 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.9);
+  }
+
+  .modern-emoji-icon {
+    font-size: 24px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-emoji-rating {
+    gap: 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.8);
+  }
+
+  .modern-emoji-icon {
+    font-size: 20px;
+  }
+
+  .modern-emoji span {
+    font-size: 9px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 15px;
+  }
+
+  .modern-quick-button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Make form elements smaller */
+  .modern-form-group input,
+  .modern-form-group textarea {
+    padding: 8px !important;
+  }
+}
+
+/* Extra fixes for iframe integration */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* iPhone-specific form fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Target iOS devices */
+  .modern-form-group input,
+  .phone-input,
+  .modern-chat-input,
+  .modern-review-input {
+    font-size: 16px !important; /* Prevent auto zooming */
+  }
+
+  .modern-form-overlay {
+    /* Fix scrolling issues on iOS */
+    height: 100%;
+    position: fixed;
+  }
+
+  .modern-chat-window {
+    /* Fix momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Make form appear in center of conversation */
+.modern-fullwidth-form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 5px 0; /* Reduced from 10px */
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+/* Make the form smaller and more compact */
+.modern-inline-form {
+  width: 100%;
+  max-width: 280px; /* Reduced from 500px */
+  background: white;
+  border-radius: 8px;
+  padding: 12px; /* Reduced from 16px */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+
+/* Add close button to the form */
+.modern-form-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Make form header smaller */
+.modern-inline-form .modern-form-header {
+  text-align: left;
+  margin-bottom: 12px; /* Reduced from 16px */
+}
+
+.modern-inline-form .modern-form-header h3 {
+  font-size: 14px; /* Reduced from 15px */
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px; /* Reduced from 16px */
+  padding-bottom: 0;
+  border-bottom: none;
+  line-height: 1.3;
+  padding-right: 20px; /* Make room for close button */
+}
+
+.modern-inline-form .modern-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Make form fields smaller and more compact */
+.modern-inline-form .modern-form-group {
+  margin-bottom: 8px; /* Reduced from 12px */
+}
+
+.modern-inline-form label {
+  font-size: 12px; /* Reduced from 14px */
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px; /* Reduced from 6px */
+  display: block;
+}
+
+.modern-inline-form input,
+.modern-inline-form .react-tel-input .form-control {
+  width: 100%;
+  padding: 8px !important; /* Reduced from 10px */
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  box-sizing: border-box;
+  height: 36px !important; /* Reduced from 42px */
+}
+
+.modern-inline-form input:focus,
+.modern-inline-form .react-tel-input .form-control:focus {
+  border-color: #7629c8 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
+}
+
+/* Make submit button smaller */
+.modern-inline-submit-button {
+  background: #8a3ff7 !important;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px; /* Reduced from 12px */
+  font-size: 13px; /* Reduced from 14px */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px; /* Reduced from 10px */
+}
+
+.modern-inline-submit-button:hover {
+  background: #7629c8 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #b08ae0 !important;
+  cursor: not-allowed;
+}
+
+/* Fix phone input field styling with left padding and border */
+.modern-inline-form .phone-input-container {
+  width: 100%;
+}
+
+.modern-inline-form .phone-input {
+  width: 100% !important;
+  height: 36px !important; /* Reduced from 42px */
+  font-size: 14px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e0e0e0 !important;
+  background: white !important;
+  padding-left: 52px !important; /* Ensure enough left padding */
+}
+
+.modern-inline-form .react-tel-input .selected-flag {
+  padding: 0 8px 0 8px !important;
+  border-radius: 4px 0 0 4px !important;
+  height: 36px !important; /* Reduced from 42px */
+  border-right: 1px solid #e0e0e0 !important; /* Add border for phone country code */
+}
+
+.modern-inline-form .react-tel-input .flag-dropdown {
+  border-radius: 4px 0 0 4px !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+/* Success and error message styling */
+.modern-success-message .modern-message-bubble {
+  background: #e6f7e6 !important;
+  color: #2e7d32 !important;
+  border-left: 4px solid #2e7d32;
+  padding: 10px 12px; /* Smaller padding */
+  font-size: 14px; /* Smaller font */
+}
+
+/* Add error message styling */
+.modern-message.modern-error-message .modern-message-bubble {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  border-left: 4px solid #c62828;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+/* Add specific styling for error states in form */
+.modern-inline-form input.error,
+.modern-inline-form .react-tel-input .form-control.error {
+  border-color: #f44336 !important;
+  background-color: #ffebee !important;
+}
+
+.modern-inline-form .error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Mobile responsive fixes for inline form */
+@media (max-width: 480px) {
+  .modern-inline-form {
+    padding: 10px; /* Further reduced for mobile */
+    max-width: 260px; /* Even smaller on mobile */
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .modern-inline-form .modern-form-group {
+    margin-bottom: 6px;
+  }
+
+  .modern-inline-form label {
+    font-size: 11px;
+  }
+
+  .modern-inline-submit-button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  /* Ensure messages are more compact on mobile */
+  .modern-messages {
+    gap: 8px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-inline-form {
+    padding: 10px;
+    max-width: 240px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 12px;
+  }
+
+  .modern-form-message {
+    max-width: 100% !important;
+  }
+}
+
+/* Success message with checkmark animation */
+.modern-success-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.modern-success-wrapper {
+  width: 100%;
+  max-width: 320px;
+  background: white;
+  border-radius: 10px;
+  padding: 25px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.modern-success-wrapper h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 15px 0 10px;
+  color: #333;
+}
+
+.modern-success-wrapper p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+/* Checkmark animation */
+.modern-checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 0 auto 15px;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: modern-fill 0.4s ease-in-out 0.4s forwards,
+    modern-scale 0.3s ease-in-out 0.9s both;
+}
+
+.modern-checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: modern-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.modern-checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: modern-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes modern-stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes modern-scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes modern-fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
+}

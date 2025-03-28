@@ -16,7 +16,7 @@ const handleLeadSubmit = async (
   setIsTyping,
   uniqueSessionId,
   messages,
-  setIsSubmitDisabled 
+  setIsSubmitDisabled
 ) => {
   e.preventDefault();
   console.log("handleLeadSubmit function called");
@@ -36,7 +36,9 @@ const handleLeadSubmit = async (
     let location = {};
     try {
       console.log("Fetching Geolocation...");
-      const geoResponse = await axios.get(`https://ipapi.co/${ipAddress}/json/`);
+      const geoResponse = await axios.get(
+        `https://ipapi.co/${ipAddress}/json/`
+      );
       console.log("Geolocation Response:", geoResponse.data);
 
       location = {
@@ -72,7 +74,10 @@ const handleLeadSubmit = async (
     const leadName = leadData?.name?.toUpperCase();
     setMessages((prevMessages) => [
       ...prevMessages,
-      { sender: "Bot", text: `Thank you! ${leadName}, for submitting your enquiry!` },
+      {
+        sender: "Bot",
+        text: `Thank you! ${leadName}, for submitting your enquiry!`,
+      },
     ]);
 
     // Save analytics event
@@ -90,7 +95,7 @@ const handleLeadSubmit = async (
     setTimeout(() => {
       setFormVisible(false);
       setChatVisible(true);
-      setShowRating(true);
+      // setShowRating(true);
     }, 3000);
   } catch (error) {
     console.error("Error in handleLeadSubmit:", error);
@@ -102,6 +107,5 @@ const handleLeadSubmit = async (
     setIsSubmitDisabled(false);
   }, 3000);
 };
-
 
 export default handleLeadSubmit;

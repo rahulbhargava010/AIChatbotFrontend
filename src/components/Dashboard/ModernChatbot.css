@@ -266,18 +266,20 @@
   background: transparent;
 }
 
+/* UPDATED: Reduced gap between messages from 16px to 10px */
 .modern-messages {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   width: 100%;
 }
 
+/* UPDATED: Reduced gap within message from 4px to 2px */
 .modern-message {
   max-width: 80%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .modern-user-message {
@@ -288,11 +290,12 @@
   align-self: flex-start;
 }
 
+/* UPDATED: Made bubbles more compact with smaller fonts */
 .modern-message-bubble {
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 15px;
-  line-height: 1.5;
+  padding: 10px 12px; /* Reduced from 12px 16px */
+  border-radius: 16px; /* Reduced from 18px */
+  font-size: 14px; /* Reduced from 15px */
+  line-height: 1.4; /* Reduced from 1.5 */
   white-space: pre-line;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   word-break: break-word;
@@ -319,20 +322,23 @@
   text-align: right;
 }
 
+/* UPDATED: Reduced image gallery spacing and image sizes */
 .modern-image-gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px; /* Reduced from 8px */
   max-width: 100%;
+  margin: 5px 0; /* Add margin for spacing */
 }
 
 .modern-chat-image {
-  width: 150px;
-  height: 100px;
+  width: 120px; /* Reduced from 150px */
+  height: 80px; /* Reduced from 100px */
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 6px; /* Reduced from 8px */
   transition: transform 0.2s ease;
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
 }
 
 .modern-chat-image:hover {
@@ -773,7 +779,7 @@
   box-shadow: 0 6px 15px rgba(118, 41, 200, 0.3);
 }
 
-/* First screen */
+/* UPDATED: First screen with increased z-index to ensure visibility */
 .modern-first-screen {
   position: absolute;
   top: 0;
@@ -788,8 +794,9 @@
   text-align: center;
   background: linear-gradient(to right, #6a11cb, #2575fc);
   color: white;
-  z-index: 20;
+  z-index: 100; /* Increased z-index to ensure visibility */
   border-radius: 16px;
+  opacity: 1 !important; /* Force visibility */
 }
 
 .modern-first-screen-content {
@@ -1277,39 +1284,67 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 }
-/* Inline form styles */
+
+/* Inline form styles - UPDATED */
 .modern-fullwidth-form-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 10px 0;
+  margin: 5px 0; /* Reduced from 10px */
   padding: 0 5px;
   box-sizing: border-box;
 }
 
+/* Make the form smaller and more compact */
 .modern-inline-form {
   width: 100%;
-  max-width: 500px;
+  max-width: 280px; /* Reduced from 500px */
   background: white;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px; /* Reduced from 16px */
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease-in-out;
+  position: relative;
 }
 
+/* Add close button to the form */
+.modern-form-close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Make form header smaller */
 .modern-inline-form .modern-form-header {
   text-align: left;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Reduced from 16px */
 }
 
 .modern-inline-form .modern-form-header h3 {
-  font-size: 15px;
+  font-size: 14px; /* Reduced from 15px */
   font-weight: 600;
   color: #333;
-  margin-bottom: 16px;
+  margin-bottom: 10px; /* Reduced from 16px */
   padding-bottom: 0;
   border-bottom: none;
-  line-height: 1.4;
+  line-height: 1.3;
+  padding-right: 20px; /* Make room for close button */
 }
 
 .modern-inline-form .modern-contact-form {
@@ -1318,29 +1353,30 @@ body {
   gap: 12px;
 }
 
+/* Make form fields smaller and more compact */
 .modern-inline-form .modern-form-group {
-  margin-bottom: 12px;
+  margin-bottom: 8px; /* Reduced from 12px */
 }
 
 .modern-inline-form label {
-  font-size: 14px;
+  font-size: 12px; /* Reduced from 14px */
   font-weight: 500;
   color: #333;
-  margin-bottom: 6px;
+  margin-bottom: 4px; /* Reduced from 6px */
   display: block;
 }
 
 .modern-inline-form input,
 .modern-inline-form .react-tel-input .form-control {
   width: 100%;
-  padding: 10px !important;
+  padding: 8px !important; /* Reduced from 10px */
   border-radius: 4px !important;
   border: 1px solid #e0e0e0 !important;
   font-size: 14px !important;
   transition: all 0.2s ease-in-out;
   background: white;
   box-sizing: border-box;
-  height: 42px !important;
+  height: 36px !important; /* Reduced from 42px */
 }
 
 .modern-inline-form input:focus,
@@ -1350,20 +1386,21 @@ body {
   box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
 }
 
+/* Make submit button smaller */
 .modern-inline-submit-button {
   background: #8a3ff7 !important;
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 12px;
-  font-size: 14px;
+  padding: 10px; /* Reduced from 12px */
+  font-size: 13px; /* Reduced from 14px */
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 10px;
+  margin-top: 8px; /* Reduced from 10px */
 }
 
 .modern-inline-submit-button:hover {
@@ -1375,62 +1412,92 @@ body {
   cursor: not-allowed;
 }
 
-/* Phone input in inline form */
+/* Fix phone input field styling with left padding and border */
 .modern-inline-form .phone-input-container {
   width: 100%;
 }
 
 .modern-inline-form .phone-input {
   width: 100% !important;
-  height: 42px !important;
+  height: 36px !important; /* Reduced from 42px */
   font-size: 14px !important;
   border-radius: 4px !important;
   border: 1px solid #e0e0e0 !important;
   background: white !important;
-  padding-left: 52px !important;
+  padding-left: 52px !important; /* Ensure enough left padding */
 }
 
 .modern-inline-form .react-tel-input .selected-flag {
   padding: 0 8px 0 8px !important;
   border-radius: 4px 0 0 4px !important;
-  height: 42px !important;
+  height: 36px !important; /* Reduced from 42px */
+  border-right: 1px solid #e0e0e0 !important; /* Add border for phone country code */
 }
 
 .modern-inline-form .react-tel-input .flag-dropdown {
   border-radius: 4px 0 0 4px !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
+/* Success and error message styling */
 .modern-success-message .modern-message-bubble {
   background: #e6f7e6 !important;
   color: #2e7d32 !important;
   border-left: 4px solid #2e7d32;
+  padding: 10px 12px; /* Smaller padding */
+  font-size: 14px; /* Smaller font */
 }
 
-/* Responsive styles for inline form */
+/* Add error message styling */
+.modern-message.modern-error-message .modern-message-bubble {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  border-left: 4px solid #c62828;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+/* Add specific styling for error states in form */
+.modern-inline-form input.error,
+.modern-inline-form .react-tel-input .form-control.error {
+  border-color: #f44336 !important;
+  background-color: #ffebee !important;
+}
+
+.modern-inline-form .error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Mobile responsive fixes for inline form */
 @media (max-width: 480px) {
   .modern-inline-form {
-    padding: 12px;
+    padding: 10px; /* Further reduced for mobile */
+    max-width: 260px; /* Even smaller on mobile */
   }
-
+  
   .modern-inline-form .modern-form-header h3 {
-    font-size: 15px;
-    margin-bottom: 12px;
+    font-size: 13px;
+    margin-bottom: 8px;
   }
-
+  
+  .modern-inline-form .modern-form-group {
+    margin-bottom: 6px;
+  }
+  
   .modern-inline-form label {
+    font-size: 11px;
+  }
+  
+  .modern-inline-submit-button {
+    padding: 8px;
     font-size: 12px;
-    margin-bottom: 4px;
   }
-
-  .modern-inline-form input,
-  .modern-inline-form .react-tel-input .form-control {
-    padding: 8px !important;
-    font-size: 16px !important; /* Prevent zooming on iOS */
-  }
-
-  .modern-inline-form .modern-form-submit {
-    padding: 10px;
-    font-size: 14px;
+  
+  /* Ensure messages are more compact on mobile */
+  .modern-messages {
+    gap: 8px;
   }
 }
 
@@ -1438,10 +1505,11 @@ body {
 @media (max-width: 320px) {
   .modern-inline-form {
     padding: 10px;
+    max-width: 240px;
   }
 
   .modern-inline-form .modern-form-header h3 {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .modern-form-message {
@@ -1535,177 +1603,5 @@ body {
 @keyframes modern-fill {
   100% {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
-  }
-}
-
-/* Inline form styles */
-.modern-fullwidth-form-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 10px 0;
-  padding: 0 5px;
-  box-sizing: border-box;
-}
-
-.modern-inline-form {
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.modern-inline-form .modern-form-header {
-  text-align: left;
-  margin-bottom: 16px;
-}
-
-.modern-inline-form .modern-form-header h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 16px;
-  padding-bottom: 0;
-  border-bottom: none;
-  line-height: 1.4;
-}
-
-.modern-inline-form .modern-contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modern-inline-form .modern-form-group {
-  margin-bottom: 12px;
-}
-
-.modern-inline-form label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.modern-inline-form input,
-.modern-inline-form .react-tel-input .form-control {
-  width: 100%;
-  padding: 10px !important;
-  border-radius: 4px !important;
-  border: 1px solid #e0e0e0 !important;
-  font-size: 14px !important;
-  transition: all 0.2s ease-in-out;
-  background: white;
-  box-sizing: border-box;
-  height: 42px !important;
-}
-
-.modern-inline-form input:focus,
-.modern-inline-form .react-tel-input .form-control:focus {
-  border-color: #7629c8 !important;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1) !important;
-}
-
-.modern-inline-submit-button {
-  background: #8a3ff7 !important;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 10px;
-}
-
-.modern-inline-submit-button:hover {
-  background: #7629c8 !important;
-}
-
-.modern-inline-submit-button:disabled {
-  background: #b08ae0 !important;
-  cursor: not-allowed;
-}
-
-/* Phone input in inline form */
-.modern-inline-form .phone-input-container {
-  width: 100%;
-}
-
-.modern-inline-form .phone-input {
-  width: 100% !important;
-  height: 42px !important;
-  font-size: 14px !important;
-  border-radius: 4px !important;
-  border: 1px solid #e0e0e0 !important;
-  background: white !important;
-  padding-left: 52px !important;
-}
-
-.modern-inline-form .react-tel-input .selected-flag {
-  padding: 0 8px 0 8px !important;
-  border-radius: 4px 0 0 4px !important;
-  height: 42px !important;
-}
-
-.modern-inline-form .react-tel-input .flag-dropdown {
-  border-radius: 4px 0 0 4px !important;
-}
-
-.modern-success-message .modern-message-bubble {
-  background: #e6f7e6 !important;
-  color: #2e7d32 !important;
-  border-left: 4px solid #2e7d32;
-}
-
-/* Responsive styles for inline form */
-@media (max-width: 480px) {
-  .modern-inline-form {
-    padding: 12px;
-  }
-
-  .modern-inline-form .modern-form-header h3 {
-    font-size: 15px;
-    margin-bottom: 12px;
-  }
-
-  .modern-inline-form label {
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-
-  .modern-inline-form input,
-  .modern-inline-form .react-tel-input .form-control {
-    padding: 8px !important;
-    font-size: 16px !important; /* Prevent zooming on iOS */
-  }
-
-  .modern-inline-form .modern-form-submit {
-    padding: 10px;
-    font-size: 14px;
-  }
-}
-
-/* Extra small screens */
-@media (max-width: 320px) {
-  .modern-inline-form {
-    padding: 10px;
-  }
-
-  .modern-inline-form .modern-form-header h3 {
-    font-size: 14px;
-  }
-
-  .modern-form-message {
-    max-width: 100% !important;
   }
 }
