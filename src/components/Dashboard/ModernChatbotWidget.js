@@ -34,10 +34,13 @@ const ModernChatbotWidget = () => {
   const [buttons, setButtons] = useState([
     { label: "Location", action: "location" },
     { label: "Amenities", action: "amenities" },
-    { label: "Get a Call Back", action: "schedule_site_visit" },
+    { label: "Get a Call Back", action: "get_callback" },
+    { label: "Site Visit Schedule", action: "schedule_site_visit" },
+    { label: "Download Brochure", action: "brochure" },
   ]);
   const [isMobile, setIsMobile] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [inlineFormVisible, setInlineFormVisible] = useState(false);
   const [chatVisible, setChatVisible] = useState(true);
   const [formType, setFormType] = useState("");
   const [buttonContent, setButtonContent] = useState({});
@@ -46,7 +49,6 @@ const ModernChatbotWidget = () => {
   const [leadData, setLeadData] = useState({
     name: "",
     phone: "",
-    email: "",
     id: "",
   });
   const [chatbotData, setChatbotData] = useState(null);
@@ -68,7 +70,7 @@ const ModernChatbotWidget = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
 
-  // First screen animation state
+  // First screen animation state - CHANGED to ensure it's always shown initially
   const [showFirstScreen, setShowFirstScreen] = useState(true);
   const [chatInitialized, setChatInitialized] = useState(false);
 
@@ -123,13 +125,13 @@ const ModernChatbotWidget = () => {
     };
   }, [speechRecognition]);
 
-  // Automatically hide the first screen after 5 seconds
+  // Automatically hide the first screen after 10 seconds (CHANGED from 5 seconds)
   useEffect(() => {
     if (showFirstScreen) {
       const timer = setTimeout(() => {
         setShowFirstScreen(false);
         setChatInitialized(true);
-      }, 5000);
+      }, 10000);
 
       return () => clearTimeout(timer);
     }
@@ -141,16 +143,25 @@ const ModernChatbotWidget = () => {
     setChatInitialized(true);
   };
 
-  // Show form after a certain time if not interacting
+  // Show form after a certain time if not interacting - UPDATED timing and conditions
   useEffect(() => {
+    // Only show form after 3 messages from user or after 60 seconds
     const interval = setInterval(() => {
-      if (!formVisible && !isTyping && messages.length > 5 && !formSubmitted) {
-        setFormVisible(true);
+      const userSenderCount = messages.filter(
+        (message) => message.sender === "User"
+      ).length;
+
+      // Only show form after at least 3 user messages
+      if (isTyping === false && userSenderCount >= 3) {
+        if (!formSubmitted && !inlineFormVisible) {
+          // Show the form inline in the chat
+          addInlineForm();
+        }
       }
-    }, 180000); // 3 minutes
+    }, 60000); // Increased to 60 seconds (1 minute)
 
     return () => clearInterval(interval);
-  }, [formVisible, isTyping, messages.length, formSubmitted]);
+  }, [isTyping, messages, formSubmitted, inlineFormVisible]);
 
   // Track UTM parameters
   useEffect(() => {
@@ -167,35 +178,12 @@ const ModernChatbotWidget = () => {
 
   // Handle rating submission
   useEffect(() => {
+    // Rating functionality disabled
     if (rating) {
-      if (formSubmitted) {
-        const submitRating = async () => {
-          try {
-            await api.post("/conversations/addRating", {
-              leadId: leadData.id,
-              chatbotId,
-              rating,
-              sessionId,
-              review,
-            });
-            setRating("");
-            setTimeout(() => {
-              setShowRating(false);
-            }, 3000);
-          } catch (error) {
-            console.error("Error submitting rating:", error);
-          }
-        };
-        submitRating();
-      } else {
-        setShowRating(false);
-        setFormVisible(true);
-        setMsgFromResponse(
-          "Please fill out your information before rating our chat service."
-        );
-      }
+      setRating("");
+      setShowRating(false);
     }
-  }, [rating, formSubmitted, leadData.id, chatbotId, sessionId, review]);
+  }, [rating]);
 
   // Auto-save session and conversations
   useEffect(() => {
@@ -207,7 +195,7 @@ const ModernChatbotWidget = () => {
       if (hasUserMessage) {
         saveConversation(storedSessionId);
       }
-    }, 10000);
+    }, 7000);
 
     return () => clearInterval(interval);
   }, [messages, storedSessionId]);
@@ -262,16 +250,30 @@ const ModernChatbotWidget = () => {
         setChatbotData(response.data);
 
         if (buttons && buttons.length > 0) {
+          // Merge the API buttons with our custom buttons
+          const customButtons = [
+            { label: "Get a Call Back", action: "get_callback" },
+            { label: "Site Visit Schedule", action: "schedule_site_visit" },
+            { label: "Download Brochure", action: "brochure" },
+          ];
+
+          // Filter out duplicates based on action
+          const mergedButtons = [
+            ...buttons,
+            ...customButtons.filter(
+              (cBtn) => !buttons.some((btn) => btn.action === cBtn.action)
+            ),
+          ];
+
           const buttonMap = {};
-          buttons.forEach((btn) => {
+          mergedButtons.forEach((btn) => {
             buttonMap[btn.action] = btn.data;
           });
           setButtonContent(buttonMap);
-          setButtons(buttons);
+          setButtons(mergedButtons);
         }
 
         // Prepare messages but don't show them until first screen is dismissed
-        // Removed interior buttons as requested
         const initialMessages = [
           { sender: "Bot", text: greeting, timestamp: new Date() },
           { sender: "Bot", text: chatbotGreeting, timestamp: new Date() },
@@ -284,8 +286,6 @@ const ModernChatbotWidget = () => {
             timestamp: new Date(),
           });
         }
-
-        // Buttons removed from initial messages as requested
 
         setMessages(initialMessages);
       } catch (err) {
@@ -329,7 +329,6 @@ const ModernChatbotWidget = () => {
             timestamp: new Date(),
           },
           { images: dummyData.projectImages, timestamp: new Date() },
-          // Buttons removed as requested
         ]);
       }
     };
@@ -340,12 +339,19 @@ const ModernChatbotWidget = () => {
   // Handle rating
   const handleRateChat = () => {
     if (formSubmitted) {
-      setShowRating(true);
+      // Rating functionality is disabled for now
+      // setShowRating(true);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          sender: "Bot",
+          text: "Thank you for your interest in providing feedback. This feature is currently being updated.",
+          timestamp: new Date(),
+        },
+      ]);
     } else {
-      setFormVisible(true);
-      setMsgFromResponse(
-        "Please fill out your information before rating our chat service."
-      );
+      addInlineForm();
+      setMsgFromResponse("Please share your details:");
     }
     setIsOpen(false);
   };
@@ -357,6 +363,32 @@ const ModernChatbotWidget = () => {
       ...prevState,
       [name]: checked,
     }));
+  };
+
+  // Function to add the form inline in the chat
+  const addInlineForm = () => {
+    // Remove existing inline forms first
+    setMessages((prevMessages) =>
+      prevMessages.filter((msg) => !msg.isInlineForm)
+    );
+
+    // Now add the new inline form
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        isInlineForm: true,
+        // Don't include a timestamp for the form
+      },
+    ]);
+
+    setInlineFormVisible(true);
+
+    // Scroll to the form after it renders
+    setTimeout(() => {
+      if (chatWindowRef.current) {
+        chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+      }
+    }, 100);
   };
 
   // Handle feedback submission
@@ -387,6 +419,135 @@ const ModernChatbotWidget = () => {
 
     setRating(feedback?.rating);
     saveConversation(storedSessionId);
+  };
+
+  // Handle successful form submission - UPDATED
+  const handleFormSuccess = () => {
+    try {
+      // First remove the form from messages
+      const filteredMessages = messages.filter((msg) => !msg.isInlineForm);
+
+      // Then add success message with improved styling
+      const updatedMessages = [
+        ...filteredMessages,
+        {
+          sender: "Bot",
+          text: "Thank you! Your details have been successfully submitted. Our team will get in touch with you soon.",
+          timestamp: new Date(),
+          isSuccess: true,
+        },
+      ];
+
+      // Update messages state with the new array
+      setMessages(updatedMessages);
+
+      // Update other states
+      setInlineFormVisible(false);
+      setFormSubmitted(true);
+
+      // Reset form values
+      setLeadData({
+        name: "",
+        phone: "",
+        id: "",
+      });
+
+      // Add a follow-up message after a delay
+      setTimeout(() => {
+        setMessages((currentMessages) => [
+          ...currentMessages,
+          {
+            sender: "Bot",
+            text: "Is there anything else I can help you with?",
+            timestamp: new Date(),
+          },
+        ]);
+      }, 1000);
+    } catch (error) {
+      console.error("Error in handleFormSuccess:", error);
+
+      // Show error message if something goes wrong
+      setMessages((prevMessages) => [
+        ...prevMessages.filter((msg) => !msg.isInlineForm),
+        {
+          sender: "Bot",
+          text: "We're sorry, there was an error submitting your details. Please try again.",
+          timestamp: new Date(),
+          isError: true,
+        },
+      ]);
+    }
+  };
+
+  // Handle inline form submission - UPDATED
+  const handleInlineFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitDisabled(true);
+
+    try {
+      // Validate phone number - ensure it has at least 10 digits
+      if (leadData.phone.replace(/\D/g, "").length < 10) {
+        setMessages((prevMessages) => [
+          ...prevMessages.filter((msg) => !msg.isInlineForm),
+          {
+            sender: "Bot",
+            text: "Please enter a valid phone number with at least 10 digits.",
+            timestamp: new Date(),
+            isError: true,
+          },
+          {
+            isInlineForm: true,
+          },
+        ]);
+        setIsSubmitDisabled(false);
+        return;
+      }
+
+      // Create a dummy setMessages function that won't affect our chat
+      const dummySetMessages = (msgs) => {
+        console.log("Form submission processed");
+        return msgs;
+      };
+
+      // Call the lead submit handler with proper parameters
+      await handleLeadSubmit(
+        e,
+        leadData,
+        setLeadData,
+        chatbotId,
+        conversation,
+        dummySetMessages, // Provide a dummy function that won't modify our messages
+        () => {}, // Dummy function for setFormVisible
+        setFormSubmitted,
+        () => {}, // Disable showing the rating by providing a no-op function
+        setChatVisible,
+        setIsTyping,
+        uniqueSessionId,
+        messages,
+        setIsSubmitDisabled
+      );
+
+      // Handle success in our own way
+      handleFormSuccess();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+
+      // Show error message
+      setMessages((prevMessages) => [
+        ...prevMessages.filter((msg) => !msg.isInlineForm),
+        {
+          sender: "Bot",
+          text: "We couldn't process your request. Please try again later.",
+          timestamp: new Date(),
+          isError: true,
+        },
+        {
+          isInlineForm: true,
+        },
+      ]);
+
+      setIsSubmitDisabled(false);
+    }
   };
 
   // Speech recognition functions
@@ -542,7 +703,7 @@ const ModernChatbotWidget = () => {
 
     // If more than 10 user messages and no form submitted yet, show form
     if (userSenderCount >= 10 && !formSubmitted) {
-      setFormVisible(true);
+      addInlineForm();
       setIsButtonDisabled(false); // Re-enable button
       return;
     }
@@ -561,14 +722,15 @@ const ModernChatbotWidget = () => {
       const { reply, score } = response.data;
 
       if (reply && reply.toLowerCase().includes("form")) {
-        setFormVisible(true);
+        addInlineForm();
+
         if (reply.toLowerCase().includes("sitevisit")) {
           setMsgFromResponse(
             "To Book The Site Visit Please Fill Out the Form."
           );
         } else if (reply.toLowerCase().includes("brochure")) {
           setMsgFromResponse(
-            "To Download The Brouchure Please Fill Out the Form."
+            "To Download The Brochure Please Fill Out the Form."
           );
         } else if (reply.toLowerCase().includes("payments")) {
           setMsgFromResponse(
@@ -608,7 +770,7 @@ const ModernChatbotWidget = () => {
       });
     } catch (err) {
       console.error("Failed to send message:", err);
-      setFormVisible(true);
+      addInlineForm();
       setMsgFromResponse(
         "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
       );
@@ -641,10 +803,40 @@ const ModernChatbotWidget = () => {
         )
       ) {
         setFormType(action);
-        setFormVisible(true);
-        setMsgFromResponse(
-          "Please Provide Your Information, We Are Happy To Help!"
+
+        // Set appropriate message for the form
+        if (action === "schedule_site_visit") {
+          setMsgFromResponse("Please share your details for a site visit:");
+        } else if (action === "get_callback") {
+          setMsgFromResponse(
+            "Please share your details for a call back from our team:"
+          );
+        } else if (action === "brochure") {
+          setMsgFromResponse(
+            "Please share your details to download our brochure:"
+          );
+        } else {
+          setMsgFromResponse("Please provide your information:");
+        }
+
+        // Add user's request as a message
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "User", text: label, timestamp: new Date() },
+        ]);
+
+        // First remove any existing inline form
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => !msg.isInlineForm)
         );
+
+        setInlineFormVisible(false);
+
+        // Wait a bit before adding the new form
+        setTimeout(() => {
+          // Add bot response and form
+          addInlineForm();
+        }, 300);
       } else {
         setFormVisible(false);
         setChatVisible(true);
@@ -759,16 +951,9 @@ const ModernChatbotWidget = () => {
   // Placeholder for the logo
   const renderLogo = () => {
     if (projectLogo) {
-      let logoUrl = projectLogo;
-
-      // If the logo path doesn't start with http, prepend the base URL
-      if (!projectLogo.startsWith("http")) {
-        logoUrl = `https://assist-ai.propstory.com/${projectLogo}`;
-      }
-
       return (
         <img
-          src={logoUrl}
+          src={`https://assist-ai.propstory.com/${projectLogo}`}
           alt="Logo"
           className="modern-chatbot-logo"
           onError={(e) => {
@@ -779,12 +964,112 @@ const ModernChatbotWidget = () => {
         />
       );
     } else {
+      // Fallback to placeholder
       return (
         <div className="modern-placeholder-logo">
           <span>{chatbotData?.chatbotName?.charAt(0) || "A"}</span>
         </div>
       );
     }
+  };
+
+  // UPDATED: Improved rendering of chat images
+  const renderChatImage = (img, idx) => {
+    let imageUrl = "";
+    // Simpler image URL handling
+    if (typeof img === "string") {
+      if (img.startsWith("http")) {
+        imageUrl = img;
+      } else {
+        imageUrl = `https://assist-ai.propstory.com/${img}`;
+      }
+    } else {
+      imageUrl = "https://via.placeholder.com/150x100?text=Project+Image";
+    }
+
+    return (
+      <img
+        key={idx}
+        src={imageUrl}
+        alt={`Project image ${idx + 1}`}
+        className="modern-chat-image"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src =
+            "https://via.placeholder.com/150x100?text=Image+Not+Found";
+        }}
+      />
+    );
+  };
+
+  // UPDATED: Render inline form component with close button and without email field
+  const renderInlineForm = () => {
+    return (
+      <div className="modern-inline-form">
+        <div className="modern-form-header">
+          <button
+            className="modern-form-close-button"
+            onClick={() => {
+              // Remove form from messages
+              setMessages((prevMessages) =>
+                prevMessages.filter((msg) => !msg.isInlineForm)
+              );
+              setInlineFormVisible(false);
+            }}
+            aria-label="Close form"
+          >
+            <X size={16} />
+          </button>
+          <h3>{msgFromResponse || "Please share your details:"}</h3>
+        </div>
+
+        <form className="modern-contact-form" onSubmit={handleInlineFormSubmit}>
+          <div className="modern-form-group">
+            <label htmlFor="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              placeholder="Enter your name"
+              required
+              value={leadData.name}
+              onChange={(e) =>
+                setLeadData({ ...leadData, name: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="modern-form-group">
+            <label htmlFor="phone">Phone Number</label>
+            <PhoneInput
+              country={"in"}
+              value={leadData.phone}
+              onChange={(phone) => setLeadData({ ...leadData, phone })}
+              inputProps={{
+                required: true,
+                id: "phone",
+                placeholder: "Enter your mobile number",
+              }}
+              containerClass="phone-input-container"
+              inputClass="phone-input"
+              buttonClass="phone-select-button"
+              dropdownClass="phone-dropdown"
+              // Remove validation by setting isValid to always return true
+              isValid={() => true}
+            />
+          </div>
+
+          {/* Email field removed as requested */}
+
+          <button
+            type="submit"
+            className="modern-inline-submit-button"
+            disabled={isSubmitDisabled}
+          >
+            {isSubmitDisabled ? "PROCESSING..." : "SUBMIT"}
+          </button>
+        </form>
+      </div>
+    );
   };
 
   return (
@@ -821,178 +1106,6 @@ const ModernChatbotWidget = () => {
                 >
                   Get Started
                 </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Contact Form Overlay */}
-        <AnimatePresence>
-          {formVisible && (
-            <motion.div
-              className="modern-form-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="modern-form-container">
-                <button
-                  className="modern-close-form"
-                  onClick={() => {
-                    setFormVisible(false);
-                    setChatVisible(true);
-                  }}
-                  aria-label="Close form"
-                >
-                  <X size={24} />
-                </button>
-
-                {formSubmitted ? (
-                  <motion.div
-                    className="modern-form-success"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  >
-                    <div className="modern-success-icon">
-                      <svg
-                        className="checkmark"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 52 52"
-                      >
-                        <circle
-                          className="checkmark__circle"
-                          cx="26"
-                          cy="26"
-                          r="25"
-                          fill="none"
-                        />
-                        <path
-                          className="checkmark__check"
-                          fill="none"
-                          d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                        />
-                      </svg>
-                    </div>
-                    <h3>THANK YOU!</h3>
-                    <p>
-                      We've received your submission, and we'll be in touch
-                      soon!
-                    </p>
-                    <button
-                      className="modern-submit-button"
-                      onClick={() => {
-                        setFormVisible(false);
-                        setChatVisible(true);
-                      }}
-                    >
-                      Return to Chat
-                    </button>
-                  </motion.div>
-                ) : (
-                  <div className="modern-form-fields">
-                    <div className="modern-form-header">
-                      <h3>{msgFromResponse || "Please Introduce Yourself"}</h3>
-                    </div>
-
-                    <form
-                      className="modern-contact-form"
-                      onSubmit={(e) =>
-                        handleLeadSubmit(
-                          e,
-                          leadData,
-                          setLeadData,
-                          chatbotId,
-                          conversation,
-                          setMessages,
-                          setFormVisible,
-                          setFormSubmitted,
-                          setShowRating,
-                          setChatVisible,
-                          setIsTyping,
-                          uniqueSessionId,
-                          messages,
-                          setIsSubmitDisabled
-                        )
-                      }
-                    >
-                      <div className="modern-form-group">
-                        <label htmlFor="name">Full Name</label>
-                        <div className="modern-input-with-icon">
-                          <input
-                            type="text"
-                            id="name"
-                            placeholder="Enter your name"
-                            required
-                            value={leadData.name}
-                            onChange={(e) =>
-                              setLeadData({ ...leadData, name: e.target.value })
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="modern-form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <PhoneInput
-                          country={"in"}
-                          value={leadData.phone}
-                          onChange={(phone) =>
-                            setLeadData({ ...leadData, phone })
-                          }
-                          inputProps={{
-                            required: true,
-                            id: "phone",
-                            placeholder: "Enter your mobile number",
-                          }}
-                          containerClass="phone-input-container"
-                          inputClass="phone-input"
-                          buttonClass="phone-select-button"
-                          dropdownClass="phone-dropdown"
-                        />
-                      </div>
-
-                      <div className="modern-form-group">
-                        <label htmlFor="email">Email Address</label>
-                        <div className="modern-input-with-icon">
-                          <input
-                            type="email"
-                            id="email"
-                            placeholder="Enter your email"
-                            required
-                            value={leadData.email}
-                            onChange={(e) =>
-                              setLeadData({
-                                ...leadData,
-                                email: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      {/* <Form.Check
-                        type="checkbox"
-                        id="permission"
-                        name="option1"
-                        label={`I allow ${
-                          chatbotData?.chatbotName || "AI Assistant"
-                        } call center to contact me for sales and support`}
-                        checked={checkedItems.option1}
-                        onChange={handleChange}
-                        className="modern-form-checkbox"
-                      /> */}
-
-                      <button
-                        type="submit"
-                        className="modern-form-submit"
-                        disabled={isSubmitDisabled}
-                      >
-                        {isSubmitDisabled ? "PROCESSING..." : "SUBMIT"}
-                      </button>
-                    </form>
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
@@ -1036,15 +1149,6 @@ const ModernChatbotWidget = () => {
                         <MessageSquare size={16} />
                         <span>Talk to Human</span>
                       </button>
-                      {/* <button
-                        onClick={() => {
-                          handleRateChat();
-                          setIsOpen(false);
-                        }}
-                      >
-                        <Star size={16} />
-                        <span>Rate this Chat</span>
-                      </button> */}
                       <button
                         onClick={() => {
                           // Use the actual phone number from API if available
@@ -1118,89 +1222,85 @@ const ModernChatbotWidget = () => {
               {/* Messages */}
               <div className="modern-messages">
                 {messages?.map((message, index) => {
-                  const hasContent =
+                  // Handle regular messages
+                  if (
                     message.text ||
                     message.images?.length ||
-                    message.buttons?.length;
+                    message.buttons?.length
+                  ) {
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className={`modern-message ${
+                          message.sender === "User"
+                            ? "modern-user-message"
+                            : "modern-bot-message"
+                        } ${message.isSuccess ? "modern-success-message" : ""}
+                          ${message.isError ? "modern-error-message" : ""}`}
+                      >
+                        {/* Text Message */}
+                        {message.text && (
+                          <div className="modern-message-bubble">
+                            {message.text}
+                          </div>
+                        )}
 
-                  return hasContent ? (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className={`modern-message ${
-                        message.sender === "User"
-                          ? "modern-user-message"
-                          : "modern-bot-message"
-                      }`}
-                    >
-                      {/* Text Message */}
-                      {message.text && (
-                        <div className="modern-message-bubble">
-                          {message.text}
-                        </div>
-                      )}
+                        {/* Image Message - UPDATED to use the new renderChatImage function */}
+                        {message?.images && message.images.length > 0 && (
+                          <div className="modern-image-gallery">
+                            {message.images.map((img, idx) =>
+                              renderChatImage(img, idx)
+                            )}
+                          </div>
+                        )}
 
-                      {/* Image Message */}
-                      {message?.images && message.images.length > 0 && (
-                        <div className="modern-image-gallery">
-                          {message.images.map((img, idx) => {
-                            let imageUrl = "";
-                            try {
-                              if (img.startsWith("http")) {
-                                imageUrl = img;
-                              } else {
-                                imageUrl = `https://assist-ai.propstory.com/${img}`;
-                              }
-                            } catch (error) {
-                              imageUrl =
-                                "https://via.placeholder.com/150x100?text=Project+Image";
-                            }
-                            return (
-                              <img
+                        {/* Button Options */}
+                        {message?.buttons && message.buttons.length > 0 && (
+                          <div className="modern-button-options">
+                            {message.buttons.map((button, idx) => (
+                              <motion.button
                                 key={idx}
-                                src={imageUrl}
-                                alt={`Project image ${idx + 1}`}
-                                className="modern-chat-image"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src =
-                                    "https://via.placeholder.com/150x100?text=Image+Not+Found";
-                                }}
-                              />
-                            );
-                          })}
-                        </div>
-                      )}
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="modern-option-button"
+                                onClick={() =>
+                                  handleButtonClick(button.action, button.label)
+                                }
+                              >
+                                {button.label}
+                              </motion.button>
+                            ))}
+                          </div>
+                        )}
 
-                      {/* Button Options */}
-                      {message?.buttons && message.buttons.length > 0 && (
-                        <div className="modern-button-options">
-                          {message.buttons.map((button, idx) => (
-                            <motion.button
-                              key={idx}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                              className="modern-option-button"
-                              onClick={() =>
-                                handleButtonClick(button.action, button.label)
-                              }
-                            >
-                              {button.label}
-                            </motion.button>
-                          ))}
-                        </div>
-                      )}
+                        {/* Message timestamp */}
+                        {message.timestamp && (
+                          <div className="modern-message-time">
+                            {formatTimestamp(message.timestamp)}
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  }
+                  // Handle inline form
+                  else if (message.isInlineForm) {
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="modern-fullwidth-form-container"
+                      >
+                        {renderInlineForm()}
+                      </motion.div>
+                    );
+                  }
 
-                      {/* Message timestamp */}
-                      {message.timestamp && (
-                        <div className="modern-message-time">
-                          {formatTimestamp(message.timestamp)}
-                        </div>
-                      )}
-                    </motion.div>
-                  ) : null;
+                  return null;
                 })}
 
                 {/* Typing Indicator */}
@@ -1242,19 +1342,6 @@ const ModernChatbotWidget = () => {
             {/* Input Area */}
             <div className="modern-input-area">
               <div className="modern-input-container">
-                {/* Optional mic button */}
-                {/* <button
-                  className={`modern-mic-button ${
-                    isRecording ? "recording" : ""
-                  }`}
-                  onClick={handleRecord}
-                  aria-label={
-                    isRecording ? "Stop recording" : "Start recording"
-                  }
-                >
-                  <Mic size={20} />
-                </button> */}
-
                 <input
                   type="text"
                   className="modern-chat-input"
