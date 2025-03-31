@@ -38,7 +38,7 @@
     "react-scripts": "5.0.1",
     "react-sliding-pane": "^7.3.0",
     "socket.io-client": "^4.8.1",
-    "styled-components": "^6.1.14",
+    "styled-components": "^6.1.13",
     "sweetalert2": "^11.17.2",
     "web-vitals": "^2.1.4"
   },
