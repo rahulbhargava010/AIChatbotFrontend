@@ -8,6 +8,9 @@ import {
   MessageSquare,
   Star,
   ExternalLink,
+  Download,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { Form } from "react-bootstrap";
@@ -64,6 +67,7 @@ const ModernChatbotWidget = () => {
   });
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+  const [showBrochurePrompt, setShowBrochurePrompt] = useState(false);
 
   // Speech recognition states
   const [speechRecognition, setSpeechRecognition] = useState(null);
@@ -98,6 +102,17 @@ const ModernChatbotWidget = () => {
     { value: "4", icon: "🙂", label: "Good" },
     { value: "5", icon: "😍", label: "Excellent" },
   ];
+
+  // FIX 1: Ensure proper scrolling
+  useEffect(() => {
+    // Add overflow properties to enable scrolling
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      // Clean up the style changes when component unmounts
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   // Check if device is mobile
   useEffect(() => {
@@ -143,8 +158,11 @@ const ModernChatbotWidget = () => {
     setChatInitialized(true);
   };
 
-  // Show form after a certain time if not interacting - UPDATED timing and conditions
+  // FIX 8: Only show form if not submitted yet
+  // Show form after a certain time if not interacting and form hasn't been submitted
   useEffect(() => {
+    if (formSubmitted) return; // Don't show form if already submitted
+
     // Only show form after 3 messages from user or after 60 seconds
     const interval = setInterval(() => {
       const userSenderCount = messages.filter(
@@ -200,12 +218,16 @@ const ModernChatbotWidget = () => {
     return () => clearInterval(interval);
   }, [messages, storedSessionId]);
 
-  // Auto-scroll to latest message
+  // FIX 1: Ensure proper scrolling - Improved auto-scroll to latest message
   useEffect(() => {
     if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+      // Smoothly scroll to the bottom
+      chatWindowRef.current.scrollTo({
+        top: chatWindowRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // Ensure chat is visible once first screen is hidden
   useEffect(() => {
@@ -214,6 +236,36 @@ const ModernChatbotWidget = () => {
       setChatInitialized(true);
     }
   }, [showFirstScreen]);
+
+  // FIX 7: After project images, show question about brochure download
+  // This useEffect detects when project images are added and shows the brochure prompt
+  useEffect(() => {
+    const hasImages = messages.some(
+      (msg) => msg.images && msg.images.length > 0
+    );
+
+    if (hasImages && !showBrochurePrompt && !formSubmitted) {
+      // Set a timeout to add the brochure question after images have been shown
+      const timer = setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            sender: "Bot",
+            text: "Would you like to download our brochure?",
+            buttons: [
+              { label: "Yes, please", action: "brochure" },
+              { label: "No, thanks", action: "no_brochure" },
+            ],
+            timestamp: new Date(),
+          },
+        ]);
+
+        setShowBrochurePrompt(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [messages, showBrochurePrompt, formSubmitted]);
 
   // Fetch welcome data
   useEffect(() => {
@@ -241,8 +293,6 @@ const ModernChatbotWidget = () => {
           chatbotName,
           projectLogo,
         } = response.data;
-
-        console.log("Welcome response data:", response.data);
 
         setWebhook(webhook || "");
         setProjectLogo(projectLogo || "");
@@ -282,6 +332,7 @@ const ModernChatbotWidget = () => {
 
         if (projectImages && projectImages.length > 0) {
           initialMessages.push({
+            sender: "Bot",
             images: projectImages,
             timestamp: new Date(),
           });
@@ -328,7 +379,11 @@ const ModernChatbotWidget = () => {
             text: dummyData.projectHighlights,
             timestamp: new Date(),
           },
-          { images: dummyData.projectImages, timestamp: new Date() },
+          {
+            sender: "Bot",
+            images: dummyData.projectImages,
+            timestamp: new Date(),
+          },
         ]);
       }
     };
@@ -365,8 +420,12 @@ const ModernChatbotWidget = () => {
     }));
   };
 
+  // FIX 8: Add condition to not show form if already submitted
   // Function to add the form inline in the chat
   const addInlineForm = () => {
+    // Don't add the form if it's already been submitted
+    if (formSubmitted) return;
+
     // Remove existing inline forms first
     setMessages((prevMessages) =>
       prevMessages.filter((msg) => !msg.isInlineForm)
@@ -386,7 +445,10 @@ const ModernChatbotWidget = () => {
     // Scroll to the form after it renders
     setTimeout(() => {
       if (chatWindowRef.current) {
-        chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+        chatWindowRef.current.scrollTo({
+          top: chatWindowRef.current.scrollHeight,
+          behavior: "smooth",
+        });
       }
     }, 100);
   };
@@ -751,12 +813,14 @@ const ModernChatbotWidget = () => {
         return;
       }
 
+      // FIX 4: Better content formatting - Don't split sentences based on periods
       // Add a slight delay to simulate natural typing
       setTimeout(() => {
-        const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
+        // Instead of splitting on periods, we'll keep the text intact
+        // and let CSS white-space: pre-line handle natural line breaks
         setMessages((prevMessages) => [
           ...prevMessages,
-          { sender: "Bot", text: formattedReply, score, timestamp: new Date() },
+          { sender: "Bot", text: reply, score, timestamp: new Date() },
         ]);
         setIsTyping(false);
         setWhileTyping(false);
@@ -797,6 +861,20 @@ const ModernChatbotWidget = () => {
   // Handle button clicks
   const handleButtonClick = async (action, label) => {
     try {
+      // Handle the "no_brochure" action
+      if (action === "no_brochure") {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "User", text: label, timestamp: new Date() },
+          {
+            sender: "Bot",
+            text: "No problem! Let me know if you have any other questions.",
+            timestamp: new Date(),
+          },
+        ]);
+        return;
+      }
+
       if (
         ["schedule_site_visit", "get_callback", "brochure", "contact"].includes(
           action
@@ -948,32 +1026,38 @@ const ModernChatbotWidget = () => {
     setChatVisible(false);
   };
 
-  // Placeholder for the logo
+  // FIX 3: Improved logo rendering
+  // Placeholder for the logo with better size handling
   const renderLogo = () => {
     if (projectLogo) {
       return (
-        <img
-          src={`https://assist-ai.propstory.com/${projectLogo}`}
-          alt="Logo"
-          className="modern-chatbot-logo"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src =
-              "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
-          }}
-        />
+        <div className="modern-logo-container">
+          <img
+            src={`https://assist-ai.propstory.com/${projectLogo}`}
+            alt="Logo"
+            className="modern-chatbot-logo"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src =
+                "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+            }}
+          />
+        </div>
       );
     } else {
       // Fallback to placeholder
       return (
-        <div className="modern-placeholder-logo">
-          <span>{chatbotData?.chatbotName?.charAt(0) || "A"}</span>
+        <div className="modern-logo-container">
+          <div className="modern-placeholder-logo">
+            <span>{chatbotData?.chatbotName?.charAt(0) || "A"}</span>
+          </div>
         </div>
       );
     }
   };
 
-  // UPDATED: Improved rendering of chat images
+  // FIX 2: Improved image size rendering
+  // UPDATED: Improved rendering of chat images with adjusted dimensions
   const renderChatImage = (img, idx) => {
     let imageUrl = "";
     // Simpler image URL handling
@@ -984,7 +1068,7 @@ const ModernChatbotWidget = () => {
         imageUrl = `https://assist-ai.propstory.com/${img}`;
       }
     } else {
-      imageUrl = "https://via.placeholder.com/150x100?text=Project+Image";
+      imageUrl = "https://via.placeholder.com/300x200?text=Project+Image";
     }
 
     return (
@@ -996,13 +1080,14 @@ const ModernChatbotWidget = () => {
         onError={(e) => {
           e.target.onerror = null;
           e.target.src =
-            "https://via.placeholder.com/150x100?text=Image+Not+Found";
+            "https://via.placeholder.com/300x200?text=Image+Not+Found";
         }}
       />
     );
   };
 
-  // UPDATED: Render inline form component with close button and without email field
+  // FIX 6: Improved phone field padding
+  // UPDATED: Render inline form component with close button and improved phone field
   const renderInlineForm = () => {
     return (
       <div className="modern-inline-form">
@@ -1038,7 +1123,7 @@ const ModernChatbotWidget = () => {
             />
           </div>
 
-          <div className="modern-form-group">
+          <div className="modern-form-group phone-input-group">
             <label htmlFor="phone">Phone Number</label>
             <PhoneInput
               country={"in"}
@@ -1048,6 +1133,7 @@ const ModernChatbotWidget = () => {
                 required: true,
                 id: "phone",
                 placeholder: "Enter your mobile number",
+                className: "enhanced-phone-input",
               }}
               containerClass="phone-input-container"
               inputClass="phone-input"
@@ -1057,8 +1143,6 @@ const ModernChatbotWidget = () => {
               isValid={() => true}
             />
           </div>
-
-          {/* Email field removed as requested */}
 
           <button
             type="submit"
@@ -1090,7 +1174,7 @@ const ModernChatbotWidget = () => {
               transition={{ duration: 0.3 }}
             >
               <div className="modern-first-screen-content">
-                <div className="modern-logo-container">{renderLogo()}</div>
+                {renderLogo()}
                 <h2 className="text-white">
                   {chatbotData?.chatbotName || "AI Assistant"}
                 </h2>
@@ -1270,7 +1354,25 @@ const ModernChatbotWidget = () => {
                                   handleButtonClick(button.action, button.label)
                                 }
                               >
-                                {button.label}
+                                {button.action === "brochure" ? (
+                                  <>
+                                    <Download
+                                      size={14}
+                                      className="button-icon"
+                                    />{" "}
+                                    {button.label}
+                                  </>
+                                ) : button.action === "no_brochure" ? (
+                                  <>
+                                    <ThumbsDown
+                                      size={14}
+                                      className="button-icon"
+                                    />{" "}
+                                    {button.label}
+                                  </>
+                                ) : (
+                                  button.label
+                                )}
                               </motion.button>
                             ))}
                           </div>
@@ -1351,6 +1453,7 @@ const ModernChatbotWidget = () => {
                   onKeyDown={handleKeyDown}
                 />
 
+                {/* FIX 5: Larger send button */}
                 <button
                   className={`modern-send-button ${
                     !input.trim() || isButtonDisabled ? "disabled" : ""
@@ -1359,7 +1462,7 @@ const ModernChatbotWidget = () => {
                   disabled={!input.trim() || isButtonDisabled}
                   aria-label="Send message"
                 >
-                  <Send size={20} />
+                  <Send size={24} />
                 </button>
               </div>
               <div className="modern-powered-by">

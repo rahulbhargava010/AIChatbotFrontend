@@ -87,6 +87,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow: hidden; /* FIX: Ensure proper container boundaries */
 }
 
 .modern-chatbot-hidden {
@@ -131,13 +132,21 @@
   flex-direction: column;
 }
 
+/* FIX 3: Improved logo sizing and display */
+.modern-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .modern-chatbot-logo {
-  width: 40px;
+  width: 120px;
   height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
+  /* border-radius: 50%; */
+  /* object-fit: cover; */
   border: 2px solid #ffffff;
   flex-shrink: 0;
+  background-color: white; /* Add background to ensure visibility */
 }
 
 .modern-placeholder-logo {
@@ -239,10 +248,11 @@
   background: #f5f5f5;
 }
 
-/* Chat window styles */
+/* Chat window styles - FIX 1: Ensure proper scrolling */
 .modern-chat-window {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -251,6 +261,8 @@
   position: relative;
   -webkit-overflow-scrolling: touch;
   height: calc(100% - 60px - 70px); /* Adjusted for header and input area */
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+  scroll-behavior: smooth; /* Smooth scrolling */
 }
 
 .modern-chat-window::-webkit-scrollbar {
@@ -290,13 +302,13 @@
   align-self: flex-start;
 }
 
-/* UPDATED: Made bubbles more compact with smaller fonts */
+/* FIX 4: Better content formatting */
 .modern-message-bubble {
   padding: 10px 12px; /* Reduced from 12px 16px */
   border-radius: 16px; /* Reduced from 18px */
   font-size: 14px; /* Reduced from 15px */
   line-height: 1.4; /* Reduced from 1.5 */
-  white-space: pre-line;
+  white-space: pre-line; /* Keep line breaks in text */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   word-break: break-word;
 }
@@ -322,29 +334,31 @@
   text-align: right;
 }
 
-/* UPDATED: Reduced image gallery spacing and image sizes */
+/* FIX 2: Improved image size and display */
 .modern-image-gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px; /* Reduced from 8px */
+  gap: 8px;
   max-width: 100%;
-  margin: 5px 0; /* Add margin for spacing */
+  margin: 8px 0;
 }
 
 .modern-chat-image {
-  width: 120px; /* Reduced from 150px */
-  height: 80px; /* Reduced from 100px */
+  width: 250px; /* Increased from 120px */
+  height: 180px; /* Increased from 80px */
   object-fit: cover;
-  border-radius: 6px; /* Reduced from 8px */
+  border-radius: 8px;
   transition: transform 0.2s ease;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .modern-chat-image:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Improved button options */
 .modern-button-options {
   display: flex;
   flex-wrap: wrap;
@@ -361,6 +375,15 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  color: #000;
+  gap: 6px;
+}
+
+/* Add special button styling for actions */
+.button-icon {
+  color: #6a11cb;
 }
 
 .modern-option-button:hover {
@@ -496,14 +519,15 @@
   min-width: 0;
 }
 
+/* FIX 5: Larger send button */
 .modern-send-button {
   background: #6a11cb !important;
   border: none;
   border-radius: 50%;
-  min-width: 36px;
-  min-height: 36px;
-  width: 36px;
-  height: 36px;
+  min-width: 42px;
+  min-height: 42px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -711,7 +735,11 @@
   box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1);
 }
 
-/* Phone Input */
+/* FIX 6: Improved phone input styling */
+.phone-input-group {
+  margin-bottom: 16px;
+}
+
 .phone-input-container {
   width: 100%;
 }
@@ -723,13 +751,18 @@
   border-radius: 8px !important;
   border: 1px solid #e0e0e0 !important;
   background: white !important;
-  padding-left: 60px !important;
+  padding-left: 60px !important; /* Increased from 50px */
+}
+
+.enhanced-phone-input {
+  padding-left: 65px !important;
 }
 
 .phone-select-button {
   background-color: transparent !important;
   border: none !important;
   border-right: 1px solid #e0e0e0 !important;
+  padding: 0 12px !important;
 }
 
 .phone-dropdown {
@@ -822,6 +855,9 @@
 .modern-first-screen .modern-placeholder-logo,
 .modern-first-screen .modern-chatbot-logo {
   margin: 0 auto;
+  width: 120px;
+  height: 40px;
+  font-size: 32px;
 }
 
 .modern-first-screen h2 {
@@ -864,6 +900,9 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
   z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modern-rating-content {
@@ -1037,7 +1076,7 @@ textarea:focus {
   border: 1px solid #e0e0e0 !important;
   background-color: white !important;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
-  padding-left: 50px !important;
+  padding-left: 60px !important; /* FIX 6: Increased padding */
   transition: all 0.2s ease-in-out !important;
   box-sizing: border-box !important;
 }
@@ -1052,11 +1091,13 @@ textarea:focus {
   border-color: #e0e0e0 !important;
   background-color: white !important;
   border-right: 1px solid #e0e0e0 !important;
+  width: 52px !important; /* FIX 6: Set width for flag dropdown */
 }
 
 .react-tel-input .selected-flag {
   padding: 0 12px 0 12px !important;
   border-radius: 8px 0 0 8px !important;
+  width: 52px !important; /* FIX 6: Set width for selected flag */
 }
 
 .react-tel-input .selected-flag:hover,
@@ -1143,8 +1184,8 @@ textarea:focus {
 
   .modern-chatbot-logo,
   .modern-placeholder-logo {
-    width: 32px;
-    height: 32px;
+    width: 120px;
+    height: 40px;
   }
 
   /* Form adjustments for mobile */
@@ -1192,7 +1233,7 @@ textarea:focus {
   .modern-form-group textarea,
   .phone-input {
     font-size: 16px !important; /* Prevent zooming on iOS */
-    padding: 10px !important;
+    /* padding: 10px !important; */
   }
 
   .modern-form-submit {
@@ -1250,7 +1291,7 @@ textarea:focus {
   /* Make form elements smaller */
   .modern-form-group input,
   .modern-form-group textarea {
-    padding: 8px !important;
+    /* padding: 8px !important; */
   }
 }
 
@@ -1369,7 +1410,7 @@ body {
 .modern-inline-form input,
 .modern-inline-form .react-tel-input .form-control {
   width: 100%;
-  padding: 8px !important; /* Reduced from 10px */
+  /* padding: 8px !important;  */
   border-radius: 4px !important;
   border: 1px solid #e0e0e0 !important;
   font-size: 14px !important;
@@ -1431,7 +1472,6 @@ body {
   padding: 0 8px 0 8px !important;
   border-radius: 4px 0 0 4px !important;
   height: 36px !important; /* Reduced from 42px */
-  border-right: 1px solid #e0e0e0 !important; /* Add border for phone country code */
 }
 
 .modern-inline-form .react-tel-input .flag-dropdown {
@@ -1476,25 +1516,25 @@ body {
     padding: 10px; /* Further reduced for mobile */
     max-width: 260px; /* Even smaller on mobile */
   }
-  
+
   .modern-inline-form .modern-form-header h3 {
     font-size: 13px;
     margin-bottom: 8px;
   }
-  
+
   .modern-inline-form .modern-form-group {
     margin-bottom: 6px;
   }
-  
+
   .modern-inline-form label {
     font-size: 11px;
   }
-  
+
   .modern-inline-submit-button {
     padding: 8px;
     font-size: 12px;
   }
-  
+
   /* Ensure messages are more compact on mobile */
   .modern-messages {
     gap: 8px;
