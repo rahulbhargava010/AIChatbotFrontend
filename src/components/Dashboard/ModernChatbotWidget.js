@@ -11,6 +11,7 @@ import {
   Download,
   ThumbsUp,
   ThumbsDown,
+  Map as MapIcon,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { Form } from "react-bootstrap";
@@ -35,8 +36,9 @@ const ModernChatbotWidget = () => {
   const [input, setInput] = useState("");
   const chatWindowRef = useRef(null);
   const [buttons, setButtons] = useState([
-    { label: "Location", action: "location" },
-    { label: "Amenities", action: "amenities" },
+    { label: "Highlights", action: "highlight", data: "Highlight" },
+    { label: "Location", action: "location", data: "Location" },
+    { label: "Amenities", action: "amenities", data: "Amenities" },
     { label: "Get a Call Back", action: "get_callback" },
     { label: "Site Visit Schedule", action: "schedule_site_visit" },
     { label: "Download Brochure", action: "brochure" },
@@ -69,6 +71,17 @@ const ModernChatbotWidget = () => {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [showBrochurePrompt, setShowBrochurePrompt] = useState(false);
 
+  // Map related states
+  const [showMap, setShowMap] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapData, setMapData] = useState("");
+  const [mapLocation, setMapLocation] = useState({
+    lat: 12.9716,
+    lng: 77.5946,
+    address: "Bangalore",
+  }); // Default to Bangalore
+  const [mapMessageIndex, setMapMessageIndex] = useState(-1); // Track map message index
+
   // Speech recognition states
   const [speechRecognition, setSpeechRecognition] = useState(null);
   const [isListening, setIsListening] = useState(false);
@@ -80,6 +93,9 @@ const ModernChatbotWidget = () => {
 
   // Rating system
   const [showRating, setShowRating] = useState(false);
+
+  // Active tab state
+  const [activeTab, setActiveTab] = useState("Highlights");
 
   // UTM params for tracking
   const [utmParams, setUtmParams] = useState({
@@ -157,6 +173,66 @@ const ModernChatbotWidget = () => {
     setShowFirstScreen(false);
     setChatInitialized(true);
   };
+
+  // FIX: Map handling - Load map data when tab is clicked
+  useEffect(() => {
+    if (activeTab === "Map" && mapData) {
+      setShowMap(true);
+      setMapLoaded(true);
+
+      // Find if there is an existing map message in the chat
+      const mapIndex = messages.findIndex((msg) => msg.map);
+
+      if (mapIndex >= 0) {
+        // Update map message index for scrolling
+        setMapMessageIndex(mapIndex);
+
+        // Scroll to the existing map message with a consistent approach
+        setTimeout(() => {
+          const mapMessage = document.getElementById(`map-message-${mapIndex}`);
+
+          if (mapMessage && chatWindowRef.current) {
+            mapMessage.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }, 300);
+      } else {
+        // Add a new map message if none exists
+        const mapButton = buttons.find((btn) => btn.action === "map");
+        if (mapButton && mapButton.data) {
+          setMessages((prevMessages) => {
+            const newMessages = [
+              ...prevMessages,
+              {
+                sender: "Bot",
+                map: true,
+                mapHtml: mapButton.data,
+                timestamp: new Date(),
+              },
+            ];
+            // Update map message index
+            setMapMessageIndex(newMessages.length - 1);
+            return newMessages;
+          });
+
+          // Scroll to the newly added map
+          setTimeout(() => {
+            const mapMessages = document.querySelectorAll(
+              ".modern-map-message"
+            );
+            if (mapMessages.length > 0) {
+              mapMessages[mapMessages.length - 1].scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+          }, 500);
+        }
+      }
+    }
+  }, [activeTab, mapData, buttons, messages, chatWindowRef]);
 
   // FIX 8: Only show form if not submitted yet
   // Show form after a certain time if not interacting and form hasn't been submitted
@@ -286,12 +362,13 @@ const ModernChatbotWidget = () => {
         const {
           greeting,
           projectHighlights,
-          buttons,
+          buttons: apiButtons,
           webhook,
           projectImages,
           chatbotGreeting,
           chatbotName,
           projectLogo,
+          projectLocation,
         } = response.data;
 
         setWebhook(webhook || "");
@@ -299,7 +376,18 @@ const ModernChatbotWidget = () => {
         setProjectImages(projectImages || []);
         setChatbotData(response.data);
 
-        if (buttons && buttons.length > 0) {
+        // Set map location if available
+        if (projectLocation) {
+          setMapLocation(projectLocation);
+        }
+
+        if (apiButtons && apiButtons.length > 0) {
+          // Store the map data if present
+          const mapButton = apiButtons.find((btn) => btn.action === "map");
+          if (mapButton && mapButton.data) {
+            setMapData(mapButton.data);
+          }
+
           // Merge the API buttons with our custom buttons
           const customButtons = [
             { label: "Get a Call Back", action: "get_callback" },
@@ -309,9 +397,9 @@ const ModernChatbotWidget = () => {
 
           // Filter out duplicates based on action
           const mergedButtons = [
-            ...buttons,
+            ...apiButtons,
             ...customButtons.filter(
-              (cBtn) => !buttons.some((btn) => btn.action === cBtn.action)
+              (cBtn) => !apiButtons.some((btn) => btn.action === cBtn.action)
             ),
           ];
 
@@ -321,6 +409,14 @@ const ModernChatbotWidget = () => {
           });
           setButtonContent(buttonMap);
           setButtons(mergedButtons);
+
+          // Make sure "Map" button is present if not already
+          if (!mergedButtons.some((btn) => btn.action === "map") && mapData) {
+            setButtons((prev) => [
+              ...prev,
+              { label: "Map", action: "map", data: mapData },
+            ]);
+          }
         }
 
         // Prepare messages but don't show them until first screen is dismissed
@@ -342,49 +438,146 @@ const ModernChatbotWidget = () => {
       } catch (err) {
         console.error("Error fetching welcome data:", err);
 
-        // Fallback to dummy data if API fails
-        const dummyData = {
-          greeting: "Welcome to our chatbot! 👋",
-          chatbotGreeting:
-            "I'm here to help you with any questions you might have.",
-          projectHighlights:
-            "Our project offers exceptional features, prime location, and attractive amenities. How may I assist you today?",
-          projectImages: [
-            "https://via.placeholder.com/400x200?text=Project+Image",
-          ],
-          chatbotName: "AI Assistant",
-          projectLogo: "https://via.placeholder.com/150x60?text=Logo",
-          buttons: [
-            { label: "Features", action: "features" },
-            { label: "Location", action: "location" },
-            { label: "Contact Us", action: "schedule_site_visit" },
-          ],
-        };
+        // Fallback to dummy data if API fails and use the JSON data provided by the user
+        try {
+          const dummyButtons = JSON.parse(`[
+            {
+                "label": "Highlights",
+                "action": "highlight",
+                "data": "Highlight"
+            },
+            {
+                "label": "Location",
+                "action": "location",
+                "data": "Location"
+            },
+            {
+                "label": "Amenities",
+                "action": "amenities",
+                "data": "Amenities. Kids Play Area. Jogging Track | Gym"
+            },
+            {
+                "label": "Map",
+                "action": "map",
+                "data": "<iframe src=\\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3357.4016555823405!2d77.70788457430174!3d12.900199816441223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae133b960efefd%3A0xa8f045fff3993f82!2sEast%20park%20residences%20-%20Ramsons%20Trendsquares!5e1!3m2!1sen!2sin!4v1743418540211!5m2!1sen!2sin\\" width=\\"600\\" height=\\"450\\" style=\\"border:0;\\" allowfullscreen=\\"\\" loading=\\"lazy\\" referrerpolicy=\\"no-referrer-when-downgrade\\"></iframe>"
+            }
+        ]`);
 
-        setWebhook(null);
-        setProjectLogo(dummyData.projectLogo);
-        setProjectImages(dummyData.projectImages);
-        setChatbotData(dummyData);
-        setButtonContent({});
+          setButtons(dummyButtons);
 
-        setMessages([
-          { sender: "Bot", text: dummyData.greeting, timestamp: new Date() },
-          {
-            sender: "Bot",
-            text: dummyData.chatbotGreeting,
-            timestamp: new Date(),
-          },
-          {
-            sender: "Bot",
-            text: dummyData.projectHighlights,
-            timestamp: new Date(),
-          },
-          {
-            sender: "Bot",
-            images: dummyData.projectImages,
-            timestamp: new Date(),
-          },
-        ]);
+          // Store the map data
+          const mapButton = dummyButtons.find((btn) => btn.action === "map");
+          if (mapButton && mapButton.data) {
+            setMapData(mapButton.data);
+          }
+
+          const buttonMap = {};
+          dummyButtons.forEach((btn) => {
+            buttonMap[btn.action] = btn.data;
+          });
+          setButtonContent(buttonMap);
+
+          const dummyData = {
+            greeting: "Welcome to our chatbot! 👋",
+            chatbotGreeting:
+              "I'm here to help you with any questions you might have.",
+            projectHighlights:
+              "Our project offers exceptional features, prime location, and attractive amenities. How may I assist you today?",
+            projectImages: [
+              "https://via.placeholder.com/400x200?text=Project+Image",
+            ],
+            chatbotName: "AI Assistant",
+            projectLogo: "https://via.placeholder.com/150x60?text=Logo",
+            buttons: dummyButtons,
+          };
+
+          setWebhook(null);
+          setProjectLogo(dummyData.projectLogo);
+          setProjectImages(dummyData.projectImages);
+          setChatbotData(dummyData);
+
+          setMessages([
+            { sender: "Bot", text: dummyData.greeting, timestamp: new Date() },
+            {
+              sender: "Bot",
+              text: dummyData.chatbotGreeting,
+              timestamp: new Date(),
+            },
+            {
+              sender: "Bot",
+              text: dummyData.projectHighlights,
+              timestamp: new Date(),
+            },
+            {
+              sender: "Bot",
+              images: dummyData.projectImages,
+              timestamp: new Date(),
+            },
+          ]);
+        } catch (parseError) {
+          console.error("Error parsing JSON buttons:", parseError);
+          const defaultButtons = [
+            { label: "Highlights", action: "highlight", data: "Highlight" },
+            { label: "Location", action: "location", data: "Location" },
+            { label: "Amenities", action: "amenities", data: "Amenities" },
+            {
+              label: "Map",
+              action: "map",
+              data: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3357.4016555823405!2d77.70788457430174!3d12.900199816441223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae133b960efefd%3A0xa8f045fff3993f82!2sEast%20park%20residences%20-%20Ramsons%20Trendsquares!5e1!3m2!1sen!2sin!4v1743418540211!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+            },
+          ];
+          setButtons(defaultButtons);
+
+          // Store the map data
+          const mapButton = defaultButtons.find((btn) => btn.action === "map");
+          if (mapButton && mapButton.data) {
+            setMapData(mapButton.data);
+          }
+
+          const buttonMap = {};
+          defaultButtons.forEach((btn) => {
+            buttonMap[btn.action] = btn.data;
+          });
+          setButtonContent(buttonMap);
+
+          const dummyData = {
+            greeting: "Welcome to our chatbot! 👋",
+            chatbotGreeting:
+              "I'm here to help you with any questions you might have.",
+            projectHighlights:
+              "Our project offers exceptional features, prime location, and attractive amenities. How may I assist you today?",
+            projectImages: [
+              "https://via.placeholder.com/400x200?text=Project+Image",
+            ],
+            chatbotName: "AI Assistant",
+            projectLogo: "https://via.placeholder.com/150x60?text=Logo",
+            buttons: defaultButtons,
+          };
+
+          setWebhook(null);
+          setProjectLogo(dummyData.projectLogo);
+          setProjectImages(dummyData.projectImages);
+          setChatbotData(dummyData);
+
+          setMessages([
+            { sender: "Bot", text: dummyData.greeting, timestamp: new Date() },
+            {
+              sender: "Bot",
+              text: dummyData.chatbotGreeting,
+              timestamp: new Date(),
+            },
+            {
+              sender: "Bot",
+              text: dummyData.projectHighlights,
+              timestamp: new Date(),
+            },
+            {
+              sender: "Bot",
+              images: dummyData.projectImages,
+              timestamp: new Date(),
+            },
+          ]);
+        }
       }
     };
 
@@ -858,18 +1051,93 @@ const ModernChatbotWidget = () => {
     }
   };
 
-  // Handle button clicks
+  // Handle button clicks - UPDATED for FIX 4 & 5
   const handleButtonClick = async (action, label) => {
     try {
-      // Handle the "no_brochure" action
+      // Special handling for Map tab
+      if (action === "map") {
+        setActiveTab("Map");
+
+        // Find if there is an existing map message in the chat
+        const mapIndex = messages.findIndex((msg) => msg.map);
+
+        if (mapIndex >= 0) {
+          // Update map message index for scrolling
+          setMapMessageIndex(mapIndex);
+
+          // Add a small delay to ensure DOM is updated before scrolling
+          setTimeout(() => {
+            // Use a more specific selector with a unique id attribute for better targeting
+            const mapMessage = document.getElementById(
+              `map-message-${mapIndex}`
+            );
+
+            if (mapMessage && chatWindowRef.current) {
+              // Use scrollIntoView with specific options for better positioning
+              mapMessage.scrollIntoView({
+                behavior: "smooth",
+                block: "center", // Center the map in the viewport
+              });
+
+              // Alternative approach using the chatWindowRef directly if needed
+              /*
+              chatWindowRef.current.scrollTo({
+                top: mapMessage.offsetTop - (chatWindowRef.current.clientHeight / 4),
+                behavior: "smooth"
+              });
+              */
+            }
+          }, 300); // Increased timeout to ensure DOM updates are complete
+        } else {
+          // Find the map button to get the iframe data
+          const mapButton = buttons.find((btn) => btn.action === "map");
+
+          if (mapButton && mapButton.data) {
+            setMessages((prevMessages) => {
+              const newMessages = [
+                ...prevMessages,
+                {
+                  sender: "Bot",
+                  map: true,
+                  mapHtml: mapButton.data,
+                  timestamp: new Date(),
+                },
+              ];
+              // Update map message index
+              setMapMessageIndex(newMessages.length - 1);
+              return newMessages;
+            });
+
+            // Add a delay to scroll to the newly added map
+            setTimeout(() => {
+              const mapMessages = document.querySelectorAll(
+                ".modern-map-message"
+              );
+              if (mapMessages.length > 0) {
+                mapMessages[mapMessages.length - 1].scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+            }, 500); // Longer delay for new map addition
+          }
+        }
+
+        return;
+      }
+
+      // Handle the "no_brochure" action - FIX 5: After clicking "No", show other buttons
       if (action === "no_brochure") {
         setMessages((prevMessages) => [
           ...prevMessages,
           { sender: "User", text: label, timestamp: new Date() },
           {
             sender: "Bot",
-            text: "No problem! Let me know if you have any other questions.",
+            text: "No problem! What else would you like to know about our property?",
             timestamp: new Date(),
+            buttons: buttons.filter((btn) =>
+              ["highlight", "location", "amenities"].includes(btn.action)
+            ),
           },
         ]);
         return;
@@ -946,6 +1214,11 @@ const ModernChatbotWidget = () => {
           return content;
         };
 
+        // Set active tab based on button action
+        if (["highlight", "location", "amenities"].includes(action)) {
+          setActiveTab(label);
+        }
+
         // Simulate response delay
         setTimeout(() => {
           setMessages((prevMessages) => [
@@ -966,6 +1239,23 @@ const ModernChatbotWidget = () => {
       console.error("Error fetching content:", err);
       setIsTyping(false);
       setWhileTyping(false);
+    }
+  };
+
+  // Handle tab click
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+
+    // Find the corresponding button
+    const tabButton = buttons.find((btn) => btn.label === tab);
+
+    if (tabButton) {
+      // Handle Map tab specially
+      if (tabButton.action === "map") {
+        handleButtonClick("map", tab);
+      } else {
+        handleButtonClick(tabButton.action, tab);
+      }
     }
   };
 
@@ -1156,6 +1446,52 @@ const ModernChatbotWidget = () => {
     );
   };
 
+  // FIX 4: Modified to render Yes & No buttons in a single row
+  const renderYesNoButtons = (buttons) => {
+    if (!buttons || buttons.length !== 2) return null;
+
+    // Check if buttons are Yes & No options
+    const isYesNoButtons =
+      (buttons[0].label.toLowerCase().includes("yes") &&
+        buttons[1].label.toLowerCase().includes("no")) ||
+      (buttons[0].action === "brochure" && buttons[1].action === "no_brochure");
+
+    if (!isYesNoButtons) return null;
+
+    return (
+      <div className="modern-yesno-buttons">
+        {buttons.map((button, idx) => (
+          <motion.button
+            key={idx}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className={`modern-yesno-button ${
+              button.action === "brochure" ? "yes-button" : "no-button"
+            }`}
+            onClick={() => handleButtonClick(button.action, button.label)}
+          >
+            {button.action === "brochure" ? (
+              <>
+                <ThumbsUp size={14} className="button-icon" /> {button.label}
+              </>
+            ) : (
+              <>
+                <ThumbsDown size={14} className="button-icon" /> {button.label}
+              </>
+            )}
+          </motion.button>
+        ))}
+      </div>
+    );
+  };
+
+  // Get the tab buttons from the full buttons array
+  const getTabButtons = () => {
+    return buttons.filter((btn) =>
+      ["highlight", "location", "amenities", "map"].includes(btn.action)
+    );
+  };
+
   return (
     <div
       className={`modern-chatbot-wrapper ${
@@ -1198,55 +1534,46 @@ const ModernChatbotWidget = () => {
         {/* Main Chat Interface */}
         {chatVisible && (!showFirstScreen || chatInitialized) && (
           <>
-            {/* Header */}
-            <div className="modern-header">
-              <div className="modern-header-left">
+            {/* Improved Header with Three Dots Menu */}
+            <div className="modern-header-redesigned">
+              <div className="modern-header-content">
                 {renderLogo()}
-                <div className="modern-header-info">
+                <div className="modern-header-title">
                   <h3>{chatbotData?.chatbotName || "AI Assistant"}</h3>
                   <span className="modern-status">
                     <span className="modern-status-dot"></span>
                     Online
                   </span>
                 </div>
-              </div>
-              <div className="modern-header-actions">
-                <div className="modern-dropdown">
-                  <button
-                    className="modern-icon-button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    aria-label="Menu"
-                  >
-                    <MoreVertical size={24} />
-                  </button>
-                  {isOpen && (
-                    <div className="modern-dropdown-menu">
-                      <button
-                        onClick={() => {
-                          handleButtonClick(
-                            "schedule_site_visit",
-                            "Talk to Human"
-                          );
-                          setIsOpen(false);
-                        }}
-                      >
-                        <MessageSquare size={16} />
-                        <span>Talk to Human</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          // Use the actual phone number from API if available
-                          const phoneNumber =
-                            chatbotData?.phoneNumber || "+919999999999";
-                          window.open(`https://wa.me/${phoneNumber}`, "_blank");
-                          setIsOpen(false);
-                        }}
-                      >
-                        <ExternalLink size={16} />
-                        <span>Send details via WhatsApp</span>
-                      </button>
-                    </div>
-                  )}
+                <div className="modern-header-actions">
+                  <div className="modern-dropdown">
+                    <button
+                      className="modern-icon-button"
+                      onClick={() => setIsOpen(!isOpen)}
+                      aria-label="Menu"
+                    >
+                      <MoreVertical size={24} />
+                    </button>
+                    {isOpen && (
+                      <div className="modern-dropdown-menu">
+                        <button
+                          onClick={() => {
+                            // Use the actual phone number from API if available
+                            const phoneNumber =
+                              chatbotData?.phoneNumber || "+919999999999";
+                            window.open(
+                              `https://wa.me/${phoneNumber}`,
+                              "_blank"
+                            );
+                            setIsOpen(false);
+                          }}
+                        >
+                          <ExternalLink size={16} />
+                          <span>Send details via WhatsApp</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1306,12 +1633,25 @@ const ModernChatbotWidget = () => {
               {/* Messages */}
               <div className="modern-messages">
                 {messages?.map((message, index) => {
-                  // Handle regular messages
+                  // Handle regular messages with text, images, or buttons
                   if (
                     message.text ||
                     message.images?.length ||
                     message.buttons?.length
                   ) {
+                    // Check if this is a message with yes/no buttons
+                    const hasYesNoButtons =
+                      message.buttons &&
+                      message.buttons.length === 2 &&
+                      ((message.buttons[0].label
+                        .toLowerCase()
+                        .includes("yes") &&
+                        message.buttons[1].label
+                          .toLowerCase()
+                          .includes("no")) ||
+                        (message.buttons[0].action === "brochure" &&
+                          message.buttons[1].action === "no_brochure"));
+
                     return (
                       <motion.div
                         key={index}
@@ -1333,7 +1673,7 @@ const ModernChatbotWidget = () => {
                         )}
 
                         {/* Image Message - UPDATED to use the new renderChatImage function */}
-                        {message?.images && message.images.length > 0 && (
+                        {message.images && message.images.length > 0 && (
                           <div className="modern-image-gallery">
                             {message.images.map((img, idx) =>
                               renderChatImage(img, idx)
@@ -1341,44 +1681,79 @@ const ModernChatbotWidget = () => {
                           </div>
                         )}
 
-                        {/* Button Options */}
-                        {message?.buttons && message.buttons.length > 0 && (
-                          <div className="modern-button-options">
-                            {message.buttons.map((button, idx) => (
-                              <motion.button
-                                key={idx}
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.97 }}
-                                className="modern-option-button"
-                                onClick={() =>
-                                  handleButtonClick(button.action, button.label)
-                                }
-                              >
-                                {button.action === "brochure" ? (
-                                  <>
-                                    <Download
-                                      size={14}
-                                      className="button-icon"
-                                    />{" "}
-                                    {button.label}
-                                  </>
-                                ) : button.action === "no_brochure" ? (
-                                  <>
-                                    <ThumbsDown
-                                      size={14}
-                                      className="button-icon"
-                                    />{" "}
-                                    {button.label}
-                                  </>
-                                ) : (
-                                  button.label
-                                )}
-                              </motion.button>
-                            ))}
-                          </div>
-                        )}
+                        {/* FIX 4: Yes/No Buttons in one row if applicable */}
+                        {hasYesNoButtons
+                          ? renderYesNoButtons(message.buttons)
+                          : /* Regular Button Options */
+                            message.buttons &&
+                            message.buttons.length > 0 && (
+                              <div className="modern-button-options">
+                                {message.buttons.map((button, idx) => (
+                                  <motion.button
+                                    key={idx}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    className="modern-option-button"
+                                    onClick={() =>
+                                      handleButtonClick(
+                                        button.action,
+                                        button.label
+                                      )
+                                    }
+                                  >
+                                    {button.action === "brochure" ? (
+                                      <>
+                                        <Download
+                                          size={14}
+                                          className="button-icon"
+                                        />{" "}
+                                        {button.label}
+                                      </>
+                                    ) : button.action === "no_brochure" ? (
+                                      <>
+                                        <ThumbsDown
+                                          size={14}
+                                          className="button-icon"
+                                        />{" "}
+                                        {button.label}
+                                      </>
+                                    ) : (
+                                      button.label
+                                    )}
+                                  </motion.button>
+                                ))}
+                              </div>
+                            )}
 
                         {/* Message timestamp */}
+                        {message.timestamp && (
+                          <div className="modern-message-time">
+                            {formatTimestamp(message.timestamp)}
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  }
+                  // Handle map message
+                  else if (message.map) {
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="modern-message modern-bot-message modern-map-message"
+                        id={`map-message-${index}`}
+                      >
+                        <div className="modern-message-map">
+                          {/* Use the HTML from the map data directly */}
+                          <div
+                            className="modern-iframe-container"
+                            dangerouslySetInnerHTML={{
+                              __html: message.mapHtml,
+                            }}
+                          />
+                        </div>
                         {message.timestamp && (
                           <div className="modern-message-time">
                             {formatTimestamp(message.timestamp)}
@@ -1418,27 +1793,30 @@ const ModernChatbotWidget = () => {
               </div>
             </div>
 
-            {/* Quick Buttons above input area */}
-            <div className="modern-quick-buttons">
-              {/* Filter out duplicate buttons based on action */}
-              {buttons
-                .filter(
-                  (button, index, self) =>
-                    index === self.findIndex((b) => b.action === button.action)
-                )
-                .map((button, index) => (
-                  <motion.button
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="modern-quick-button"
-                    onClick={() =>
-                      handleButtonClick(button.action, button.label)
-                    }
-                  >
-                    {button.label}
-                  </motion.button>
-                ))}
+            {/* Tabs for Highlights, Location, Amenities, Map */}
+            <div className="modern-chat-tabs">
+              {getTabButtons().map((button) => (
+                <button
+                  key={button.action}
+                  className={`modern-tab-button ${
+                    activeTab === button.label ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick(button.label)}
+                >
+                  {button.label}
+                </button>
+              ))}
+              <button
+                className={`modern-tab-button ${
+                  activeTab === "Contact" ? "active" : ""
+                }`}
+                onClick={() => {
+                  handleButtonClick("get_callback", "Get a Call Back");
+                  setActiveTab("Contact");
+                }}
+              >
+                Contact
+              </button>
             </div>
 
             {/* Input Area */}
