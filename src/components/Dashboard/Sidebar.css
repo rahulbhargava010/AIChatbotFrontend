@@ -94,6 +94,8 @@
 .content-wrapper.expanded {
   margin-left: 220px;
   width: calc(100% - 220px);
+  overflow-y: auto;
+  height: 100vh;
 }
 
 /* Make sure content doesn't overflow */
