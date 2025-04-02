@@ -108,13 +108,13 @@
   position: relative;
 }
 
-/* New Header Styling */
+/* Updated Header Styling */
 .modern-header-redesigned {
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #5928e5, #4e5efc);
+  padding: 14px 16px;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   color: white;
-  padding: 12px 16px;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 10;
   animation: fadeIn 0.3s ease-in-out;
@@ -123,170 +123,104 @@
 .modern-header-content {
   display: flex;
   align-items: center;
-  position: relative;
+  width: 100%;
 }
 
+/* Header title and status styling */
 .modern-header-title {
-  flex: 1;
-  margin-left: 15px;
-  overflow: hidden;
+  flex: 0 1 auto;
+  margin-left: 5px;
 }
 
 .modern-header-title h3 {
-  margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin: 0 0 3px 0;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.5px;
 }
 
-.modern-header-actions {
-  display: flex;
-  align-items: center;
-}
-
-/* Logo container in redesigned header */
-.modern-header-redesigned .modern-logo-container {
-  flex-shrink: 0;
-  width: auto;
-  height: auto;
-}
-
-.modern-header-redesigned .modern-chatbot-logo {
-  width: 130px;
-  height: 42px;
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-}
-
-.modern-header-redesigned .modern-placeholder-logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.2);
-  font-size: 22px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Status indicator */
-.modern-header-redesigned .modern-status {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  margin-top: 4px;
-  opacity: 0.9;
-}
-
-.modern-header-redesigned .modern-status-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #4caf50;
-  border-radius: 50%;
-  margin-right: 6px;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
-  animation: pulse 2s infinite;
-}
-
-/* Header styles - Legacy */
-.modern-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: linear-gradient(to right, #6a11cb, #2575fc);
-  color: white;
-  animation: fadeIn 0.3s ease-in-out;
-  z-index: 10;
-  flex-shrink: 0; /* Prevent shrinking */
-}
-
-.modern-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: 75%;
-}
-
-.modern-header-info {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* FIX 3: Improved logo sizing and display */
-.modern-logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modern-chatbot-logo {
-  width: 120px;
-  height: 40px;
-  /* border-radius: 50%; */
-  /* object-fit: cover; */
-  border: 2px solid #ffffff;
-  flex-shrink: 0;
-  background-color: white; /* Add background to ensure visibility */
-}
-
-.modern-placeholder-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.modern-header-info h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
+/* Enhanced status indicator */
 .modern-status {
+  font-size: 13px;
+  opacity: 0.85;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  margin-top: 4px;
 }
 
 .modern-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  background-color: #4ade80;
+  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
   border-radius: 50%;
-  background: #4caf50;
-  flex-shrink: 0;
+  animation: pulse 2s infinite;
 }
 
+/* Add spacer to create gap between left and right sections */
+.modern-header-spacer {
+  flex: 1;
+  min-width: 20px;
+}
+
+/* Right side container alignment */
+.modern-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* New white background styling for logo container */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: white;
+  padding: 5px 8px;
+  border-radius: 8px;
+  height: 40px;
+  width: auto;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo container sizing and alignment */
+.modern-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  overflow: hidden;
+}
+
+/* Logo image with proper object-fit */
+.modern-chatbot-logo {
+  height: 36px;
+  max-width: 130px;
+  object-fit: contain;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* Action buttons styling */
 .modern-header-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
 }
 
 .modern-icon-button {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 50%;
-  width: 45px;
-  height: 40px;
+  width: 42px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -297,26 +231,6 @@
 }
 
 .modern-icon-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* FIX 3: Improved Header Close Button */
-.modern-close-button-header {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  transition: background 0.2s ease;
-  flex-shrink: 0;
-}
-
-.modern-close-button-header:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
@@ -354,6 +268,77 @@
 
 .modern-dropdown-menu button:hover {
   background: #f5f5f5;
+}
+
+/* Improved placeholder logo */
+.modern-placeholder-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Legacy header styles - kept for compatibility */
+.modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 10;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.modern-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 75%;
+}
+
+.modern-header-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modern-header-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* FIX 3: Improved Header Close Button */
+.modern-close-button-header {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modern-close-button-header:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Chat window styles - FIX 1: Ensure proper scrolling */
@@ -1051,22 +1036,6 @@
   max-width: 300px;
 }
 
-.modern-logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 0 auto 10px auto;
-}
-
-.modern-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid white;
-}
-
 .modern-first-screen .modern-placeholder-logo,
 .modern-first-screen .modern-chatbot-logo {
   margin: 0 auto;
@@ -1661,19 +1630,33 @@ textarea:focus {
     font-size: 13px;
   }
 
-  /* Smaller header for mobile */
-  .modern-header {
+  /* Header adjustments for mobile */
+  .modern-header-redesigned {
     padding: 10px 12px;
   }
 
-  .modern-header-info h3 {
-    font-size: 14px;
+  .modern-header-title h3 {
+    font-size: 15px;
   }
 
-  .modern-chatbot-logo,
-  .modern-placeholder-logo {
-    width: 120px;
-    height: 40px;
+  .modern-status {
+    font-size: 12px;
+  }
+
+  .modern-logo-container.modern-logo-white-bg {
+    height: 36px;
+    padding: 4px 6px;
+    min-width: 120px;
+  }
+
+  .modern-chatbot-logo {
+    height: 30px;
+    max-width: 110px;
+  }
+
+  .modern-icon-button {
+    width: 42px;
+    height: 34px;
   }
 
   /* Form adjustments for mobile */
@@ -1746,26 +1729,6 @@ textarea:focus {
 
   .modern-emoji-icon {
     font-size: 24px;
-  }
-
-  /* Header adjustments for mobile */
-  .modern-header-redesigned {
-    padding: 10px 12px;
-  }
-
-  .modern-header-title h3 {
-    font-size: 16px;
-  }
-
-  .modern-header-redesigned .modern-chatbot-logo {
-    width: 110px;
-    height: 36px;
-  }
-
-  .modern-header-redesigned .modern-placeholder-logo {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
   }
 
   /* Tab adjustments for mobile */
@@ -1855,12 +1818,23 @@ textarea:focus {
     font-size: 14px;
   }
 
-  .modern-header-redesigned .modern-status {
+  .modern-status {
     font-size: 11px;
   }
 
-  .modern-header-redesigned .modern-chatbot-logo {
-    width: 90px;
+  .modern-logo-container.modern-logo-white-bg {
+    height: 32px;
+    padding: 3px 5px;
+    min-width: 100px;
+  }
+
+  .modern-chatbot-logo {
+    height: 28px;
+    max-width: 90px;
+  }
+
+  .modern-icon-button {
+    width: 42px;
     height: 32px;
   }
 

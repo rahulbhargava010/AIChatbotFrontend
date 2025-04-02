@@ -1316,30 +1316,41 @@ const ModernChatbotWidget = () => {
     setChatVisible(false);
   };
 
-  // FIX 3: Improved logo rendering
-  // Placeholder for the logo with better size handling
+  // IMPROVED: Enhanced logo rendering with better error handling
   const renderLogo = () => {
     if (projectLogo) {
       return (
         <div className="modern-logo-container">
           <img
             src={`https://assist-ai.propstory.com/${projectLogo}`}
-            alt="Logo"
+            alt={chatbotData?.chatbotName || "Property Logo"}
             className="modern-chatbot-logo"
             onError={(e) => {
-              e.target.onerror = null;
-              e.target.src =
-                "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+              // First try to load from direct URL if it's a full URL
+              if (!projectLogo.startsWith("http")) {
+                e.target.src = projectLogo;
+                e.target.onerror = (e2) => {
+                  // If that fails too, use the placeholder
+                  e2.target.onerror = null;
+                  e2.target.src =
+                    "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                };
+              } else {
+                // Use placeholder directly
+                e.target.onerror = null;
+                e.target.src =
+                  "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+              }
             }}
           />
         </div>
       );
     } else {
-      // Fallback to placeholder
+      // Improved placeholder with background gradient
       return (
         <div className="modern-logo-container">
           <div className="modern-placeholder-logo">
-            <span>{chatbotData?.chatbotName?.charAt(0) || "A"}</span>
+            <span>{chatbotData?.chatbotName?.charAt(0) || "M"}</span>
           </div>
         </div>
       );
@@ -1534,10 +1545,11 @@ const ModernChatbotWidget = () => {
         {/* Main Chat Interface */}
         {chatVisible && (!showFirstScreen || chatInitialized) && (
           <>
-            {/* Improved Header with Three Dots Menu */}
+            {/* IMPROVED: Enhanced Header with Better Logo Styling */}
+            {/* Revised Header Layout - Logo next to 3 dots */}
             <div className="modern-header-redesigned">
               <div className="modern-header-content">
-                {renderLogo()}
+                {/* Title and Status Section - Left side */}
                 <div className="modern-header-title">
                   <h3>{chatbotData?.chatbotName || "AI Assistant"}</h3>
                   <span className="modern-status">
@@ -1545,34 +1557,84 @@ const ModernChatbotWidget = () => {
                     Online
                   </span>
                 </div>
-                <div className="modern-header-actions">
-                  <div className="modern-dropdown">
-                    <button
-                      className="modern-icon-button"
-                      onClick={() => setIsOpen(!isOpen)}
-                      aria-label="Menu"
-                    >
-                      <MoreVertical size={24} />
-                    </button>
-                    {isOpen && (
-                      <div className="modern-dropdown-menu">
-                        <button
-                          onClick={() => {
-                            // Use the actual phone number from API if available
-                            const phoneNumber =
-                              chatbotData?.phoneNumber || "+919999999999";
-                            window.open(
-                              `https://wa.me/${phoneNumber}`,
-                              "_blank"
-                            );
-                            setIsOpen(false);
-                          }}
-                        >
-                          <ExternalLink size={16} />
-                          <span>Send details via WhatsApp</span>
-                        </button>
+
+                {/* Spacer div to create gap between title and logo/menu */}
+                <div className="modern-header-spacer"></div>
+
+                {/* Right side container for Logo and Actions */}
+                <div className="modern-header-right">
+                  {/* Logo Section with white background */}
+                  <div className="modern-logo-container modern-logo-white-bg">
+                    {projectLogo ? (
+                      <img
+                        src={`https://assist-ai.propstory.com/${projectLogo}`}
+                        alt={chatbotData?.chatbotName || "Property Logo"}
+                        className="modern-chatbot-logo"
+                        onError={(e) => {
+                          // First try to load from direct URL if it's a full URL
+                          if (!projectLogo.startsWith("http")) {
+                            e.target.src = projectLogo;
+                            e.target.onerror = (e2) => {
+                              // If that fails too, use the placeholder
+                              e2.target.onerror = null;
+                              e2.target.src =
+                                "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                            };
+                          } else {
+                            // Use placeholder directly
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                          }
+                        }}
+                      />
+                    ) : (
+                      <div className="modern-placeholder-logo">
+                        <span>
+                          {chatbotData?.chatbotName?.charAt(0) || "M"}
+                        </span>
                       </div>
                     )}
+                  </div>
+
+                  {/* Action Buttons Section */}
+                  <div className="modern-header-actions">
+                    <div className="modern-dropdown">
+                      <button
+                        className="modern-icon-button"
+                        onClick={() => setIsOpen(!isOpen)}
+                        aria-label="Menu"
+                      >
+                        <MoreVertical size={22} />
+                      </button>
+                      {isOpen && (
+                        <div className="modern-dropdown-menu">
+                          <button
+                            onClick={() => {
+                              const phoneNumber =
+                                chatbotData?.phoneNumber || "+919999999999";
+                              window.open(
+                                `https://wa.me/${phoneNumber}`,
+                                "_blank"
+                              );
+                              setIsOpen(false);
+                            }}
+                          >
+                            <ExternalLink size={16} />
+                            <span>Send details via WhatsApp</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleRateChat();
+                              setIsOpen(false);
+                            }}
+                          >
+                            <MessageSquare size={16} />
+                            <span>Contact Support</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1843,7 +1905,7 @@ const ModernChatbotWidget = () => {
                   <Send size={24} />
                 </button>
               </div>
-              <div className="modern-powered-by">
+              {/* <div className="modern-powered-by">
                 Powered by{" "}
                 <Link
                   className="modern-powered-link"
@@ -1853,7 +1915,7 @@ const ModernChatbotWidget = () => {
                 >
                   Propstory
                 </Link>
-              </div>
+              </div> */}
             </div>
           </>
         )}
