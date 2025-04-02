@@ -108,7 +108,92 @@
   position: relative;
 }
 
-/* Header styles */
+/* New Header Styling */
+.modern-header-redesigned {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modern-header-content {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.modern-header-title {
+  flex: 1;
+  margin-left: 15px;
+  overflow: hidden;
+}
+
+.modern-header-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
+}
+
+.modern-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo container in redesigned header */
+.modern-header-redesigned .modern-logo-container {
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
+
+.modern-header-redesigned .modern-chatbot-logo {
+  width: 130px;
+  height: 42px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.modern-header-redesigned .modern-placeholder-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Status indicator */
+.modern-header-redesigned .modern-status {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+.modern-header-redesigned .modern-status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+  animation: pulse 2s infinite;
+}
+
+/* Header styles - Legacy */
 .modern-header {
   display: flex;
   justify-content: space-between;
@@ -125,11 +210,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  max-width: 75%;
 }
 
 .modern-header-info {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* FIX 3: Improved logo sizing and display */
@@ -170,6 +257,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .modern-status {
@@ -197,7 +285,7 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 50%;
-  width: 40px;
+  width: 45px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -209,6 +297,26 @@
 }
 
 .modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* FIX 3: Improved Header Close Button */
+.modern-close-button-header {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modern-close-button-header:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
@@ -381,6 +489,52 @@
   gap: 6px;
 }
 
+/* FIX 4: Yes/No buttons in one row */
+.modern-yesno-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.modern-yesno-button {
+  flex: 1;
+  max-width: 120px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.modern-yesno-button.yes-button {
+  color: #2e7d32;
+  border-color: #a5d6a7;
+  background-color: #e8f5e9;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: #c8e6c9;
+}
+
+.modern-yesno-button.no-button {
+  color: #c62828;
+  border-color: #ef9a9a;
+  background-color: #ffebee;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: #ffcdd2;
+}
+
 /* Add special button styling for actions */
 .button-icon {
   color: #6a11cb;
@@ -421,6 +575,67 @@
 
 .modern-typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+/* Map Message Styling */
+.modern-message-map {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 8px;
+}
+
+.modern-map-message {
+  max-width: 100% !important;
+  width: 95%;
+}
+
+.modern-iframe-container {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.modern-iframe-container iframe {
+  width: 100% !important;
+  border-radius: 12px !important;
+  border: none !important;
+  height: 220px !important;
+  max-height: 250px;
+}
+
+/* FIX 1: Tabs */
+.modern-chat-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: white;
+  border-top: 1px solid #eee;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+.modern-tab-button {
+  flex: 1;
+  white-space: nowrap;
+  padding: 10px 0;
+  background: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-width: 70px;
+}
+
+.modern-tab-button.active {
+  color: #6a11cb;
+  border-bottom: 2px solid #6a11cb;
+  font-weight: 500;
 }
 
 /* Quick buttons */
@@ -841,7 +1056,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 0 auto 24px auto;
+  margin: 0 auto 10px auto;
 }
 
 .modern-logo {
@@ -1113,219 +1328,6 @@ textarea:focus {
   z-index: 70 !important;
 }
 
-/* Responsive styles for all devices */
-@media (max-width: 480px) {
-  .modern-chatbot-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .modern-chatbot-container {
-    width: 100%;
-    height: 100%;
-    border-radius: 16px;
-    max-width: 100%;
-    max-height: 100%;
-  }
-
-  .modern-chat-window {
-    padding: 10px;
-  }
-
-  .modern-message {
-    max-width: 85%;
-  }
-
-  .modern-message-bubble {
-    padding: 8px 12px;
-    font-size: 14px;
-  }
-
-  .modern-input-area {
-    padding: 8px;
-  }
-
-  .modern-input-container {
-    padding: 4px 8px;
-  }
-
-  /* Adjust button size for mobile */
-  .modern-mic-button,
-  .modern-send-button {
-    min-width: 36px;
-    min-height: 36px;
-    width: 36px;
-    height: 36px;
-  }
-
-  /* Make quick buttons smaller */
-  .modern-quick-buttons {
-    padding: 8px 12px;
-  }
-
-  .modern-quick-button {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  /* Smaller header for mobile */
-  .modern-header {
-    padding: 10px 12px;
-  }
-
-  .modern-header-info h3 {
-    font-size: 14px;
-  }
-
-  .modern-chatbot-logo,
-  .modern-placeholder-logo {
-    width: 120px;
-    height: 40px;
-  }
-
-  /* Form adjustments for mobile */
-  .modern-form-overlay {
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .modern-form-container {
-    padding: 16px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .modern-close-form {
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    z-index: 100;
-  }
-
-  .modern-form-fields {
-    padding-bottom: 16px;
-    padding-top: 8px;
-  }
-
-  .modern-form-header h3 {
-    font-size: 16px;
-    margin-bottom: 18px;
-    padding-right: 30px;
-  }
-
-  .modern-form-group {
-    margin-bottom: 14px;
-  }
-
-  .modern-form-group label {
-    font-size: 13px;
-    margin-bottom: 6px;
-  }
-
-  .modern-form-group input,
-  .modern-form-group textarea,
-  .phone-input {
-    font-size: 16px !important; /* Prevent zooming on iOS */
-    /* padding: 10px !important; */
-  }
-
-  .modern-form-submit {
-    padding: 12px;
-    font-size: 15px;
-    margin-top: 14px;
-  }
-
-  /* Rating modal adjustments */
-  .modern-rating-content {
-    width: 90%;
-    padding: 16px;
-  }
-
-  .modern-emoji-rating {
-    margin: 12px 0;
-  }
-
-  .modern-emoji {
-    transform: scale(0.9);
-  }
-
-  .modern-emoji-icon {
-    font-size: 24px;
-  }
-}
-
-/* Extra small screens */
-@media (max-width: 320px) {
-  .modern-emoji-rating {
-    gap: 0;
-  }
-
-  .modern-emoji {
-    transform: scale(0.8);
-  }
-
-  .modern-emoji-icon {
-    font-size: 20px;
-  }
-
-  .modern-emoji span {
-    font-size: 9px;
-  }
-
-  .modern-form-header h3 {
-    font-size: 15px;
-  }
-
-  .modern-quick-button {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-
-  /* Make form elements smaller */
-  .modern-form-group input,
-  .modern-form-group textarea {
-    /* padding: 8px !important; */
-  }
-}
-
-/* Extra fixes for iframe integration */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* iPhone-specific form fixes */
-@supports (-webkit-touch-callout: none) {
-  /* Target iOS devices */
-  .modern-form-group input,
-  .phone-input,
-  .modern-chat-input,
-  .modern-review-input {
-    font-size: 16px !important; /* Prevent auto zooming */
-  }
-
-  .modern-form-overlay {
-    /* Fix scrolling issues on iOS */
-    height: 100%;
-    position: fixed;
-  }
-
-  .modern-chat-window {
-    /* Fix momentum scrolling on iOS */
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
 /* Inline form styles - UPDATED */
 .modern-fullwidth-form-container {
   width: 100%;
@@ -1510,53 +1512,6 @@ body {
   margin-top: 4px;
 }
 
-/* Mobile responsive fixes for inline form */
-@media (max-width: 480px) {
-  .modern-inline-form {
-    padding: 10px; /* Further reduced for mobile */
-    max-width: 260px; /* Even smaller on mobile */
-  }
-
-  .modern-inline-form .modern-form-header h3 {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
-  .modern-inline-form .modern-form-group {
-    margin-bottom: 6px;
-  }
-
-  .modern-inline-form label {
-    font-size: 11px;
-  }
-
-  .modern-inline-submit-button {
-    padding: 8px;
-    font-size: 12px;
-  }
-
-  /* Ensure messages are more compact on mobile */
-  .modern-messages {
-    gap: 8px;
-  }
-}
-
-/* Extra small screens */
-@media (max-width: 320px) {
-  .modern-inline-form {
-    padding: 10px;
-    max-width: 240px;
-  }
-
-  .modern-inline-form .modern-form-header h3 {
-    font-size: 12px;
-  }
-
-  .modern-form-message {
-    max-width: 100% !important;
-  }
-}
-
 /* Success message with checkmark animation */
 .modern-success-container {
   width: 100%;
@@ -1643,5 +1598,328 @@ body {
 @keyframes modern-fill {
   100% {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 480px) {
+  .modern-chatbot-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .modern-chatbot-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .modern-chat-window {
+    padding: 10px;
+  }
+
+  .modern-message {
+    max-width: 85%;
+  }
+
+  .modern-message-bubble {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .modern-input-area {
+    padding: 8px;
+  }
+
+  .modern-input-container {
+    padding: 4px 8px;
+  }
+
+  /* Adjust button size for mobile */
+  .modern-mic-button,
+  .modern-send-button {
+    min-width: 42px;
+    min-height: 40px;
+    width: 42x;
+    height: 40px;
+  }
+
+  /* Make quick buttons smaller */
+  .modern-quick-buttons {
+    padding: 8px 12px;
+  }
+
+  .modern-quick-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Smaller header for mobile */
+  .modern-header {
+    padding: 10px 12px;
+  }
+
+  .modern-header-info h3 {
+    font-size: 14px;
+  }
+
+  .modern-chatbot-logo,
+  .modern-placeholder-logo {
+    width: 120px;
+    height: 40px;
+  }
+
+  /* Form adjustments for mobile */
+  .modern-form-overlay {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modern-form-container {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modern-close-form {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    z-index: 100;
+  }
+
+  .modern-form-fields {
+    padding-bottom: 16px;
+    padding-top: 8px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 16px;
+    margin-bottom: 18px;
+    padding-right: 30px;
+  }
+
+  .modern-form-group {
+    margin-bottom: 14px;
+  }
+
+  .modern-form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .modern-form-group input,
+  .modern-form-group textarea,
+  .phone-input {
+    font-size: 16px !important; /* Prevent zooming on iOS */
+    /* padding: 10px !important; */
+  }
+
+  .modern-form-submit {
+    padding: 12px;
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  /* Rating modal adjustments */
+  .modern-rating-content {
+    width: 90%;
+    padding: 16px;
+  }
+
+  .modern-emoji-rating {
+    margin: 12px 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.9);
+  }
+
+  .modern-emoji-icon {
+    font-size: 24px;
+  }
+
+  /* Header adjustments for mobile */
+  .modern-header-redesigned {
+    padding: 10px 12px;
+  }
+
+  .modern-header-title h3 {
+    font-size: 16px;
+  }
+
+  .modern-header-redesigned .modern-chatbot-logo {
+    width: 110px;
+    height: 36px;
+  }
+
+  .modern-header-redesigned .modern-placeholder-logo {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  /* Tab adjustments for mobile */
+  .modern-chat-tabs {
+    padding: 0 5px;
+  }
+
+  .modern-tab-button {
+    font-size: 12px;
+    padding: 8px 5px;
+    min-width: 60px;
+  }
+
+  .modern-yesno-button {
+    max-width: 100px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .modern-iframe-container iframe {
+    height: 180px !important;
+  }
+
+  .modern-inline-form {
+    padding: 10px; /* Further reduced for mobile */
+    max-width: 260px; /* Even smaller on mobile */
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .modern-inline-form .modern-form-group {
+    margin-bottom: 6px;
+  }
+
+  .modern-inline-form label {
+    font-size: 11px;
+  }
+
+  .modern-inline-submit-button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  /* Ensure messages are more compact on mobile */
+  .modern-messages {
+    gap: 8px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .modern-emoji-rating {
+    gap: 0;
+  }
+
+  .modern-emoji {
+    transform: scale(0.8);
+  }
+
+  .modern-emoji-icon {
+    font-size: 20px;
+  }
+
+  .modern-emoji span {
+    font-size: 9px;
+  }
+
+  .modern-form-header h3 {
+    font-size: 15px;
+  }
+
+  .modern-quick-button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Make form elements smaller */
+  .modern-form-group input,
+  .modern-form-group textarea {
+    /* padding: 8px !important; */
+  }
+
+  .modern-header-title h3 {
+    font-size: 14px;
+  }
+
+  .modern-header-redesigned .modern-status {
+    font-size: 11px;
+  }
+
+  .modern-header-redesigned .modern-chatbot-logo {
+    width: 90px;
+    height: 32px;
+  }
+
+  .modern-tab-button {
+    font-size: 11px;
+    padding: 6px 2px;
+    min-width: 50px;
+  }
+
+  .modern-yesno-button {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .modern-iframe-container iframe {
+    height: 160px !important;
+  }
+
+  .modern-inline-form {
+    padding: 10px;
+    max-width: 240px;
+  }
+
+  .modern-inline-form .modern-form-header h3 {
+    font-size: 12px;
+  }
+
+  .modern-form-message {
+    max-width: 100% !important;
+  }
+}
+
+/* Extra fixes for iframe integration */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* iPhone-specific form fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Target iOS devices */
+  .modern-form-group input,
+  .phone-input,
+  .modern-chat-input,
+  .modern-review-input {
+    font-size: 16px !important; /* Prevent auto zooming */
+  }
+
+  .modern-form-overlay {
+    /* Fix scrolling issues on iOS */
+    height: 100%;
+    position: fixed;
+  }
+
+  .modern-chat-window {
+    /* Fix momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 }
