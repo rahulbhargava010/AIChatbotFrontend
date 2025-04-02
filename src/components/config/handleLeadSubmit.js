@@ -1,5 +1,4 @@
 import axios from "axios";
-// Import api directly instead of receiving it as a parameter
 import api from "../config/axios";
 
 const handleLeadSubmit = async (
@@ -18,8 +17,14 @@ const handleLeadSubmit = async (
   messages,
   setIsSubmitDisabled
 ) => {
-  e.preventDefault();
+  // Make sure e is defined before calling preventDefault
+  if (e && typeof e.preventDefault === "function") {
+    e.preventDefault();
+  }
   console.log("handleLeadSubmit function called");
+
+  // Ensure leadData is an object to prevent spreading undefined
+  const safeLeadData = leadData || {};
 
   setIsSubmitDisabled(true); // ✅ Disable submit button
 
@@ -30,7 +35,7 @@ const handleLeadSubmit = async (
     // Get IP address
     const ipResponse = await axios.get("https://api.ipify.org?format=json");
     console.log("IP Response:", ipResponse.data);
-    const ipAddress = ipResponse.data.ip;
+    const ipAddress = ipResponse.data?.ip || "";
 
     // Get Geolocation
     let location = {};
@@ -42,19 +47,19 @@ const handleLeadSubmit = async (
       console.log("Geolocation Response:", geoResponse.data);
 
       location = {
-        country: geoResponse.data.country_name,
-        region: geoResponse.data.region,
-        city: geoResponse.data.city,
-        lat: geoResponse.data.latitude,
-        lng: geoResponse.data.longitude,
+        country: geoResponse.data?.country_name || "",
+        region: geoResponse.data?.region || "",
+        city: geoResponse.data?.city || "",
+        lat: geoResponse.data?.latitude || null,
+        lng: geoResponse.data?.longitude || null,
       };
     } catch (error) {
       console.error("Error fetching geolocation data:", error);
     }
 
-    // Prepare lead data
+    // Prepare lead data - use safe spreading
     const updatedLeadData = {
-      ...leadData,
+      ...safeLeadData,
       ipAddress,
       userAgent,
       device,
@@ -70,13 +75,17 @@ const handleLeadSubmit = async (
       conversation,
     });
 
-    setLeadData({ ...leadData, id: leadResponse?.data?.lead?._id });
-    const leadName = leadData?.name?.toUpperCase();
+    setLeadData({ ...safeLeadData, id: leadResponse?.data?.lead?._id });
+
+    // Use optional chaining and provide a default for undefined
+    const leadName = safeLeadData?.name?.toUpperCase() || "";
     setMessages((prevMessages) => [
-      ...prevMessages,
+      ...(prevMessages || []),
       {
         sender: "Bot",
-        text: `Thank you! ${leadName}, for submitting your enquiry!`,
+        text: `Thank you${
+          leadName ? "! " + leadName : ""
+        }, for submitting your enquiry!`,
       },
     ]);
 
