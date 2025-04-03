@@ -108,7 +108,7 @@ const handleLeadSubmit = async (
     }, 3000);
   } catch (error) {
     console.error("Error in handleLeadSubmit:", error);
-    alert("Failed to save lead.");
+    // alert("Failed to save lead.");
   }
 
   // ✅ Re-enable submit button after 3 seconds
