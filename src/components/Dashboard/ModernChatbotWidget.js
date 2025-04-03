@@ -371,6 +371,8 @@ const ModernChatbotWidget = () => {
           projectLocation,
         } = response.data;
 
+        console.log("DATA:", response.data);
+
         setWebhook(webhook || "");
         setProjectLogo(projectLogo || "");
         setProjectImages(projectImages || []);
@@ -1521,7 +1523,7 @@ const ModernChatbotWidget = () => {
               transition={{ duration: 0.3 }}
             >
               <div className="modern-first-screen-content">
-                {renderLogo()}
+                {/* {renderLogo()} */}
                 <h2 className="text-white">
                   {chatbotData?.chatbotName || "AI Assistant"}
                 </h2>
@@ -1612,7 +1614,7 @@ const ModernChatbotWidget = () => {
                           <button
                             onClick={() => {
                               const phoneNumber =
-                                chatbotData?.phoneNumber || "+919999999999";
+                                chatbotData?.phone || "+91 86683 71594";
                               window.open(
                                 `https://wa.me/${phoneNumber}`,
                                 "_blank"
