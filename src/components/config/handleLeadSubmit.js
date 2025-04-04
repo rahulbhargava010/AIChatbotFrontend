@@ -3,10 +3,8 @@ import api from "../config/axios";
 import SHA256 from "crypto-js/sha256";
 
 const fireGoogleConversion = (lead) => {
-  const hashedEmail = SHA256(lead?.email.trim().toLowerCase()).toString();
-  const hashedPhone = SHA256(lead?.phone.replace(/\D/g, "")).toString(); // remove non-numeric
-  console.log("hashedEmail", hashedEmail);
-  console.log("hashedPhone", hashedPhone);
+  const hashedEmail = SHA256(lead?.email?.trim().toLowerCase()).toString();
+  const hashedPhone = SHA256(lead?.phone?.replace(/\D/g, "")).toString(); // remove non-numeric
   window.gtag("event", "conversion", {
     send_to: "AW-16740067480/0NvVCPLPj90ZEJjRpK4-", // Replace with your Conversion Label
     user_data: {
