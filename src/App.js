@@ -55,20 +55,20 @@ const Header = () => {
   return (
     <>
       <Helmet>
-        <title>Home | AI Chatbot</title>
+        <title>Home | AssistAI Chatbot</title>
         <meta
           name="description"
-          content="Welcome to AI Chatbot, the best chatbot for customer support and automation."
+          content="Welcome to AssistAI Chatbot, the best chatbot for customer support and automation."
         />
         <meta
           name="keywords"
-          content="AI Chatbot, Customer Support, Automation, Live Chat"
+          content="AssistAI Chatbot, Customer Support, Automation, Live Chat"
         />
       </Helmet>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/dashboard">
-            Chatbot Dashboard
+            AssistAI Dashboard
           </Link>
           <button
             className="navbar-toggler"
