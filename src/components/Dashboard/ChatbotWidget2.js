@@ -519,39 +519,39 @@ const ChatbotWidget = () => {
   
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-  
+      console.log('reply from handleSendMessage: ', reply )
+      console.log('score from handleSendMessage: ', score )
       if (reply.toLowerCase().includes("form")) {
-        setFormVisible(true);
-        if (reply.toLowerCase().includes("sitevisit")) {
-          setMsgFromResponse(
-            "To Book The Site Visit Please Fill Out the Form."
-          );
+          if(!formSubmitted){
+              if (reply.toLowerCase().includes("sitevisit")) {
+                  setMsgFromResponse("To Book The Site Visit Please Fill Out the Form.");
+              }
+              else if (reply.toLowerCase().includes("brochure")){
+                  setMsgFromResponse(
+                    "To Download The Brouchure Please Fill Out the Form."
+                  );
+              }
+              else if (reply.toLowerCase().includes("payments")){
+                  setMsgFromResponse(
+                      "To Know More About The Payment Plan Please Fill Out the Form."
+                  );
+              }
+              else if (reply.toLowerCase().includes("sorry")){
+                  setMsgFromResponse(
+                    "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
+                  );
+              }
+            else{
+                setMsgFromResponse(
+                  "Hi, How Can I Help You?"
+                );
+            }
+            setFormVisible(true);
+            setIsButtonDisabled(false);
+            return;
         }
-        else if (reply.toLowerCase().includes("brochure")){
-          setMsgFromResponse(
-             "To Download The Brouchure Please Fill Out the Form."
-          );
-        }
-        else if (reply.toLowerCase().includes("payments")){
-          setMsgFromResponse(
-              "To Know More About The Payment Plan Please Fill Out the Form."
-          );
-        }
-        else if (reply.toLowerCase().includes("sorry")){
-          setMsgFromResponse(
-            "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
-          );
-        }
-       else{
-        setMsgFromResponse(
-          "Hi, How Can I Help You?"
-        );
-       }
-        setIsButtonDisabled(false);
-        return;
-      }
       
-  
+      }
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
       // reply.replace(/\.{2,}/g, ".") // Replace multiple dots with a single dot
       // .split(/(?<!\d)\.(?!\d|\s?(cr|l|lakh|crore|k|m|b|rs))/gi) // Split only when dot is not in number/unit format
@@ -589,7 +589,7 @@ const ChatbotWidget = () => {
     
       // Show the form instead of displaying an error message
       setFormVisible(true);
-       setIsTyping(false);
+      setIsTyping(false);
       setMsgFromResponse(
         "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
       );
@@ -631,12 +631,15 @@ const ChatbotWidget = () => {
   // Save chat message to backend
   const saveConversation = async (sessionId) => {
     try {
-      const response = await api.post("/conversations/save", {
-        chatbotId,
-        messages,
-        sessionId,
-      });
-      setConversation(response.data.conversation._id);
+      const hasUserMessage = messages.some((msg) => msg.sender === "User");
+      if (hasUserMessage) {
+          const response = await api.post("/conversations/save", {
+            chatbotId,
+            messages,
+            sessionId,
+          });
+          setConversation(response.data.conversation._id);
+      }
     } catch (err) {
       console.error("Error saving message:", err);
     }

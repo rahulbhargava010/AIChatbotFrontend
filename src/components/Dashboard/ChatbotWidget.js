@@ -331,18 +331,31 @@ const ChatbotWidget = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const userSenderCount = messages.filter(
-        (message) => message.sender === "User"
-      ).length;
-
-      if (isTyping == false && userSenderCount > 0) {
-          // console.log("comming after every 10 second", isTyping)
-          setFormVisible(true);
-      }
+        if (!formVisible && !isTyping) {
+            if(!formSubmitted) {
+                setFormVisible(true);
+            }
+        }
     }, 10000); // Runs every 10 seconds
-  
+
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [isTyping]); // Dependencies
+  }, [formVisible, isTyping]); // Dependencies
+
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const userSenderCount = messages.filter(
+  //       (message) => message.sender === "User"
+  //     ).length;
+
+  //     if (isTyping == false && userSenderCount > 0) {
+  //         // console.log("comming after every 10 second", isTyping)
+  //         setFormVisible(true);
+  //     }
+  //   }, 10000); // Runs every 10 seconds
+  
+  //   return () => clearInterval(interval); // Cleanup on unmount
+  // }, [isTyping]); // Dependencies
   
   
 
@@ -599,7 +612,7 @@ const ChatbotWidget = () => {
     
       // Show the form instead of displaying an error message
       setFormVisible(true);
-       setIsTyping(false);
+      setIsTyping(false);
       setMsgFromResponse(
         "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
       );
@@ -641,12 +654,15 @@ const ChatbotWidget = () => {
   // Save chat message to backend
   const saveConversation = async (sessionId) => {
     try {
-      const response = await api.post("/conversations/save", {
-        chatbotId,
-        messages,
-        sessionId,
-      });
-      setConversation(response.data.conversation._id);
+      const hasUserMessage = messages.some((msg) => msg.sender === "User");
+      if (hasUserMessage) {
+        const response = await api.post("/conversations/save", {
+          chatbotId,
+          messages,
+          sessionId,  
+        });
+        setConversation(response.data.conversation._id);
+      }
     } catch (err) {
       console.error("Error saving message:", err);
     }

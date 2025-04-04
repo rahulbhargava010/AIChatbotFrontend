@@ -1,5 +1,30 @@
 import axios from "axios";
 import api from "../config/axios";
+import SHA256 from "crypto-js/sha256";
+
+const fireGoogleConversion = (lead) => {
+    const hashedEmail = SHA256(lead?.email.trim().toLowerCase()).toString();
+    const hashedPhone = SHA256(lead?.phone.replace(/\D/g, '')).toString(); // remove non-numeric
+    console.log("hashedEmail", hashedEmail)
+    console.log("hashedPhone", hashedPhone)
+    window.gtag('event', 'conversion', {
+        send_to: 'AW-16740067480/0NvVCPLPj90ZEJjRpK4-', // Replace with your Conversion Label
+        user_data: {
+            email: hashedEmail,
+            phone_number: hashedPhone
+        },
+        transaction_id: new Date().getTime().toString(), // Optional but useful
+    });
+};
+
+const triggerGTMConversion = () => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'conversion_event',
+    transaction_id: new Date().getTime().toString()
+  });
+};
+
 
 const handleLeadSubmit = async (
   e,
@@ -88,6 +113,10 @@ const handleLeadSubmit = async (
         }, for submitting your enquiry!`,
       },
     ]);
+
+    fireGoogleConversion(leadResponse?.data?.lead); // for gtag
+    // or
+    // triggerGTMConversion(); // for GTM
 
     // Save analytics event
     console.log("Saving analytics event...");
