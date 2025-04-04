@@ -12,6 +12,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   Map as MapIcon,
+  FileText,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { Form } from "react-bootstrap";
@@ -33,6 +34,7 @@ const ModernChatbotWidget = () => {
   const [webhook, setWebhook] = useState("");
   const [projectLogo, setProjectLogo] = useState("");
   const [projectImages, setProjectImages] = useState([]);
+  const [brochureUrl, setBrochureUrl] = useState(""); // Added for brochure
   const [input, setInput] = useState("");
   const chatWindowRef = useRef(null);
   const [buttons, setButtons] = useState([
@@ -43,6 +45,7 @@ const ModernChatbotWidget = () => {
     { label: "Site Visit Schedule", action: "schedule_site_visit" },
     { label: "Download Brochure", action: "brochure" },
   ]);
+  const [formPurpose, setFormPurpose] = useState(""); // Added to track form purpose
   const [isMobile, setIsMobile] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const [inlineFormVisible, setInlineFormVisible] = useState(false);
@@ -343,6 +346,81 @@ const ModernChatbotWidget = () => {
     }
   }, [messages, showBrochurePrompt, formSubmitted]);
 
+  // Function to download brochure
+  const downloadBrochure = () => {
+    if (brochureUrl) {
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement("a");
+      link.href = `https://assist-ai.propstory.com/${brochureUrl}`;
+      link.target = "_blank";
+      link.download = "property-brochure.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Add a success message in the chat
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          sender: "Bot",
+          text: "Your brochure download has started. If it doesn't open automatically, please check your downloads folder.",
+          timestamp: new Date(),
+          isSuccess: true,
+        },
+      ]);
+    } else {
+      // Display error message if brochure not available
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          sender: "Bot",
+          text: "I'm sorry, the brochure file isn't available at the moment. Please try again later or contact our team for assistance.",
+          timestamp: new Date(),
+          isError: true,
+        },
+      ]);
+    }
+  };
+
+  // Function to send brochure via WhatsApp
+  const sendBrochureViaWhatsApp = (phoneNumber) => {
+    if (brochureUrl && phoneNumber) {
+      // Format phone number (remove non-digits)
+      const formattedPhone = phoneNumber.replace(/\D/g, "");
+
+      // Create WhatsApp message with brochure link
+      const brochureLink = `https://assist-ai.propstory.com/${brochureUrl}`;
+      const message = encodeURIComponent(
+        `Here's your requested property brochure: ${brochureLink}`
+      );
+
+      // Open WhatsApp with pre-filled message
+      window.open(`https://wa.me/${formattedPhone}?text=${message}`, "_blank");
+
+      // Add confirmation message in chat
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          sender: "Bot",
+          text: "We've prepared your brochure to be sent via WhatsApp. Please complete the messaging process in the new window.",
+          timestamp: new Date(),
+          isSuccess: true,
+        },
+      ]);
+    } else {
+      // Display error message if brochure not available
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          sender: "Bot",
+          text: "I'm sorry, the brochure file isn't available at the moment. Please try again later or contact our team for assistance.",
+          timestamp: new Date(),
+          isError: true,
+        },
+      ]);
+    }
+  };
+
   // Fetch welcome data
   useEffect(() => {
     const fetchWelcomeData = async () => {
@@ -369,6 +447,7 @@ const ModernChatbotWidget = () => {
           chatbotName,
           projectLogo,
           projectLocation,
+          brochure, // Get brochure URL from response
         } = response.data;
 
         console.log("DATA:", response.data);
@@ -376,6 +455,7 @@ const ModernChatbotWidget = () => {
         setWebhook(webhook || "");
         setProjectLogo(projectLogo || "");
         setProjectImages(projectImages || []);
+        setBrochureUrl(brochure || ""); // Set brochure URL
         setChatbotData(response.data);
 
         // Set map location if available
@@ -490,12 +570,14 @@ const ModernChatbotWidget = () => {
             ],
             chatbotName: "AI Assistant",
             projectLogo: "https://via.placeholder.com/150x60?text=Logo",
+            brochure: "path/to/sample-brochure.pdf", // Dummy brochure path
             buttons: dummyButtons,
           };
 
           setWebhook(null);
           setProjectLogo(dummyData.projectLogo);
           setProjectImages(dummyData.projectImages);
+          setBrochureUrl(dummyData.brochure);
           setChatbotData(dummyData);
 
           setMessages([
@@ -553,12 +635,14 @@ const ModernChatbotWidget = () => {
             ],
             chatbotName: "AI Assistant",
             projectLogo: "https://via.placeholder.com/150x60?text=Logo",
+            brochure: "path/to/sample-brochure.pdf", // Dummy brochure path
             buttons: defaultButtons,
           };
 
           setWebhook(null);
           setProjectLogo(dummyData.projectLogo);
           setProjectImages(dummyData.projectImages);
+          setBrochureUrl(dummyData.brochure);
           setChatbotData(dummyData);
 
           setMessages([
@@ -600,7 +684,7 @@ const ModernChatbotWidget = () => {
         },
       ]);
     } else {
-      addInlineForm();
+      addInlineForm("contact");
       setMsgFromResponse("Please share your details:");
     }
     setIsOpen(false);
@@ -615,11 +699,23 @@ const ModernChatbotWidget = () => {
     }));
   };
 
+  // Function to handle brochure via WhatsApp request
+  const handleBrochureViaWhatsApp = () => {
+    addInlineForm("whatsapp_brochure");
+    setMsgFromResponse(
+      "Please share your details to receive the brochure via WhatsApp:"
+    );
+    setIsOpen(false);
+  };
+
   // FIX 8: Add condition to not show form if already submitted
   // Function to add the form inline in the chat
-  const addInlineForm = () => {
+  const addInlineForm = (purpose = "contact") => {
     // Don't add the form if it's already been submitted
     if (formSubmitted) return;
+
+    // Set form purpose
+    setFormPurpose(purpose);
 
     // Remove existing inline forms first
     setMessages((prevMessages) =>
@@ -702,6 +798,19 @@ const ModernChatbotWidget = () => {
       setInlineFormVisible(false);
       setFormSubmitted(true);
 
+      // Process based on form purpose
+      if (formPurpose === "brochure") {
+        // Download brochure after a short delay
+        setTimeout(() => {
+          downloadBrochure();
+        }, 1000);
+      } else if (formPurpose === "whatsapp_brochure") {
+        // Send brochure via WhatsApp
+        setTimeout(() => {
+          sendBrochureViaWhatsApp(leadData.phone);
+        }, 1000);
+      }
+
       // Reset form values
       setLeadData({
         name: "",
@@ -719,7 +828,7 @@ const ModernChatbotWidget = () => {
             timestamp: new Date(),
           },
         ]);
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error("Error in handleFormSuccess:", error);
 
@@ -960,7 +1069,7 @@ const ModernChatbotWidget = () => {
 
     // If more than 10 user messages and no form submitted yet, show form
     if (userSenderCount >= 10 && !formSubmitted) {
-      addInlineForm();
+      addInlineForm("contact");
       setIsButtonDisabled(false); // Re-enable button
       return;
     }
@@ -979,25 +1088,30 @@ const ModernChatbotWidget = () => {
       const { reply, score } = response.data;
 
       if (reply && reply.toLowerCase().includes("form")) {
-        addInlineForm();
+        const formType = reply.toLowerCase();
 
-        if (reply.toLowerCase().includes("sitevisit")) {
+        if (formType.includes("sitevisit")) {
+          addInlineForm("site_visit");
           setMsgFromResponse(
             "To Book The Site Visit Please Fill Out the Form."
           );
-        } else if (reply.toLowerCase().includes("brochure")) {
+        } else if (formType.includes("brochure")) {
+          addInlineForm("brochure");
           setMsgFromResponse(
             "To Download The Brochure Please Fill Out the Form."
           );
-        } else if (reply.toLowerCase().includes("payments")) {
+        } else if (formType.includes("payments")) {
+          addInlineForm("payment_plan");
           setMsgFromResponse(
             "To Know More About The Payment Plan Please Fill Out the Form."
           );
-        } else if (reply.toLowerCase().includes("sorry")) {
+        } else if (formType.includes("sorry")) {
+          addInlineForm("complaint");
           setMsgFromResponse(
             "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
           );
         } else {
+          addInlineForm("contact");
           setMsgFromResponse(
             "Please Fill Out the Form Below and We'll Get Back to You"
           );
@@ -1029,7 +1143,7 @@ const ModernChatbotWidget = () => {
       });
     } catch (err) {
       console.error("Failed to send message:", err);
-      addInlineForm();
+      addInlineForm("contact");
       setMsgFromResponse(
         "We're sorry, but we couldn't process your request. Please share your details, and our team will assist you."
       );
@@ -1152,19 +1266,23 @@ const ModernChatbotWidget = () => {
       ) {
         setFormType(action);
 
-        // Set appropriate message for the form
+        // Set appropriate message for the form and form purpose
         if (action === "schedule_site_visit") {
           setMsgFromResponse("Please share your details for a site visit:");
+          setFormPurpose("site_visit");
         } else if (action === "get_callback") {
           setMsgFromResponse(
             "Please share your details for a call back from our team:"
           );
+          setFormPurpose("contact");
         } else if (action === "brochure") {
           setMsgFromResponse(
             "Please share your details to download our brochure:"
           );
+          setFormPurpose("brochure");
         } else {
           setMsgFromResponse("Please provide your information:");
+          setFormPurpose("contact");
         }
 
         // Add user's request as a message
@@ -1183,7 +1301,7 @@ const ModernChatbotWidget = () => {
         // Wait a bit before adding the new form
         setTimeout(() => {
           // Add bot response and form
-          addInlineForm();
+          addInlineForm(action === "brochure" ? "brochure" : "contact");
         }, 300);
       } else {
         setFormVisible(false);
@@ -1625,6 +1743,12 @@ const ModernChatbotWidget = () => {
                             <ExternalLink size={16} />
                             <span>Send details via WhatsApp</span>
                           </button>
+                          {brochureUrl && (
+                            <button onClick={handleBrochureViaWhatsApp}>
+                              <FileText size={16} />
+                              <span>Send brochure via WhatsApp</span>
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               handleRateChat();
