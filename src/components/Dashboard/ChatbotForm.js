@@ -28,6 +28,8 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [projectLogoURL, setProjectLogoURL] = useState(null);
   const [projectImages, setProjectImages] = useState([]);
   const [projectImagesURL, setProjectImagesURL] = useState([]);
+  const [brochure, setBrochure] = useState(null);
+  const [brochureURL, setBrochureURL] = useState(null);
 
   const navigate = useNavigate();
   const handleInputChange = (e) => {
@@ -70,6 +72,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     projectImages.forEach((img) => {
       formData.append("projectImages", img);
     });
+
+    if (brochure) {
+      formData.append("brochure", brochure);
+    }
 
     // console.log("Fetched Button Content:", buttonContent); // Debug log
 
@@ -120,6 +126,11 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     setProjectLogoURL(null);
   };
 
+  const removeBrochure = () => {
+    setBrochure(null);
+    setBrochureURL(null);
+  };
+
   const removeImage = (index) => {
     setProjectImages((prevImages) => prevImages.filter((_, i) => i !== index));
     setProjectImagesURL((prevImages) =>
@@ -149,6 +160,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
           // setProjectLogo(initialData?.chatbotDetails.projectLogo);
           setProjectLogoURL(initialData?.chatbotDetails.projectLogo);
           setProjectImagesURL(initialData?.chatbotDetails.projectImages);
+          setBrochureURL(initialData?.chatbotDetails.brochure);
         }
       } catch (err) {
         console.log("Fetching chatbot err", err);
@@ -375,7 +387,55 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 ))}
               </div>
 
-              <button onClick={() => setStep(2)} className="btn btn-danger ">
+              <hr />
+
+              <label>Upload Project Brochure (PDF):</label>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setBrochure(file);
+                  setBrochureURL(null);
+                }}
+              />
+
+              {/* {brochure && (
+                <div className="brochure-preview">
+                  <div className="file-info">
+                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span>{brochure.name}</span>
+                    <button className="delete-button" onClick={removeBrochure}>
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )} */}
+
+              {brochureURL && !brochure && (
+                <div className="brochure-preview">
+                  <div className="file-info">
+                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span>Current brochure</span>
+                    <a
+                      href={`https://assist-ai.propstory.com/${brochureURL}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="view-button"
+                    >
+                      View
+                    </a>
+                    <button className="delete-button" onClick={removeBrochure}>
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setStep(2)}
+                className="btn btn-danger  m-2"
+              >
                 Back
               </button>
               <button type="submit" className="btn btn-primary">
