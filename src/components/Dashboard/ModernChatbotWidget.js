@@ -74,6 +74,17 @@ const ModernChatbotWidget = () => {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [showBrochurePrompt, setShowBrochurePrompt] = useState(false);
 
+  // New state variables for page information
+  const [pageInfo, setPageInfo] = useState({
+    parentUrl: "",
+    source: "",
+    subsource: "",
+    utmSource: "",
+    utmMedium: "",
+    utmCampaign: "",
+    referrer: "",
+  });
+
   // Map related states
   const [showMap, setShowMap] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -121,6 +132,75 @@ const ModernChatbotWidget = () => {
     { value: "4", icon: "🙂", label: "Good" },
     { value: "5", icon: "😍", label: "Excellent" },
   ];
+
+  // Add a new useEffect to listen for messages from the parent page
+  useEffect(() => {
+    // Function to handle messages from parent window
+    const handleMessage = (event) => {
+      const data = event.data;
+
+      // Check if this is page info data
+      if (data && data.type === "PAGE_INFO") {
+        console.log("Received page info via postMessage:", data);
+        setPageInfo({
+          parentUrl: data.url || "",
+          source: data.source || "",
+          subsource: data.subsource || "",
+          utmSource: data.utmSource || "",
+          utmMedium: data.utmMedium || "",
+          utmCampaign: data.utmCampaign || "",
+          referrer: data.referrer || "",
+        });
+      }
+    };
+
+    // Add event listener
+    window.addEventListener("message", handleMessage);
+
+    // Also try to get info from URL parameters if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const parentUrl = urlParams.get("parent_url") || "";
+    const source = urlParams.get("source") || "";
+    const subsource = urlParams.get("subsource") || "";
+    const utmSource = urlParams.get("utm_source") || "";
+    const utmMedium = urlParams.get("utm_medium") || "";
+    const utmCampaign = urlParams.get("utm_campaign") || "";
+
+    // Create direct object for logging (not using state)
+    const pageInfoFromParams = {
+      parentUrl,
+      source,
+      subsource,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+    };
+
+    // Log the actual parameter values directly
+    console.log("Retrieved page info from URL params:", pageInfoFromParams);
+
+    // Only update state if we have a parent URL
+    if (parentUrl) {
+      setPageInfo({
+        parentUrl,
+        source,
+        subsource,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        referrer: "",
+      });
+    }
+
+    // IMPORTANT! The cleanup function had a bug - it was adding a listener instead of removing it
+    return () => {
+      window.removeEventListener("message", handleMessage); // Fixed this line
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("pageInfo state updated:", pageInfo);
+  }, [pageInfo]);
 
   // FIX 1: Ensure proper scrolling
   useEffect(() => {
@@ -845,7 +925,7 @@ const ModernChatbotWidget = () => {
     }
   };
 
-  // Handle inline form submission - UPDATED
+  // Handle inline form submission - UPDATED with pageInfo
   const handleInlineFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitDisabled(true);
@@ -875,10 +955,16 @@ const ModernChatbotWidget = () => {
         return msgs;
       };
 
+      // Enhance leadData with page information
+      const enhancedLeadData = {
+        ...leadData,
+        pageInfo,
+      };
+
       // Call the lead submit handler with proper parameters
       await handleLeadSubmit(
         e,
-        leadData,
+        enhancedLeadData, // Use enhanced data with page info
         setLeadData,
         chatbotId,
         conversation,
