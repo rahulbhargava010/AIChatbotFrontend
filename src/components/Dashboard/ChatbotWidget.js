@@ -63,8 +63,12 @@ const ChatbotWidget = () => {
   const [chatbotData, setChatbotData] = useState(null);
   const [sessionId, setSessionId] = useState("");
   const [conversation, setConversation] = useState("");
-  const [msgFromResponse, setMsgFromResponse] = useState("Please Introduce Yourself");
-  const [msgRatingFromResponse, setRatingFromResponse] = useState("Please Provide Your Rating");
+  const [msgFromResponse, setMsgFromResponse] = useState(
+    "Please Introduce Yourself"
+  );
+  const [msgRatingFromResponse, setRatingFromResponse] = useState(
+    "Please Provide Your Rating"
+  );
   const [formSubmitted, setFormSubmitted] = useState(false); // Add this state
   const [checkedItems, setCheckedItems] = useState({
     option1: false,
@@ -78,8 +82,86 @@ const ChatbotWidget = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
+  // New state variable for page information
+  const [pageInfo, setPageInfo] = useState({
+    parentUrl: "",
+    source: "",
+    subsource: "",
+    utmSource: "",
+    utmMedium: "",
+    utmCampaign: "",
+    referrer: "",
+  });
 
+  // Add a new useEffect to listen for messages from the parent page
+  useEffect(() => {
+    // Function to handle messages from parent window
+    const handleMessage = (event) => {
+      const data = event.data;
 
+      // Check if this is page info data
+      if (data && data.type === "PAGE_INFO") {
+        console.log("Received page info via postMessage:", data);
+        setPageInfo({
+          parentUrl: data.url || "",
+          source: data.source || "",
+          subsource: data.subsource || "",
+          utmSource: data.utmSource || "",
+          utmMedium: data.utmMedium || "",
+          utmCampaign: data.utmCampaign || "",
+          referrer: data.referrer || "",
+        });
+      }
+    };
+
+    // Add event listener
+    window.addEventListener("message", handleMessage);
+
+    // Also try to get info from URL parameters if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const parentUrl = urlParams.get("parent_url") || "";
+    const source = urlParams.get("source") || "";
+    const subsource = urlParams.get("subsource") || "";
+    const utmSource = urlParams.get("utm_source") || "";
+    const utmMedium = urlParams.get("utm_medium") || "";
+    const utmCampaign = urlParams.get("utm_campaign") || "";
+
+    // Create direct object for logging (not using state)
+    const pageInfoFromParams = {
+      parentUrl,
+      source,
+      subsource,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+    };
+
+    // Log the actual parameter values directly
+    console.log("Retrieved page info from URL params:", pageInfoFromParams);
+
+    // Only update state if we have a parent URL
+    if (parentUrl) {
+      setPageInfo({
+        parentUrl,
+        source,
+        subsource,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        referrer: "",
+      });
+    }
+
+    // IMPORTANT! The cleanup function had a bug - it was adding a listener instead of removing it
+    return () => {
+      window.removeEventListener("message", handleMessage); // Fixed this line
+    };
+  }, []);
+
+  // Log when pageInfo state is updated
+  useEffect(() => {
+    console.log("pageInfo state updated:", pageInfo);
+  }, [pageInfo]);
 
   const indianLanguages = [
     { code: "en-IN", name: "English (India)" },
@@ -115,15 +197,15 @@ const ChatbotWidget = () => {
 
   // Toggle full-screen mode (only for mobile)
   const toggleFullScreen = () => {
-    console.log("coming in toggle sceen")
+    console.log("coming in toggle sceen");
 
     const chatbotIframe = document.querySelector(".chat-window");
-    console.log("coming in toggle sceen class", isFullScreen)
+    console.log("coming in toggle sceen class", isFullScreen);
     if (chatbotIframe) {
       if (isFullScreen) {
-        console.log("coming in if")
+        console.log("coming in if");
         // Enter fullscreen mode
-       
+
         // chatbotIframe.style.width = "95%";
         chatbotIframe.style.height = "75%";
         // chatbotIframe.style.left = "0";
@@ -132,14 +214,12 @@ const ChatbotWidget = () => {
         // chatbotIframe.style.borderRadius = "0";
         // chatbotIframe.style.zIndex = "999999999";
       } else {
-        console.log("coming in else")
+        console.log("coming in else");
         // Exit fullscreen mode
         // chatbotIframe.style.bottom = window.innerWidth <= 768 ? '13%' : '85px';
         // chatbotIframe.style.right = window.innerWidth <= 768 ? '3%' : '40px';
         // chatbotIframe.style.width = "100vw";
         chatbotIframe.style.height = "100%";
-
-        
       }
       setIsFullScreen(!isFullScreen);
     }
@@ -331,44 +411,15 @@ const ChatbotWidget = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-        if (!formVisible && !isTyping) {
-            if(!formSubmitted) {
-                setFormVisible(true);
-            }
+      if (!formVisible && !isTyping) {
+        if (!formSubmitted) {
+          setFormVisible(true);
         }
+      }
     }, 10000); // Runs every 10 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [formVisible, isTyping]); // Dependencies
-
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const userSenderCount = messages.filter(
-  //       (message) => message.sender === "User"
-  //     ).length;
-
-  //     if (isTyping == false && userSenderCount > 0) {
-  //         // console.log("comming after every 10 second", isTyping)
-  //         setFormVisible(true);
-  //     }
-  //   }, 10000); // Runs every 10 seconds
-  
-  //   return () => clearInterval(interval); // Cleanup on unmount
-  // }, [isTyping]); // Dependencies
-  
-  
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (formVisible && isTyping) {
-  //       setFormVisible(true);
-  //       // setChatVisible(false);
-  //     }
-  //   }, 10000); // Runs every 10 seconds
-
-  //   return () => clearInterval(interval); // Cleanup on unmount
-  // }, [formVisible, isTyping]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -457,85 +508,26 @@ const ChatbotWidget = () => {
     }
   };
 
-  // const handleSendMessage = async () => {
-  //   if (!input.trim()) return;
-
-  //   setMessages((prevMessages) => [
-  //     ...prevMessages,
-  //     { sender: "User", text: input },
-  //   ]);
-
-  //   const userSenderCount = messages.filter(
-  //     (message) => message.sender === "User"
-  //   ).length;
-  //   if (userSenderCount >= 10) {
-  //     setFormVisible(true);
-  //     return;
-  //   }
-  //   try {
-  //     setIsTyping(true);
-  //     const token = localStorage.getItem("token");
-  //     const response = await api.post("/aichatbots/respond", {
-  //       chatbotId,
-  //       message: input,
-  //     });
-  //     console.log("chatbot response from Test Chatbot", response);
-  //     const { reply, score } = response.data;
-  //     if (reply == "form") {
-  //       setFormVisible(true);
-  //       setMsgFromResponse(
-  //         "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
-  //       );
-  //       return;
-  //     }
-  //     // setChatHistory([...chatHistory, { user: message, bot: response.data.reply }]);
-  //     const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { sender: "Bot", text: formattedReply, score },
-  //     ]);
-
-  //     setIsTyping(false);
-
-  //     await api.post("analytics/saveEvent", {
-  //       eventType: "chat_message",
-  //       sessionId: uniqueSessionId,
-  //       messages,
-  //       chatbotId,
-  //     });
-  //   } catch (err) {
-  //     console.error("Failed to send message:", err);
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       { sender: "Bot", text: "Sorry, something went wrong." },
-  //     ]);
-  //   }
-
-  //   saveConversation(sessionId);
-  //   setInput("");
-  // };
-
-
   const handleSendMessage = async () => {
     if (!input.trim() || isButtonDisabled) return;
-  
+
     setIsButtonDisabled(true); // Disable button
-  
+
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: "User", text: input },
     ]);
-  
+
     const userSenderCount = messages.filter(
       (message) => message.sender === "User"
     ).length;
-  
+
     if (userSenderCount >= 10) {
       setFormVisible(true);
       setIsButtonDisabled(false); // Re-enable button immediately if form is shown
       return;
     }
-  
+
     try {
       setIsTyping(true);
       setWhileTyping(true);
@@ -544,72 +536,53 @@ const ChatbotWidget = () => {
         chatbotId,
         message: input,
       });
-  
+
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-  
+
       if (reply.toLowerCase().includes("form")) {
         setFormVisible(true);
         if (reply.toLowerCase().includes("sitevisit")) {
           setMsgFromResponse(
             "To Book The Site Visit Please Fill Out the Form."
           );
-        }
-        else if (reply.toLowerCase().includes("brochure")){
+        } else if (reply.toLowerCase().includes("brochure")) {
           setMsgFromResponse(
-             "To Download The Brouchure Please Fill Out the Form."
+            "To Download The Brouchure Please Fill Out the Form."
           );
-        }
-        else if (reply.toLowerCase().includes("payments")){
+        } else if (reply.toLowerCase().includes("payments")) {
           setMsgFromResponse(
-              "To Know More About The Payment Plan Please Fill Out the Form."
+            "To Know More About The Payment Plan Please Fill Out the Form."
           );
-        }
-        else if (reply.toLowerCase().includes("sorry")){
+        } else if (reply.toLowerCase().includes("sorry")) {
           setMsgFromResponse(
             "We're sorry to hear that you're facing issues. 😞 Please share your details, and our team will assist you."
           );
+        } else {
+          setMsgFromResponse("Hi, How Can I Help You?");
         }
-       else{
-        setMsgFromResponse(
-          "Hi, How Can I Help You?"
-        );
-       }
         setIsButtonDisabled(false);
         return;
       }
-      
-  
+
       const formattedReply = reply.replace(/\.([^\n])/g, ".\n$1");
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: "Bot", text: formattedReply, score },
       ]);
-  
+
       setIsTyping(false);
       setWhileTyping(false);
 
-  
       await api.post("analytics/saveEvent", {
         eventType: "chat_message",
         sessionId: uniqueSessionId,
         messages,
         chatbotId,
       });
-    } 
-    // catch (err) {
-    //   setIsTyping(false);
-    //   setWhileTyping(false);
-    //   console.error("Failed to send message:", err);
-    //   setMessages((prevMessages) => [
-    //     ...prevMessages,
-    //     { sender: "Bot", text: "Sorry, something went wrong." },
-    //   ]);
-      
-    // }
-    catch (err) {
+    } catch (err) {
       console.error("Failed to send message:", err);
-    
+
       // Show the form instead of displaying an error message
       setFormVisible(true);
       setIsTyping(false);
@@ -618,18 +591,15 @@ const ChatbotWidget = () => {
       );
     }
 
-  
     saveConversation(sessionId);
     setInput("");
-  
+
     // Re-enable the button after 3 seconds
     setTimeout(() => {
       setIsButtonDisabled(false);
     }, 3000);
-
   };
 
-  
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default form submission behavior
@@ -659,7 +629,7 @@ const ChatbotWidget = () => {
         const response = await api.post("/conversations/save", {
           chatbotId,
           messages,
-          sessionId,  
+          sessionId,
         });
         setConversation(response.data.conversation._id);
       }
@@ -688,17 +658,20 @@ const ChatbotWidget = () => {
     try {
       const token = localStorage.getItem("token");
       const icon = "🔹"; // Replace this with any emoji or HTML entity
-  
-      if (["schedule_site_visit", "get_callback", "brochure"].includes(action)) {
-        setMsgFromResponse("Please Provide Your Information, We Are Happy To Help!");
+
+      if (
+        ["schedule_site_visit", "get_callback", "brochure"].includes(action)
+      ) {
+        setMsgFromResponse(
+          "Please Provide Your Information, We Are Happy To Help!"
+        );
         setFormType(action);
         setFormVisible(true);
-        
       } else {
         setFormVisible(false);
         setChatVisible(true);
         // setFormAction(webhook)
-  
+
         if (buttonContent[action]) {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -715,46 +688,12 @@ const ChatbotWidget = () => {
           ]);
         }
       }
-  
+
       saveConversation(storedSessionId);
     } catch (err) {
       console.error("Error fetching content:", err);
     }
   };
-
-  
-  // const handleButtonClick = async (action, label) => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-
-  //     if (
-  //       ["schedule_site_visit", "get_callback", "brochure"].includes(action)
-  //     ) {
-  //       setFormType(action);
-
-  //       setFormVisible(true);
-
-  //       // setFormAction(webhook)
-
-  //       // setChatVisible(false);
-  //     } else {
-  //       setFormVisible(false);
-
-  //       setChatVisible(true);
-
-  //       if (buttonContent[action])
-  //         setMessages((prevMessages) => [
-  //           ...prevMessages,
-  //           { sender: "User", text: label },
-  //           { sender: "Bot", text: buttonContent[action] },
-  //         ]);
-  //     }
-
-  //     saveConversation(storedSessionId);
-  //   } catch (err) {
-  //     console.error("Error fetching content:", err);
-  //   }
-  // };
 
   const dummyData = {
     greeting: "Hello! Welcome to our chatbot.",
@@ -805,7 +744,6 @@ const ChatbotWidget = () => {
         } = response.data;
 
         console.log("Welcome in project greeting 12: ", response);
-        
 
         setWebhook(webhook);
         setProjectLogo(projectLogo);
@@ -839,7 +777,7 @@ const ChatbotWidget = () => {
         // ✅ Dummy data if API fails
         const dummyData = {
           greeting: "Welcome! How can I assist you?",
-          chatbotGreeting: "Hello! I’m here to help with your queries.",
+          chatbotGreeting: "Hello! I'm here to help with your queries.",
           projectHighlights: "Key highlights of the project include XYZ.",
           projectImages: ["https://via.placeholder.com/150"],
           buttons: [
@@ -959,10 +897,11 @@ const ChatbotWidget = () => {
 
                   <form
                     className="chatbot-form my-4"
-                    onSubmit={(e) => 
+                    onSubmit={(e) =>
                       handleLeadSubmit(
                         e,
-                        leadData,
+                        // Enhance leadData with page information
+                        { ...leadData, pageInfo },
                         setLeadData,
                         chatbotId,
                         conversation,
@@ -974,11 +913,10 @@ const ChatbotWidget = () => {
                         setIsTyping,
                         uniqueSessionId,
                         messages,
-                        setIsSubmitDisabled // ✅ Pass it here
+                        setIsSubmitDisabled
                       )
                     }
                   >
-
                     {/* Name Input */}
                     <div className="icondiv">
                       <svg
@@ -1021,7 +959,7 @@ const ChatbotWidget = () => {
                         placeholder="Mobile Number"
                         pattern="[0-9]{10}"
                         required
-                        value={leadData.phone} // ✅ Corrected
+                        value={leadData.phone}
                         onChange={(e) =>
                           setLeadData({ ...leadData, phone: e.target.value })
                         }
@@ -1045,45 +983,21 @@ const ChatbotWidget = () => {
                         className="form-control"
                         placeholder="Email Address"
                         required
-                        value={leadData.email} // ✅ Corrected
+                        value={leadData.email}
                         onChange={(e) =>
                           setLeadData({ ...leadData, email: e.target.value })
                         }
                       />
                     </div>
 
-                    {/* Checkboxes */}
-                    {/* <div className="align-items-center">
-                      <Form.Check
-                        type="checkbox"
-                        id="checkbox1"
-                        name="option1"
-                        label={`\u00A0 I allow ${chatbotData?.name} call center to call me on this number for  \u00A0\u00A0sales and support activities`}
-                        checked={checkedItems.option1}
-                        onChange={handleChange}
-                      />
-                    </div> */}
-
-                    {/* <div>
-                      <Form.Check
-                        type="checkbox"
-                        id="checkbox2"
-                        name="option2"
-                        label={`\u00A0 Sign up for our newsletter`}
-                        checked={checkedItems.option2}
-                        onChange={handleChange}
-                      />
-                    </div> */}
-
                     {/* Submit Button */}
-                    <button 
-                      type="submit" 
-                      className="btn btn-primary w-100" 
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
                       disabled={isSubmitDisabled}
                     >
                       {isSubmitDisabled ? "Processing..." : "SUBMIT"}
                     </button>
-
                   </form>
                 </>
               )}
@@ -1100,95 +1014,31 @@ const ChatbotWidget = () => {
               />
             ) : (
               <>
-                {/* <button
-  className="close_button"
-  onClick={() => setChatVisible(false)} // Hide chatbot
->
-  ×
-</button> */}
-
                 <div className="d-flex header p-2 justify-content-between align-items-start">
-                  {/* {chatbotData?.projectLogo && (
-                    <div className="chatbot-logo d-flex justify-content-center align-items-center">
+                  {chatbotData?.projectLogo && (
+                    <div className="chatbot-logo d-flex justify-content-center align-items-start">
                       <img
                         key={chatbotData?.projectLogo}
                         className="chatbot-logo-img"
-                        src={ chatbotData?.projectLogo ? chatbotData?.projectLogo : 
-                          "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png"
-                        }
+                        src={`https://assist-ai.propstory.com/${chatbotData?.projectLogo}`}
                         alt="Project Logo"
                         height="50"
                         width="60"
-                        onError={(e) => (e.target.style.display = "none")}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
+                        }}
                       />
-
-                  <div className="py-2 text-left ms-2">
-                    <h4 className="title">
-                    {chatbotData?.chatbotName} Help Desk
-                    </h4>
-                    <small>
-                      <span className="d-block pt-2">
-                        {" "}
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <circle
-                            cx="8"
-                            cy="8"
-                            r="6"
-                            fill="#198754"
-                            stroke="#28C840"
-                            strokeWidth="2"
-                          />
-                        </svg>{" "}
-                        We are online to assist you
-                      </span>
-                    </small>
-                  </div>
-                    </div>
-                  )} */}
-
-
-                  {chatbotData?.projectLogo && (
-                    <div className="chatbot-logo d-flex justify-content-center align-items-start">
-                      {/* <img
-                        key={chatbotData?.projectLogo}
-                        className="chatbot-logo-img"
-                        src={chatbotData?.projectLogo}
-                        alt="Project Logo"
-                        height="50"
-                        width="60"
-                        // onError={(e) => {
-                        //   e.target.onerror = null; // Prevent infinite loop
-                        //   e.target.src =
-                        //     "https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
-                        // }}
-                      /> */}
-
-                        <img
-                          key={chatbotData?.projectLogo}
-                          className="chatbot-logo-img"
-                          src={`https://assist-ai.propstory.com/${chatbotData?.projectLogo}`} // Corrected
-                          alt="Project Logo"
-                          height="50"
-                          width="60"
-                          onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src ="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx53gk0m7srs5pd.png";
-                              }}
-                              />
-
 
                       <div className="py-2 text-left ms-2">
                         <h4 className="title">
-                          {/* {chatbotData?.chatbotName} Help Desk */}
                           {chatbotData?.chatbotName
-                              ?.toLowerCase()
-                              .replace(/\b\w/g, (char) => char.toUpperCase())} Help Desk
+                            ?.toLowerCase()
+                            .replace(/\b\w/g, (char) =>
+                              char.toUpperCase()
+                            )}{" "}
+                          Help Desk
                         </h4>
                         <small>
                           <span className="d-block pt-2">
@@ -1216,26 +1066,6 @@ const ChatbotWidget = () => {
                   )}
 
                   <div className="relative py-2">
-                    {/* {isMobile && (
-                      <button
-                        className="fullscreen-toggle"
-                        onClick={toggleFullScreen}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="black"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M3 3h6v2H5v4H3V3zM15 3h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zM21 15v6h-6v-2h4v-4h2z" />
-                        </svg>
-                      </button>
-                    )} */}
                     {/* Menu Icon */}
                     <div
                       className="menu-toggle1 cursor-pointer rounded-md hover:bg-gray-200 transition align-items-center"
@@ -1257,9 +1087,6 @@ const ChatbotWidget = () => {
                     {isOpen && (
                       <div className="relative right-0 bg-white shadow-lg">
                         <ul className="menu_list bg-white text-center position-absolute list-unstyled">
-                          {/* <li onClick={() => setIsOpen(false)}>
-                            Talk to Human
-                          </li> */}
                           <li
                             onClick={() => {
                               handleRateChat();
@@ -1268,9 +1095,6 @@ const ChatbotWidget = () => {
                           >
                             Rate this Chat
                           </li>
-                          {/* <li onClick={() => setIsOpen(false)}>
-                            Send details over WhatsApp
-                          </li> */}
                         </ul>
                       </div>
                     )}
@@ -1291,113 +1115,116 @@ const ChatbotWidget = () => {
                     />
                   )}
 
-{messages?.map((message, index) => {
-  const hasContent =
-    message.text ||
-    message.images?.length ||
-    message.buttons?.length;
+                  {messages?.map((message, index) => {
+                    const hasContent =
+                      message.text ||
+                      message.images?.length ||
+                      message.buttons?.length;
 
-  return hasContent ? (
-    <motion.div
-      key={index}
-      initial={{ opacity: 0, y: 10 }} // Start slightly below
-      animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
-      transition={{ duration: 0.3, ease: "linear" }} // Instant response
-      className={`message ${
-        message.sender === "User"
-          ? "user-message"
-          : "bot-message"
-      }`}
-    >
-      <div
-        className={`message ${
-          message.sender === "User"
-            ? "user-message"
-            : "bot-message"
-        }`}
-      >
-        {/* ✅ Text Message */}
-        {message.text && (
-          <div
-            className="message-bubble"
-            style={{
-              backgroundColor: "rgb(231 218 243 / 51%)",
-              boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-              borderRadius: "10px",
-              padding: "10px",
-              width: "auto !important", // Adapts width to content
-              lineHeight: "21px",
-              margin: "5px 0",
-              border: "2px solid rgb(255, 255, 255)",
-              fontSize: "14px",
-              textAlign: "left",
-              whiteSpace: "pre-wrap", // Ensures correct spacing
-              wordBreak: "break-word", // Prevents unwanted breaks
-            }}
-          >
-            {message.text
-              .replace(/\.{2,}/g, ".") // Replaces multiple dots with a single dot
-              .split("\n")
-              .map((line, idx) => (
-                <span key={idx}>
-                  {line}
-                  {idx !== message.text.split("\n").length - 1 && <br />}
-                </span>
-              ))}
-          </div>
-        )}
+                    return hasContent ? (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }} // Start slightly below
+                        animate={{ opacity: 1, y: 0 }} // Fade in and move up instantly
+                        transition={{ duration: 0.3, ease: "linear" }} // Instant response
+                        className={`message ${
+                          message.sender === "User"
+                            ? "user-message"
+                            : "bot-message"
+                        }`}
+                      >
+                        <div
+                          className={`message ${
+                            message.sender === "User"
+                              ? "user-message"
+                              : "bot-message"
+                          }`}
+                        >
+                          {/* ✅ Text Message */}
+                          {message.text && (
+                            <div
+                              className="message-bubble"
+                              style={{
+                                backgroundColor: "rgb(231 218 243 / 51%)",
+                                boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
+                                borderRadius: "10px",
+                                padding: "10px",
+                                width: "auto !important", // Adapts width to content
+                                lineHeight: "21px",
+                                margin: "5px 0",
+                                border: "2px solid rgb(255, 255, 255)",
+                                fontSize: "14px",
+                                textAlign: "left",
+                                whiteSpace: "pre-wrap", // Ensures correct spacing
+                                wordBreak: "break-word", // Prevents unwanted breaks
+                              }}
+                            >
+                              {message.text
+                                .replace(/\.{2,}/g, ".") // Replaces multiple dots with a single dot
+                                .split("\n")
+                                .map((line, idx) => (
+                                  <span key={idx}>
+                                    {line}
+                                    {idx !==
+                                      message.text.split("\n").length - 1 && (
+                                      <br />
+                                    )}
+                                  </span>
+                                ))}
+                            </div>
+                          )}
 
-        {/* ✅ Image Message */}
-        {message?.images && (
-          <div className="image-container">
-            {message.images.map((img, idx) => (
-              <img
-                key={idx}
-                className="chatbot-logo-img"
-                src={`https://assist-ai.propstory.com/${img}`}
-                alt="Project Image"
-                height="200"
-                width="200"
-                style={{
-                  borderRadius: "10%",
-                  marginRight: "10px",
-                  marginBottom: "2rem",
-                }}
-                onError={(e) => (e.target.style.display = "none")} // Hide broken images
-              />
-            ))}
-          </div>
-        )}
+                          {/* ✅ Image Message */}
+                          {message?.images && (
+                            <div className="image-container">
+                              {message.images.map((img, idx) => (
+                                <img
+                                  key={idx}
+                                  className="chatbot-logo-img"
+                                  src={`https://assist-ai.propstory.com/${img}`}
+                                  alt="Project Image"
+                                  height="200"
+                                  width="200"
+                                  style={{
+                                    borderRadius: "10%",
+                                    marginRight: "10px",
+                                    marginBottom: "2rem",
+                                  }}
+                                  onError={(e) =>
+                                    (e.target.style.display = "none")
+                                  } // Hide broken images
+                                />
+                              ))}
+                            </div>
+                          )}
 
-        {/* ✅ Buttons */}
-        {message?.buttons &&
-          message?.buttons?.map((button, idx) => (
-            <div
-              className="d-flex flex-wrap justify-content-evenly text-center gap-2"
-              key={idx}
-            >
-              <a
-                onClick={() =>
-                  handleButtonClick(
-                    button.action,
-                    button.label
-                  )
-                }
-                className="button-52"
-              >
-                {button.label}
-              </a>
-            </div>
-          ))}
-      </div>
-    </motion.div>
-  ) : null;
-})}
-
-
+                          {/* ✅ Buttons */}
+                          {message?.buttons &&
+                            message?.buttons?.map((button, idx) => (
+                              <div
+                                className="d-flex flex-wrap justify-content-evenly text-center gap-2"
+                                key={idx}
+                              >
+                                <a
+                                  onClick={() =>
+                                    handleButtonClick(
+                                      button.action,
+                                      button.label
+                                    )
+                                  }
+                                  className="button-52"
+                                >
+                                  {button.label}
+                                </a>
+                              </div>
+                            ))}
+                        </div>
+                      </motion.div>
+                    ) : null;
+                  })}
 
                   {/* ✅ Typing Animation */}
-                  {isTyping && whileTyping &&(
+                  {isTyping && whileTyping && (
                     <div className="message bot-message">
                       <div className="message-bubble typing-animation">
                         <span className="dot"></span>
@@ -1430,55 +1257,34 @@ const ChatbotWidget = () => {
                   </div>
                 </div>
 
-               <div className="typing-area window_bg_pink">
-                                 <div className="typing-form">
-                                   <div className="input-wrapper py-0 form-control chat-input d-flex align-items-center">
-                                     {/* <button
-                                       onClick={handleRecord}
-                                       className={`p-1 mt-0 bg-transparent text-dark rounded-full ${
-                                         isRecording ? "bg-red-500" : "bg-gray-200"
-                                       }`}
-                                     >
-                                       <Mic className="w-4 h-4 text-gray-700" />
-                                     </button> */}
-                                     <input
-                                       type="text"
-                                       placeholder="Enter a prompt here"
-                                       className="typing-input"
-                                       value={input}
-                                       onChange={(e) =>  {
-                                        setInput(e.target.value);
-                                        setIsTyping(true);
-                                       }}
-                                       onKeyDown={handleKeyDown}
-                                       required
-                                     />
-                                     <a
-                                       id="send-message-button"
-                                       className="icon material-symbols-rounded send-button p-0"
-                                       onClick={handleSendMessage}
-                                       disabled={isButtonDisabled} 
-                                     >
-                                       <button className="p-1 mt- bg-black rounded-5 bg_pink text-dark">
-                                         <Send className="w-2 h-2" />
-                                       </button>
-                                     </a>
-                                   </div>
-                                 </div>
-                                 {/* <div>
-                                   <small>
-                                     Powered by{" "}
-                                     <Link
-                                       className="text-primary fw-bold ps-1"
-                                       to="https://propstory.in/"
-                                       target="_blank"
-                                     >
-                                       Propstory
-                                     </Link>
-                                   </small>
-                                 </div> */}
-                               </div>
-                
+                <div className="typing-area window_bg_pink">
+                  <div className="typing-form">
+                    <div className="input-wrapper py-0 form-control chat-input d-flex align-items-center">
+                      <input
+                        type="text"
+                        placeholder="Enter a prompt here"
+                        className="typing-input"
+                        value={input}
+                        onChange={(e) => {
+                          setInput(e.target.value);
+                          setIsTyping(true);
+                        }}
+                        onKeyDown={handleKeyDown}
+                        required
+                      />
+                      <a
+                        id="send-message-button"
+                        className="icon material-symbols-rounded send-button p-0"
+                        onClick={handleSendMessage}
+                        disabled={isButtonDisabled}
+                      >
+                        <button className="p-1 mt- bg-black rounded-5 bg_pink text-dark">
+                          <Send className="w-2 h-2" />
+                        </button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </>
