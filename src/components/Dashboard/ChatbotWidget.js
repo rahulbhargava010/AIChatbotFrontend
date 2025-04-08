@@ -539,7 +539,7 @@ const ChatbotWidget = () => {
 
       console.log("chatbot response from Test Chatbot", response);
       const { reply, score } = response.data;
-
+      console.log("chatbot response from Test Chatbot score", score);
       if (reply.toLowerCase().includes("form")) {
         setFormVisible(true);
         if (reply.toLowerCase().includes("sitevisit")) {
