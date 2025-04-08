@@ -1122,3 +1122,115 @@ select.form-control {
     max-width: 100%;
   }
 }
+
+.message-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050;
+  min-width: 300px;
+  max-width: 80%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #0d6efd;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Modal container and backdrop styling */
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1050;
+}
+
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1051;
+}
+
+.modal {
+  z-index: 1052;
+  position: relative;
+}
+
+/* Modal content styling */
+.modal-content {
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1053;
+  position: relative;
+}
+
+.modal-header.bg-danger {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 0.75rem 1.5rem 1.5rem;
+  border-top: none;
+}
+
+/* Delete button styling in different contexts */
+.delete-lead-btn {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.delete-lead-btn:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Stylings for buttons in conversation header */
+.card-header .btn-outline-danger {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Adding some hover effects to action buttons */
+.action-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.action-btn.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
