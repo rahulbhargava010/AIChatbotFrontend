@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../config/axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -25,6 +25,7 @@ import {
   FaTag,
   FaCheckCircle,
   FaExclamationCircle,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { Bar } from "react-chartjs-2";
 import {
@@ -91,7 +92,15 @@ const LeadDetails = () => {
   const [isSiteVisitPaneOpen, setIsSiteVisitPaneOpen] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
+  // New state variables for delete features
+  const [isDeleteLeadModalOpen, setIsDeleteLeadModalOpen] = useState(false);
+  const [isDeleteConversationModalOpen, setIsDeleteConversationModalOpen] =
+    useState(false);
+  const [isDeletingLead, setIsDeletingLead] = useState(false);
+  const [isDeletingConversation, setIsDeletingConversation] = useState(false);
+
   const { leadId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!leadId) return;
@@ -527,6 +536,75 @@ const LeadDetails = () => {
       );
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  // New function to delete lead
+  const handleDeleteLead = async () => {
+    if (isDeletingLead) return;
+
+    setIsDeletingLead(true);
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/leads/delete",
+        { lead: leadId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setMessages("Lead deleted successfully!");
+      // Close the modal
+      setIsDeleteLeadModalOpen(false);
+      // Navigate back to leads list page
+
+      navigate(`/dashboard/leads/${leadId}`, { replace: true });
+    } catch (error) {
+      console.error("Error deleting lead:", error);
+      setMessages(error.response?.data?.error || "Failed to delete lead.");
+    } finally {
+      setIsDeletingLead(false);
+    }
+  };
+
+  // New function to delete conversation
+  const handleDeleteConversation = async () => {
+    if (isDeletingConversation || !leadData?.conversationLogs?._id) return;
+
+    setIsDeletingConversation(true);
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/conversations/delete",
+        { conversation: leadData.conversationLogs._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Update the state to reflect the deleted conversation
+      setLeadData({
+        ...leadData,
+        conversationLogs: { messages: [] },
+      });
+
+      setMessages("Conversation deleted successfully!");
+      // Close the modal
+      setIsDeleteConversationModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      setMessages(
+        error.response?.data?.error || "Failed to delete conversation."
+      );
+    } finally {
+      setIsDeletingConversation(false);
     }
   };
 
@@ -1233,6 +1311,17 @@ const LeadDetails = () => {
         <h5 className="card-title">
           <FaComment className="header-icon" /> Conversation
         </h5>
+        {/* Added delete conversation button in the header */}
+        {conversationLogs &&
+          conversationLogs.messages &&
+          conversationLogs.messages.length > 0 && (
+            <button
+              className="btn btn-sm btn-outline-danger ms-auto"
+              onClick={() => setIsDeleteConversationModalOpen(true)}
+            >
+              <FaTrash className="me-1" /> Delete
+            </button>
+          )}
       </div>
       <div className="card-body scrollable-content">
         {conversationLogs &&
@@ -1287,6 +1376,21 @@ const LeadDetails = () => {
 
   return (
     <div className="lead-details-container">
+      {/* Status message banner */}
+      {messages && (
+        <div
+          className="alert alert-info alert-dismissible fade show message-banner"
+          role="alert"
+        >
+          {messages}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setMessages("")}
+          ></button>
+        </div>
+      )}
+
       {/* Top Action Bar */}
       <div className="action-bar">
         <h2 className="page-title">
@@ -1314,6 +1418,15 @@ const LeadDetails = () => {
           >
             <FaPlus className="me-1" /> Site Visit
           </button>
+          {/* Add Delete Lead button with proper styling and access control */}
+          {currentUserRole !== "user" && (
+            <button
+              className="btn btn-danger action-btn"
+              onClick={() => setIsDeleteLeadModalOpen(true)}
+            >
+              <FaTrash className="me-1" /> Delete
+            </button>
+          )}
         </div>
       </div>
 
@@ -1528,6 +1641,132 @@ const LeadDetails = () => {
           </div>
         </div>
       </SlidingPane>
+
+      {/* Delete Lead Confirmation Modal */}
+      {isDeleteLeadModalOpen && (
+        <div className="modal-container">
+          <div className="modal show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header bg-danger text-white">
+                  <h5 className="modal-title">
+                    <FaExclamationTriangle className="me-2" /> Delete Lead
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setIsDeleteLeadModalOpen(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p className="mb-0">
+                    Are you sure you want to delete this lead? This action
+                    cannot be undone and will remove all associated data
+                    including comments, follow-ups, site visits, and
+                    conversation history.
+                  </p>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setIsDeleteLeadModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleDeleteLead}
+                    disabled={isDeletingLead}
+                  >
+                    {isDeletingLead ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        ></span>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash className="me-1" /> Delete Lead
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop-custom"
+            onClick={() => setIsDeleteLeadModalOpen(false)}
+          ></div>
+        </div>
+      )}
+
+      {/* Delete Conversation Confirmation Modal */}
+      {isDeleteConversationModalOpen && (
+        <div className="modal-container">
+          <div className="modal show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header bg-danger text-white">
+                  <h5 className="modal-title">
+                    <FaExclamationTriangle className="me-2" /> Delete
+                    Conversation
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setIsDeleteConversationModalOpen(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p className="mb-0">
+                    Are you sure you want to delete this conversation history?
+                    This action cannot be undone and will remove all chat
+                    messages associated with this lead.
+                  </p>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setIsDeleteConversationModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleDeleteConversation}
+                    disabled={isDeletingConversation}
+                  >
+                    {isDeletingConversation ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        ></span>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash className="me-1" /> Delete Conversation
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop-custom"
+            onClick={() => setIsDeleteConversationModalOpen(false)}
+          ></div>
+        </div>
+      )}
     </div>
   );
 };
