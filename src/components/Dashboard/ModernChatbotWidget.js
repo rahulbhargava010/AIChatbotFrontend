@@ -1171,6 +1171,8 @@ const ModernChatbotWidget = () => {
         message: currentInput,
       });
 
+      console.log("chatbot response from Test Chatbot", response);
+
       const { reply, score } = response.data;
 
       if (reply && reply.toLowerCase().includes("form")) {

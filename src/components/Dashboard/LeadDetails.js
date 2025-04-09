@@ -562,7 +562,7 @@ const LeadDetails = () => {
       setIsDeleteLeadModalOpen(false);
       // Navigate back to leads list page
 
-      navigate(`/dashboard/leads/${leadId}`, { replace: true });
+      navigate(-1);
     } catch (error) {
       console.error("Error deleting lead:", error);
       setMessages(error.response?.data?.error || "Failed to delete lead.");
