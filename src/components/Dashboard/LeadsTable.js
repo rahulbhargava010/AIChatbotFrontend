@@ -9,133 +9,52 @@ import {
 import api from "../config/axios";
 import "./LeadsTable.css";
 import LeadDetails from "./LeadDetails";
-import { FaTrash, FaExclamationTriangle } from "react-icons/fa";
+import { FaTrash, FaExclamationTriangle, FaComment } from "react-icons/fa";
 
-// Add this CSS to your LeadsTable.css file
-/*
+// CSS is now imported from LeadsTable.css
+/* 
+Add these styles to your LeadsTable.css file:
+
 .delete-btn {
   background-color: #dc3545 !important;
   color: white !important;
   border: none !important;
   border-radius: 4px !important;
-  padding: 5px 8px !important;
+  padding: 8px !important;
   cursor: pointer !important;
-  display: inline-block !important;
-  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
 }
 
 .delete-btn:hover {
   background-color: #c82333 !important;
 }
 
-.modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1050;
+.delete-conversation-btn {
+  background-color: #6c757d !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  margin-right: 8px !important;
 }
 
-.modal-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
+.delete-conversation-btn:hover {
+  background-color: #5a6268 !important;
 }
 
-.modal-content-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1050;
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.modal-header {
+.action-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #dc3545;
-  color: white;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 15px 20px;
-  border-top: 1px solid #dee2e6;
-}
-
-.btn-cancel {
-  padding: 8px 16px;
-  margin-right: 10px;
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-delete {
-  padding: 8px 16px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.spinner-border {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 0.2em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spinner-border 0.75s linear infinite;
-  margin-right: 8px;
-}
-
-@keyframes spinner-border {
-  to { transform: rotate(360deg); }
-}
-
-.message-banner {
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid #bee5eb;
-  border-radius: 0.25rem;
-  color: #0c5460;
-  background-color: #d1ecf1;
-  position: relative;
-}
-
-.close-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.75rem 1.25rem;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
+  justify-content: center;
 }
 */
 
@@ -153,6 +72,13 @@ const LeadsTable = () => {
   const [isDeleteLeadModalOpen, setIsDeleteLeadModalOpen] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState(null);
   const [isDeletingLead, setIsDeletingLead] = useState(false);
+
+  // New state for conversation deletion
+  const [isDeleteConversationModalOpen, setIsDeleteConversationModalOpen] =
+    useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState(null);
+  const [isDeletingConversation, setIsDeletingConversation] = useState(false);
+
   const [messages, setMessages] = useState("");
   const [currentUserRole, setCurrentUserRole] = useState("");
 
@@ -213,8 +139,7 @@ const LeadsTable = () => {
     navigate(`/dashboard/leads/leadDetails/${leadId}`);
   };
 
-  // IMPORTANT: Separate function to handle delete button click
-  // This ensures the event propagation is properly stopped
+  // Separate function to handle delete button click for lead
   const handleDeleteButtonClick = (e, leadId, leadName) => {
     // Stop the click from triggering the row click
     e.preventDefault();
@@ -223,7 +148,39 @@ const LeadsTable = () => {
     setLeadToDelete({ id: leadId, name: leadName });
     setIsDeleteLeadModalOpen(true);
 
-    console.log("Delete button clicked for lead:", leadId); // Debug log
+    console.log("Delete lead button clicked for lead:", leadId); // Debug log
+  };
+
+  // New function to handle delete conversation button click
+  const handleDeleteConversationClick = (
+    e,
+    leadId,
+    leadName,
+    conversationId
+  ) => {
+    // Stop the click from triggering the row click
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!conversationId) {
+      console.error("No conversation ID found for this lead");
+      setMessages("This lead doesn't have a conversation to delete.");
+      return;
+    }
+
+    setConversationToDelete({
+      leadId: leadId,
+      leadName: leadName,
+      conversationId: conversationId,
+    });
+    setIsDeleteConversationModalOpen(true);
+
+    console.log(
+      "Delete conversation button clicked for lead:",
+      leadId,
+      "conversation:",
+      conversationId
+    ); // Debug log
   };
 
   // Handle lead deletion
@@ -269,6 +226,47 @@ const LeadsTable = () => {
     }
   };
 
+  // New function to handle conversation deletion
+  const handleDeleteConversation = async () => {
+    if (isDeletingConversation || !conversationToDelete) return;
+
+    setIsDeletingConversation(true);
+    try {
+      const token = localStorage.getItem("token");
+      await api.post(
+        "/conversations/delete",
+        { conversation: conversationToDelete.conversationId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setMessages(
+        `Conversation for "${conversationToDelete.leadName}" deleted successfully!`
+      );
+
+      setTimeout(() => {
+        setMessages("");
+      }, 2000);
+
+      setIsDeleteConversationModalOpen(false);
+
+      // Refresh leads to update the UI
+      fetchLeads(selectedDate, startDate, endDate);
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      setMessages(
+        error.response?.data?.error || "Failed to delete conversation."
+      );
+    } finally {
+      setIsDeletingConversation(false);
+      setConversationToDelete(null);
+    }
+  };
+
   // Define table rows directly instead of using columns definition
   const renderTableRows = () => {
     return filteredLeads.map((lead) => (
@@ -288,21 +286,32 @@ const LeadsTable = () => {
           onClick={(e) => e.stopPropagation()}
           style={{ textAlign: "center" }}
         >
-          <button
-            onClick={(e) => handleDeleteButtonClick(e, lead._id, lead.name)}
-            style={{
-              backgroundColor: "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              padding: "5px 8px",
-              cursor: "pointer",
-              display: "inline-block",
-              width: "auto",
-            }}
-          >
-            <FaTrash /> Delete
-          </button>
+          <div className="action-buttons">
+            {/* Add Delete Conversation button if conversationLogs exists */}
+            {lead.conversationLogs && lead.conversationLogs._id && (
+              <button
+                onClick={(e) =>
+                  handleDeleteConversationClick(
+                    e,
+                    lead._id,
+                    lead.name,
+                    lead.conversationLogs._id
+                  )
+                }
+                className="delete-conversation-btn"
+                title="Delete conversation history"
+              >
+                <FaComment />
+              </button>
+            )}
+            <button
+              onClick={(e) => handleDeleteButtonClick(e, lead._id, lead.name)}
+              className="delete-btn"
+              title="Delete lead and all associated data"
+            >
+              <FaTrash />
+            </button>
+          </div>
         </td>
       </tr>
     ));
@@ -385,7 +394,7 @@ const LeadsTable = () => {
         <button className="pagination-btn">Next</button>
       </div>
 
-      {/* Delete confirmation modal */}
+      {/* Delete lead confirmation modal */}
       {isDeleteLeadModalOpen && leadToDelete && (
         <div
           style={{
@@ -518,6 +527,148 @@ const LeadsTable = () => {
                 ) : (
                   <>
                     <FaTrash style={{ marginRight: "8px" }} /> Delete Lead
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete conversation confirmation modal */}
+      {isDeleteConversationModalOpen && conversationToDelete && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1050,
+          }}
+        >
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1040,
+            }}
+            onClick={() => setIsDeleteConversationModalOpen(false)}
+          ></div>
+
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 1050,
+              width: "100%",
+              maxWidth: "500px",
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "15px 20px",
+                backgroundColor: "#ffc107",
+                color: "#212529",
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+              }}
+            >
+              <h5 style={{ margin: 0 }}>
+                <FaExclamationTriangle style={{ marginRight: "10px" }} />
+                Delete Conversation
+              </h5>
+              <button
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#212529",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setIsDeleteConversationModalOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div style={{ padding: "20px" }}>
+              <p>
+                Are you sure you want to delete the conversation history for
+                lead "{conversationToDelete.leadName}"? This action cannot be
+                undone and will remove all chat messages associated with this
+                lead.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                padding: "15px 20px",
+                borderTop: "1px solid #dee2e6",
+              }}
+            >
+              <button
+                style={{
+                  padding: "8px 16px",
+                  marginRight: "10px",
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setIsDeleteConversationModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={handleDeleteConversation}
+                disabled={isDeletingConversation}
+              >
+                {isDeletingConversation ? (
+                  <>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "1rem",
+                        height: "1rem",
+                        border: "0.2em solid currentColor",
+                        borderRightColor: "transparent",
+                        borderRadius: "50%",
+                        animation: "spinner-border 0.75s linear infinite",
+                        marginRight: "8px",
+                      }}
+                    ></span>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <FaComment style={{ marginRight: "8px" }} /> Delete
+                    Conversation
                   </>
                 )}
               </button>
