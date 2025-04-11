@@ -18,6 +18,7 @@ import {
   FaToggleOn,
   FaToggleOff,
   FaTimes,
+  FaEraser,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import TestChatbot from "./TestChatbot";
@@ -31,6 +32,8 @@ const ChatbotCard = () => {
   const [error, setError] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [activeChatbotId, setActiveChatbotId] = useState(null);
+  const [isDeletingAllConversations, setIsDeletingAllConversations] =
+    useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,6 +159,82 @@ const ChatbotCard = () => {
     }
   };
 
+  // New function to handle deleting all conversations
+  const handleDeleteAllConversations = async () => {
+    // Check if there are any conversations to delete
+    if (!data || !data.conversations || data.conversations.length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "No Conversations",
+        text: "There are no conversations to delete.",
+      });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Delete All Conversations",
+      text: "Are you sure you want to delete all conversations? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete all!",
+    });
+
+    if (result.isConfirmed) {
+      setIsDeletingAllConversations(true);
+      try {
+        const token = localStorage.getItem("token");
+        const conversations = data.conversations || [];
+
+        // Use Promise.all to delete all conversations in parallel
+        await Promise.all(
+          conversations.map(async (conv) => {
+            try {
+              await api.post(
+                "/conversations/delete",
+                { conversation: conv._id },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+            } catch (error) {
+              console.error(`Error deleting conversation ${conv._id}:`, error);
+            }
+          })
+        );
+
+        // Refresh the data to update conversation count
+        const refreshResponse = await api.post(
+          "/chatbots/chatbot-detail",
+          { chatbot: chatbotId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setData(refreshResponse.data);
+
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: `All conversations deleted successfully!`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (error) {
+        console.error("Error deleting all conversations:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete all conversations. Please try again.",
+        });
+      } finally {
+        setIsDeletingAllConversations(false);
+      }
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger mt-2">{error}</p>;
 
@@ -243,6 +322,17 @@ const ChatbotCard = () => {
             </button>
             <button className="btn btn-icon" onClick={handleCopyScript}>
               <FaCode />
+            </button>
+            {/* New Delete All Conversations Button */}
+            <button
+              className="btn btn-icon btn-warning"
+              onClick={handleDeleteAllConversations}
+              disabled={
+                isDeletingAllConversations || conversations.length === 0
+              }
+              title="Delete all conversations"
+            >
+              <FaEraser />
             </button>
             <button className="btn btn-icon btn-danger" onClick={handleDelete}>
               <FaTrash />
