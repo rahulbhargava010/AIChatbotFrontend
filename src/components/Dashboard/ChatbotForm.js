@@ -4,11 +4,215 @@ import axios from "axios";
 import "./CreateChatbot.css";
 import api from "../config/axios";
 
+// Theme preview component
+const ThemePreview = ({ colors }) => {
+  return (
+    <div
+      className="theme-preview-container"
+      style={{
+        backgroundColor: colors.background,
+        borderRadius: "4px",
+        overflow: "hidden",
+      }}
+    >
+      {/* Header */}
+      <div
+        className="preview-header"
+        style={{
+          backgroundColor: colors.primary,
+          height: "20px",
+          display: "flex",
+          alignItems: "center",
+          padding: "2px 6px",
+        }}
+      >
+        <div
+          style={{
+            width: "40%",
+            height: "8px",
+            backgroundColor: "rgba(255,255,255,0.8)",
+            borderRadius: "4px",
+          }}
+        ></div>
+      </div>
+
+      {/* Chat body */}
+      <div style={{ padding: "4px" }}>
+        {/* Bot message */}
+        <div
+          style={{
+            display: "flex",
+            marginBottom: "4px",
+            alignItems: "flex-start",
+          }}
+        >
+          <div
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              backgroundColor: colors.accent,
+              marginTop: "2px",
+              marginRight: "3px",
+            }}
+          ></div>
+          <div
+            style={{
+              width: "70%",
+              height: "12px",
+              backgroundColor: colors.secondary,
+              borderRadius: "4px",
+            }}
+          ></div>
+        </div>
+
+        {/* User message */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "4px",
+          }}
+        >
+          <div
+            style={{
+              width: "60%",
+              height: "12px",
+              backgroundColor: colors.primary,
+              borderRadius: "4px",
+            }}
+          ></div>
+        </div>
+
+        {/* Bot message */}
+        <div
+          style={{
+            display: "flex",
+            marginBottom: "4px",
+            alignItems: "flex-start",
+          }}
+        >
+          <div
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              backgroundColor: colors.accent,
+              marginTop: "2px",
+              marginRight: "3px",
+            }}
+          ></div>
+          <div
+            style={{
+              width: "50%",
+              height: "12px",
+              backgroundColor: colors.secondary,
+              borderRadius: "4px",
+            }}
+          ></div>
+        </div>
+
+        {/* Input area */}
+        <div
+          style={{
+            display: "flex",
+            marginTop: "8px",
+            alignItems: "center",
+            borderTop: `1px solid ${colors.secondary}`,
+            paddingTop: "4px",
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              height: "10px",
+              backgroundColor: colors.secondary,
+              borderRadius: "10px",
+            }}
+          ></div>
+          <div
+            style={{
+              width: "14px",
+              height: "14px",
+              borderRadius: "50%",
+              backgroundColor: colors.primary,
+              marginLeft: "5px",
+            }}
+          ></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Theme options with CSS-based previews
+const themeOptions = [
+  {
+    id: "default-theme.css",
+    name: "Default",
+    description: "Clean, professional interface with balanced colors",
+    previewColors: {
+      primary: "#3a86ff",
+      secondary: "#f0f2f5",
+      accent: "#4caf50",
+      background: "#ffffff",
+      text: "#333333",
+    },
+  },
+  {
+    id: "dark-theme.css",
+    name: "Dark Mode",
+    description: "Sleek dark theme that's easy on the eyes",
+    previewColors: {
+      primary: "#6366f1",
+      secondary: "#374151",
+      accent: "#10b981",
+      background: "#1f2937",
+      text: "#f3f4f6",
+    },
+  },
+  {
+    id: "corporate-theme.css",
+    name: "Corporate",
+    description: "Professional appearance for business applications",
+    previewColors: {
+      primary: "#0f172a",
+      secondary: "#e2e8f0",
+      accent: "#0ea5e9",
+      background: "#ffffff",
+      text: "#0f172a",
+    },
+  },
+  {
+    id: "colorful-theme.css",
+    name: "Colorful",
+    description: "Vibrant and engaging design for standout presence",
+    previewColors: {
+      primary: "#8b5cf6",
+      secondary: "#fae8ff",
+      accent: "#ec4899",
+      background: "#ffffff",
+      text: "#4b5563",
+    },
+  },
+  {
+    id: "minimal-theme.css",
+    name: "Minimal",
+    description: "Clean, minimalist design for a modern look",
+    previewColors: {
+      primary: "#f8f8f8",
+      secondary: "#f1f1f1",
+      accent: "#777777",
+      background: "#ffffff",
+      text: "#333333",
+    },
+  },
+];
+
 const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  // const [gtm, setGTM] = useState("");
   const [conversation, setConversation] = useState("");
   const [chatbotId, setChatbotId] = useState("");
   const [webhook, setWebhook] = useState("");
@@ -30,8 +234,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [projectImagesURL, setProjectImagesURL] = useState([]);
   const [brochure, setBrochure] = useState(null);
   const [brochureURL, setBrochureURL] = useState(null);
+  const [template, setTemplate] = useState("default-theme.css"); // Default theme
 
   const navigate = useNavigate();
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setButtonContent((prevContent) => ({
@@ -64,7 +270,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     if (chatbotId) {
       formData.append("id", chatbotId);
     }
-    console.log("updateChatbot", projectLogo);
+
     if (projectLogo) {
       formData.append("projectLogo", projectLogo);
     }
@@ -77,13 +283,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
       formData.append("brochure", brochure);
     }
 
-    // console.log("Fetched Button Content:", buttonContent); // Debug log
-
     // Ensure buttonContent is an object before setting state
     if (typeof buttonContent === "object" && buttonContent !== null) {
       setButtonContent(buttonContent);
     } else {
-      // console.error("Invalid button content format:", buttonContent);
       setButtonContent({});
     }
 
@@ -93,22 +296,19 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     formData.append("website", website);
     formData.append("conversion", conversion);
     formData.append("GTM", GTM);
-    // formData.append("button_content", JSON.stringify(buttonContent));
+    formData.append("template", template); // Include the selected theme
+
     if (buttonContent && typeof buttonContent === "object") {
       formData.append("buttonContent", JSON.stringify(buttonContent));
     }
+
     try {
-      const response = await api.post(
-        "/chatbots/create",
-        // { name, webhook, button_content: buttonContent, projectLogo, projectImages },
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await api.post("/chatbots/create", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       const chatbotId = response.data.chatbot._id;
       setMessage("Chatbot created successfully!");
       setError("");
@@ -144,27 +344,28 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
         initialData?.chatbotDetails &&
         Object.keys(initialData.chatbotDetails).length > 0
       )
-        console.log("Fetching chatbot data", initialData?.chatbotDetails);
-      try {
-        if (mode === "update" && Object.keys(initialData).length > 0) {
-          setChatbotId(initialData?.chatbotDetails._id);
-          setName(initialData?.chatbotDetails.name);
-          setPhone(initialData?.chatbotDetails.phone);
-          setWebhook(initialData?.chatbotDetails.webhook);
-          setWebsite(initialData?.chatbotDetails.website);
-          setGTM(initialData?.chatbotDetails.GTM);
-          setConversion(initialData?.chatbotDetails.conversion);
-          const prevContent = initialData?.chatbotDetails.button_content;
-          setButtonContent(prevContent);
-          // setProjectImages(initialData?.chatbotDetails.projectImages);
-          // setProjectLogo(initialData?.chatbotDetails.projectLogo);
-          setProjectLogoURL(initialData?.chatbotDetails.projectLogo);
-          setProjectImagesURL(initialData?.chatbotDetails.projectImages);
-          setBrochureURL(initialData?.chatbotDetails.brochure);
+        try {
+          if (mode === "update" && Object.keys(initialData).length > 0) {
+            setChatbotId(initialData?.chatbotDetails._id);
+            setName(initialData?.chatbotDetails.name);
+            setPhone(initialData?.chatbotDetails.phone);
+            setWebhook(initialData?.chatbotDetails.webhook);
+            setWebsite(initialData?.chatbotDetails.website);
+            setGTM(initialData?.chatbotDetails.GTM);
+            setConversion(initialData?.chatbotDetails.conversion);
+            setTemplate(
+              initialData?.chatbotDetails.template || "default-theme.css"
+            ); // Set template from data
+
+            const prevContent = initialData?.chatbotDetails.button_content;
+            setButtonContent(prevContent);
+            setProjectLogoURL(initialData?.chatbotDetails.projectLogo);
+            setProjectImagesURL(initialData?.chatbotDetails.projectImages);
+            setBrochureURL(initialData?.chatbotDetails.brochure);
+          }
+        } catch (err) {
+          console.log("Fetching chatbot err", err);
         }
-      } catch (err) {
-        console.log("Fetching chatbot err", err);
-      }
     };
 
     fetchChatbotData();
@@ -178,6 +379,18 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
         </h1>
         {message && <div className="alert alert-success">{message}</div>}
         {error && <div className="alert alert-danger">{error}</div>}
+
+        {/* Step indicator */}
+        <div className="step-indicator mb-4">
+          <div className={`step ${step >= 1 ? "active" : ""}`}>1</div>
+          <div className="step-line"></div>
+          <div className={`step ${step >= 2 ? "active" : ""}`}>2</div>
+          <div className="step-line"></div>
+          <div className={`step ${step >= 3 ? "active" : ""}`}>3</div>
+          <div className="step-line"></div>
+          <div className={`step ${step >= 4 ? "active" : ""}`}>4</div>
+        </div>
+
         <form onSubmit={handleCreate}>
           {step === 1 && (
             <div className="mb-3">
@@ -192,7 +405,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 onChange={(e) => setName(e.target.value)}
                 className="form-control"
               />
-              <label htmlFor="chatbot-name" className="form-label">
+              <label htmlFor="chatbot-phone" className="form-label mt-3">
                 Phone
               </label>
               <input
@@ -204,11 +417,11 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 className="form-control"
               />
 
-              <label htmlFor="chatbot-name" className="form-label">
+              <label htmlFor="chatbot-webhook" className="form-label mt-3">
                 Webhook
               </label>
               <input
-                // id="chatbot-name"
+                id="chatbot-webhook"
                 type="text"
                 placeholder="Enter Webhook"
                 value={webhook}
@@ -216,33 +429,33 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 className="form-control"
               />
 
-              <label htmlFor="chatbot-name" className="form-label">
+              <label htmlFor="chatbot-website" className="form-label mt-3">
                 Website
               </label>
               <input
-                // id="chatbot-name"
+                id="chatbot-website"
                 type="text"
                 placeholder="Enter Website"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 className="form-control"
               />
-              <label htmlFor="chatbot-name" className="form-label">
+              <label htmlFor="chatbot-gtm" className="form-label mt-3">
                 GTM Account ID
               </label>
               <input
-                // id="chatbot-name"
+                id="chatbot-gtm"
                 type="text"
                 placeholder="Enter GTM Account"
                 value={GTM}
                 onChange={(e) => setGTM(e.target.value)}
                 className="form-control"
               />
-              <label htmlFor="chatbot-name" className="form-label">
+              <label htmlFor="chatbot-conversion" className="form-label mt-3">
                 Conversation ID
               </label>
               <input
-                // id="chatbot-name"
+                id="chatbot-conversion"
                 type="text"
                 placeholder="Enter Conversation ID"
                 value={conversion}
@@ -250,8 +463,9 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 className="form-control"
               />
               <button
+                type="button"
                 onClick={() => setStep(2)}
-                className="btn btn-primary w-100"
+                className="btn btn-primary w-100 mt-4"
               >
                 Next
               </button>
@@ -272,7 +486,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   className="form-control"
                 />
 
-                <label>Project Highlight:</label>
+                <label className="mt-3">Project Highlight:</label>
                 <textarea
                   type="textarea"
                   name="highlight"
@@ -280,9 +494,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   value={buttonContent.highlight}
                   onChange={handleInputChange}
                   className="form-control"
+                  rows="3"
                 />
 
-                <label>Location Details:</label>
+                <label className="mt-3">Location Details:</label>
                 <textarea
                   type="text"
                   name="location"
@@ -290,9 +505,10 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   value={buttonContent.location}
                   onChange={handleInputChange}
                   className="form-control"
+                  rows="3"
                 />
 
-                <label>Amenities:</label>
+                <label className="mt-3">Amenities:</label>
                 <textarea
                   type="text"
                   name="amenities"
@@ -300,26 +516,36 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   value={buttonContent.amenities}
                   onChange={handleInputChange}
                   className="form-control"
+                  rows="3"
                 />
               </div>
-              <div className="btn-group btn-group-justified">
-                <a onClick={() => setStep(1)} className="btn btn-primary">
+              <div className="btn-group btn-group-justified w-100 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="btn btn-secondary"
+                >
                   Back
-                </a>
-                <a onClick={() => setStep(3)} className="btn btn-primary">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="btn btn-primary"
+                >
                   Next
-                </a>
+                </button>
               </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="multi-step-form">
-              <label> Upload Project Logo:</label>
+              <label>Upload Project Logo:</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileChange(e, setProjectLogo)}
+                className="form-control mb-2"
               />
               {projectLogo && (
                 <div className="preview-container">
@@ -327,22 +553,33 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                     src={URL.createObjectURL(projectLogo)}
                     alt="Project Logo"
                     className="preview-image"
-                  />{" "}
+                  />
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={removeLogo}
+                  >
+                    ×
+                  </button>
                 </div>
               )}
-              {projectLogoURL && (
+              {projectLogoURL && !projectLogo && (
                 <div className="preview-container">
                   <img
                     src={`https://assist-ai.propstory.com/${projectLogoURL}`}
                     alt="Project Logo"
                     className="preview-image"
-                  />{" "}
+                  />
+                  <button
+                    type="button"
+                    className="delete-button"
+                    onClick={removeLogo}
+                  >
+                    ×
+                  </button>
                 </div>
               )}
-              <button className="delete-button" onClick={removeLogo}>
-                ×
-              </button>
-              <hr />
+              <hr className="my-4" />
 
               <label>Upload Project Images:</label>
               <input
@@ -350,18 +587,19 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 accept="image/*"
                 multiple
                 onChange={handleMultipleFilesChange}
+                className="form-control mb-2"
               />
 
               <div className="image-preview-container">
                 {projectImages.map((img, index) => (
-                  <div className="preview-container">
+                  <div className="preview-container" key={`new-${index}`}>
                     <img
-                      key={index}
                       src={URL.createObjectURL(img)}
                       alt={`Project ${index + 1}`}
                       className="preview-image"
                     />
                     <button
+                      type="button"
                       className="delete-button"
                       onClick={() => removeImage(index)}
                     >
@@ -370,14 +608,14 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   </div>
                 ))}
                 {projectImagesURL.map((img, index) => (
-                  <div className="preview-container">
+                  <div className="preview-container" key={`existing-${index}`}>
                     <img
-                      key={index}
                       src={`https://assist-ai.propstory.com/${img}`}
                       alt={`Project ${index + 1}`}
                       className="preview-image"
                     />
                     <button
+                      type="button"
                       className="delete-button"
                       onClick={() => removeImage(index)}
                     >
@@ -387,7 +625,7 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                 ))}
               </div>
 
-              <hr />
+              <hr className="my-4" />
 
               <label>Upload Project Brochure (PDF):</label>
               <input
@@ -398,19 +636,8 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   setBrochure(file);
                   setBrochureURL(null);
                 }}
+                className="form-control mb-2"
               />
-
-              {/* {brochure && (
-                <div className="brochure-preview">
-                  <div className="file-info">
-                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
-                    <span>{brochure.name}</span>
-                    <button className="delete-button" onClick={removeBrochure}>
-                      ×
-                    </button>
-                  </div>
-                </div>
-              )} */}
 
               {brochureURL && !brochure && (
                 <div className="brochure-preview">
@@ -425,23 +652,82 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                     >
                       View
                     </a>
-                    <button className="delete-button" onClick={removeBrochure}>
+                    <button
+                      type="button"
+                      className="delete-button"
+                      onClick={removeBrochure}
+                    >
                       ×
                     </button>
                   </div>
                 </div>
               )}
 
-              <button
-                onClick={() => setStep(2)}
-                className="btn btn-danger  m-2"
-              >
-                Back
-              </button>
-              <button type="submit" className="btn btn-primary">
-                {/* Submit Chatbot Details */}
-                {mode === "create" ? "Create Chatbot" : "Update Chatbot"}
-              </button>
+              <div className="btn-group btn-group-justified mt-4 w-100">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="btn btn-secondary"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(4)}
+                  className="btn btn-primary"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="multi-step-form">
+              <h3 className="mb-3">Select Chatbot Theme</h3>
+
+              <div className="theme-selection-container">
+                {themeOptions.map((theme) => (
+                  <div
+                    key={theme.id}
+                    className={`theme-option ${
+                      template === theme.id ? "selected" : ""
+                    }`}
+                    onClick={() => setTemplate(theme.id)}
+                  >
+                    <div className="theme-preview">
+                      {/* Use our ThemePreview component instead of an image */}
+                      <ThemePreview colors={theme.previewColors} />
+                    </div>
+                    <div className="theme-details">
+                      <h4>{theme.name}</h4>
+                      <p>{theme.description}</p>
+                    </div>
+                    <div className="theme-radio">
+                      <input
+                        type="radio"
+                        name="template"
+                        value={theme.id}
+                        checked={template === theme.id}
+                        onChange={() => setTemplate(theme.id)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="btn-group btn-group-justified mt-4 w-100">
+                <button
+                  type="button"
+                  onClick={() => setStep(3)}
+                  className="btn btn-secondary"
+                >
+                  Back
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {mode === "create" ? "Create Chatbot" : "Update Chatbot"}
+                </button>
+              </div>
             </div>
           )}
         </form>
