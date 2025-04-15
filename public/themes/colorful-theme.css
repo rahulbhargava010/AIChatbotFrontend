@@ -1,0 +1,334 @@
+/* colorful-theme.css - Vibrant colorful theme with gradients */
+
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #ffffff;
+}
+
+.modern-header-title h3 {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: #8be9fd;
+  box-shadow: 0 0 0 2px rgba(139, 233, 253, 0.3);
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modern-placeholder-logo {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: white;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: white;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+}
+
+.modern-dropdown-menu button {
+  color: #333;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #fdf2ed;
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: #fff9f5;
+  background-image: radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 222, 196, 0.3) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(255, 182, 193, 0.3) 0%,
+      transparent 40%
+    );
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: white;
+  border-radius: 18px 18px 0 18px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: #333;
+  border-radius: 18px 18px 18px 0;
+  border: 1px solid #ffebe0;
+  box-shadow: 0 2px 8px rgba(255, 126, 95, 0.1);
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: white;
+  border-top: 1px solid #ffebe0;
+}
+
+.modern-input-container {
+  background: #fff9f5;
+  border: 1px solid #ffebe0;
+  border-radius: 24px;
+}
+
+.modern-chat-input {
+  color: #333;
+}
+
+/* Mic button */
+.modern-mic-button {
+  color: #ff7e5f;
+}
+
+.modern-mic-button:hover {
+  background: rgba(255, 126, 95, 0.1);
+}
+
+/* Send button */
+.modern-send-button {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b) !important;
+  color: white;
+}
+
+.modern-send-button:hover {
+  background: linear-gradient(135deg, #ff6c4a, #fea866) !important;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: white;
+  border: 1px solid #ffebe0;
+  color: #ff7e5f;
+  border-radius: 24px;
+  box-shadow: 0 2px 5px rgba(255, 126, 95, 0.1);
+}
+
+.modern-option-button:hover {
+  background: #fff5ef;
+  border-color: #ffdaca;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(255, 126, 95, 0.2);
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: white;
+  border: none;
+  background: linear-gradient(135deg, #00d084, #4ade80);
+  box-shadow: 0 2px 5px rgba(0, 208, 132, 0.2);
+}
+
+.modern-yesno-button.yes-button:hover {
+  background: linear-gradient(135deg, #00bb76, #3fcb74);
+  box-shadow: 0 3px 8px rgba(0, 208, 132, 0.3);
+}
+
+.modern-yesno-button.no-button {
+  color: white;
+  border: none;
+  background: linear-gradient(135deg, #ff6b6b, #ff8787);
+  box-shadow: 0 2px 5px rgba(255, 107, 107, 0.2);
+}
+
+.modern-yesno-button.no-button:hover {
+  background: linear-gradient(135deg, #fa5252, #ff7373);
+  box-shadow: 0 3px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: white;
+  border-top: 1px solid #ffebe0;
+}
+
+.modern-tab-button {
+  color: #777;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-tab-button::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.modern-tab-button.active {
+  color: #ff7e5f;
+  font-weight: 500;
+  background-color: rgba(255, 126, 95, 0.08);
+}
+
+.modern-tab-button.active::after {
+  transform: scaleX(1);
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: white;
+}
+
+.modern-start-button {
+  background: white !important;
+  color: #ff7e5f;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modern-start-button:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: white;
+  box-shadow: 0 4px 15px rgba(255, 126, 95, 0.1);
+  border-radius: 16px;
+}
+
+.modern-form-header h3 {
+  color: #ff7e5f;
+}
+
+.modern-form-close-button {
+  background: rgba(255, 126, 95, 0.1);
+  color: #ff7e5f;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(255, 126, 95, 0.2);
+}
+
+.modern-form-group label {
+  color: #666;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input {
+  border: 1px solid #ffebe0 !important;
+  background: #fff9f5 !important;
+  border-radius: 10px !important;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus {
+  border-color: #ff7e5f !important;
+  box-shadow: 0 0 0 2px rgba(255, 126, 95, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b) !important;
+  color: white;
+  border-radius: 10px;
+}
+
+.modern-inline-submit-button:hover {
+  background: linear-gradient(135deg, #ff6c4a, #fea866) !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: linear-gradient(135deg, #ffc5b2, #ffd4b8) !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: #e3fcef !important;
+  color: #0ca678 !important;
+  border-left: 4px solid #0ca678;
+}
+
+.modern-error-message .modern-message-bubble {
+  background: #ffe9e9 !important;
+  color: #e03131 !important;
+  border-left: 4px solid #e03131;
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Typing indicator */
+.modern-typing-indicator span {
+  background: #ff7e5f;
+}
+
+/* Button icons */
+.button-icon {
+  color: #ff7e5f;
+}
+
+/* Animations */
+.modern-option-button,
+.modern-yesno-button,
+.modern-inline-submit-button,
+.modern-send-button {
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Phone input styling */
+.react-tel-input .form-control {
+  background-color: #fff9f5 !important;
+  border-color: #ffebe0 !important;
+}
+
+.react-tel-input .selected-flag,
+.react-tel-input .flag-dropdown {
+  background-color: #fff9f5 !important;
+  border-color: #ffebe0 !important;
+}
+
+.react-tel-input .country-list {
+  background-color: white !important;
+  border-color: #ffebe0 !important;
+  box-shadow: 0 2px 10px rgba(255, 126, 95, 0.1) !important;
+}
+
+.react-tel-input .country-list .country.highlight,
+.react-tel-input .country-list .country:hover {
+  background-color: #fff5ef !important;
+}

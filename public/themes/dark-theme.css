@@ -1,0 +1,581 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Animation keyframes */
+@keyframes subtleGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(138, 75, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(138, 75, 255, 0.4);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseLight {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: #1a1b26;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  font-family: "Inter", sans-serif;
+  color: #e0e4fc;
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: linear-gradient(135deg, #5a32a3, #7047eb);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  color: #ffffff;
+  border-radius: 16px 16px 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.25);
+}
+
+.modern-header-title h3 {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: #10fc9c;
+  box-shadow: 0 0 0 3px rgba(16, 252, 156, 0.2);
+  animation: pulseLight 2s infinite;
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: #24273a;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.modern-placeholder-logo {
+  background: linear-gradient(135deg, #5a32a3, #7047eb);
+  color: white;
+  border-radius: 8px;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: #24273a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modern-dropdown-menu button {
+  color: #e0e4fc;
+  border-radius: 8px;
+  margin: 3px;
+  transition: all 0.2s ease;
+}
+
+.modern-dropdown-menu button:hover {
+  background: rgba(138, 75, 255, 0.15);
+  color: #c8ccff;
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: #1f2335;
+  scrollbar-color: #7047eb #2a2c40;
+}
+
+.modern-chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern-chat-window::-webkit-scrollbar-track {
+  background: #2a2c40;
+  border-radius: 3px;
+}
+
+.modern-chat-window::-webkit-scrollbar-thumb {
+  background-color: #7047eb;
+  border-radius: 3px;
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: linear-gradient(135deg, #6745eb, #8a4bff);
+  color: white;
+  border-radius: 14px 14px 2px 14px;
+  box-shadow: 0 4px 12px rgba(106, 69, 235, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: #2a2c40;
+  color: #e0e4fc;
+  border-radius: 14px 14px 14px 2px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modern-message-time {
+  color: #a8b0d8;
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: #1a1b26;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 15px;
+}
+
+.modern-input-container {
+  background: #2a2c40;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.modern-input-container:focus-within {
+  border-color: #8a4bff;
+  box-shadow: 0 0 0 2px rgba(138, 75, 255, 0.2);
+  animation: subtleGlow 2s infinite;
+}
+
+.modern-chat-input {
+  color: #e0e4fc;
+  caret-color: #8a4bff;
+}
+
+.modern-chat-input::placeholder {
+  color: #a8b0d8;
+}
+
+/* Send button */
+.modern-send-button {
+  background: linear-gradient(135deg, #6745eb, #8a4bff) !important;
+  color: white;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 8px rgba(106, 69, 235, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.modern-send-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 12px rgba(106, 69, 235, 0.4) !important;
+  filter: brightness(110%) !important;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.6;
+  transform: none !important;
+  filter: brightness(80%) !important;
+  box-shadow: none !important;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: #2a2c40;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e0e4fc;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modern-option-button:hover {
+  background: #343858;
+  border-color: rgba(138, 75, 255, 0.5);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: #e0ffe0;
+  border-color: rgba(16, 252, 156, 0.3);
+  background-color: rgba(16, 252, 156, 0.15);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: rgba(16, 252, 156, 0.25);
+  border-color: rgba(16, 252, 156, 0.5);
+  transform: translateY(-2px);
+}
+
+.modern-yesno-button.no-button {
+  color: #ffe0e0;
+  border-color: rgba(255, 71, 87, 0.3);
+  background-color: rgba(255, 71, 87, 0.15);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: rgba(255, 71, 87, 0.25);
+  border-color: rgba(255, 71, 87, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: #1a1b26;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modern-tab-button {
+  color: #a8b0d8;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.modern-tab-button.active {
+  /* color: #8a4bff !important; */
+  font-weight: 600;
+}
+
+.modern-tab-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  /* background: #8a4bff; */
+  border-radius: 3px 3px 0 0;
+}
+
+.modern-tab-button:hover {
+  color: #c8ccff;
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: linear-gradient(135deg, #342868, #7047eb);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  color: white;
+}
+
+.modern-first-screen h2 {
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.modern-first-screen p {
+  max-width: 80%;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+.modern-start-button {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.modern-start-button:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: #24273a;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+
+.modern-form-header h3 {
+  color: #e0e4fc !important;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.modern-form-header h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(to right, #6745eb, #8a4bff);
+  border-radius: 3px;
+}
+
+.modern-form-close-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a8b0d8;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.modern-form-group label {
+  color: #c8ccff;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input,
+.modern-form-group textarea {
+  background: #2a2c40 !important;
+  color: #e0e4fc !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 12px 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus,
+.modern-form-group textarea:focus {
+  border-color: #8a4bff !important;
+  box-shadow: 0 0 0 2px rgba(138, 75, 255, 0.2) !important;
+  background: #343858 !important;
+}
+
+.modern-form-group input::placeholder,
+.modern-form-group textarea::placeholder {
+  color: #a8b0d8 !important;
+}
+
+.modern-inline-submit-button {
+  background: linear-gradient(135deg, #6745eb, #8a4bff) !important;
+  color: white;
+  border-radius: 10px;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  padding: 12px;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(106, 69, 235, 0.3) !important;
+}
+
+.modern-inline-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 69, 235, 0.4) !important;
+  filter: brightness(110%) !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #4a4e69 !important;
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: rgba(16, 252, 156, 0.15) !important;
+  color: #10fc9c !important;
+  border-left: 4px solid #10fc9c;
+  box-shadow: 0 3px 10px rgba(16, 252, 156, 0.2);
+}
+
+.modern-error-message .modern-message-bubble {
+  background: rgba(255, 71, 87, 0.15) !important;
+  color: #ff4757 !important;
+  border-left: 4px solid #ff4757;
+  box-shadow: 0 3px 10px rgba(255, 71, 87, 0.2);
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Typing indicator */
+.modern-typing-indicator {
+  padding: 12px 16px;
+  background: #2a2c40;
+  border-radius: 14px 14px 14px 2px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modern-typing-indicator span {
+  background: #a8b0d8;
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  border-radius: 50%;
+}
+
+/* Button icons */
+.button-icon {
+  color: #8a4bff;
+}
+
+/* Phone input styling */
+.react-tel-input .form-control {
+  background-color: #2a2c40 !important;
+  color: #e0e4fc !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.react-tel-input .selected-flag,
+.react-tel-input .flag-dropdown {
+  background-color: #343858 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.react-tel-input .country-list {
+  background-color: #24273a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #e0e4fc !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.react-tel-input .country-list .country {
+  color: #e0e4fc !important;
+}
+
+.react-tel-input .country-list .country.highlight,
+.react-tel-input .country-list .country:hover {
+  background-color: #343858 !important;
+}
+
+/* Additional Styles for Better Aesthetics */
+
+/* Scrollbar for dropdowns */
+.modern-dropdown-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modern-dropdown-menu::-webkit-scrollbar-track {
+  background: #343858;
+  border-radius: 3px;
+}
+
+.modern-dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: #8a4bff;
+  border-radius: 3px;
+}
+
+/* Quick buttons */
+.modern-quick-button {
+  background: #2a2c40;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e0e4fc;
+}
+
+.modern-quick-button:hover {
+  background: #343858;
+  border-color: rgba(138, 75, 255, 0.5);
+  color: #ffffff;
+}
+
+/* Form checkbox styling */
+.form-check-input {
+  background-color: #2a2c40 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.form-check-input:checked {
+  background-color: #8a4bff !important;
+  border-color: #8a4bff !important;
+}
+
+.form-check-label {
+  color: #c8ccff !important;
+}
+
+/* Focus states for all interactive elements */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(138, 75, 255, 0.4) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .modern-message {
+    max-width: 85%;
+  }
+
+  .modern-header-redesigned {
+    padding: 12px 16px;
+  }
+
+  .modern-input-area {
+    padding: 12px;
+  }
+
+  .modern-send-button {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
