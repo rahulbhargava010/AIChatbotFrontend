@@ -771,7 +771,30 @@ const ModernChatbotWidget = () => {
 
   // Function to load theme CSS file
   const loadThemeStylesheet = (themeName) => {
-    const themeFile = themeName || "default-theme.css";
+    // Map backend values to the correct CSS filenames
+    const themeMap = {
+      default: "default-theme.css",
+      dark: "dark-theme.css",
+      corporate: "corporate-theme.css",
+      colorful: "colorful-theme.css",
+      minimal: "minimal-theme.css",
+    };
+
+    let themeFile = themeName;
+
+    // If the theme is one of our mapped backend values, use the mapped CSS name
+    if (themeMap[themeName]) {
+      themeFile = themeMap[themeName];
+    }
+    // Otherwise, ensure it has the .css extension
+    else if (!themeName.endsWith(".css")) {
+      themeFile = themeName + ".css";
+    }
+
+    // Use default if still not valid
+    if (!themeFile) {
+      themeFile = "default-theme.css";
+    }
 
     if (!themeStylesheetRef.current) {
       const linkElement = document.createElement("link");
