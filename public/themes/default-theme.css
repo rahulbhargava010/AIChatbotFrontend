@@ -1,0 +1,239 @@
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: linear-gradient(135deg, #5928e5, #4e5efc);
+  color: #ffffff;
+}
+
+.modern-header-title h3 {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: #4ade80;
+  box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modern-placeholder-logo {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modern-dropdown-menu button {
+  color: #333;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: #f5f7fb;
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: #333;
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.modern-input-container {
+  background: #f5f7fb;
+}
+
+.modern-chat-input {
+  color: #333;
+}
+
+/* Send button */
+.modern-send-button {
+  background: #6a11cb !important;
+  color: white;
+}
+
+.modern-send-button:hover {
+  background: #5a0fb6;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: white;
+  border: 1px solid #ddd;
+  color: #000;
+}
+
+.modern-option-button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: #2e7d32;
+  border-color: #a5d6a7;
+  background-color: #e8f5e9;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: #c8e6c9;
+}
+
+.modern-yesno-button.no-button {
+  color: #c62828;
+  border-color: #ef9a9a;
+  background-color: #ffebee;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: #ffcdd2;
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.modern-tab-button {
+  color: #666;
+}
+
+.modern-tab-button.active {
+  color: #6a11cb;
+  border-bottom: 2px solid #6a11cb;
+  font-weight: 500;
+  background-color: rgba(106, 17, 203, 0.08);
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  color: white;
+}
+
+.modern-start-button {
+  background: white !important;
+  color: #6a11cb;
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-header h3 {
+  color: #333;
+}
+
+.modern-form-close-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-group label {
+  color: #333;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input {
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus {
+  border-color: #7629c8;
+  box-shadow: 0 0 0 2px rgba(118, 41, 200, 0.1);
+}
+
+.modern-inline-submit-button {
+  background: #8a3ff7 !important;
+  color: white;
+}
+
+.modern-inline-submit-button:hover {
+  background: #7629c8 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #b08ae0 !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: #e6f7e6 !important;
+  color: #2e7d32 !important;
+  border-left: 4px solid #2e7d32;
+}
+
+.modern-error-message .modern-message-bubble {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  border-left: 4px solid #c62828;
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Typing indicator */
+.modern-typing-indicator span {
+  background: #aaa;
+}
+
+/* Button icons */
+.button-icon {
+  color: #6a11cb;
+}

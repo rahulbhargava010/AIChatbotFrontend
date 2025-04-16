@@ -1,0 +1,325 @@
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: #f8f8f8;
+  color: #333333;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.modern-header-title h3 {
+  color: #333333;
+  text-shadow: none;
+  font-weight: 500;
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: #4caf50;
+  box-shadow: none;
+}
+
+.modern-status {
+  color: #777777;
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: #f8f8f8;
+  box-shadow: none;
+  border: 1px solid #eeeeee;
+}
+
+.modern-placeholder-logo {
+  background: #eeeeee;
+  color: #666666;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #555555;
+}
+
+.modern-icon-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eeeeee;
+}
+
+.modern-dropdown-menu button {
+  color: #333333;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #f8f8f8;
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: #ffffff;
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: #f1f1f1;
+  color: #333333;
+  border-radius: 16px 16px 0 16px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: #f8f8f8;
+  color: #333333;
+  border-radius: 16px 16px 16px 0;
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: white;
+  border-top: 1px solid #eeeeee;
+}
+
+.modern-input-container {
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
+}
+
+.modern-chat-input {
+  color: #333333;
+}
+
+/* Mic button */
+.modern-mic-button {
+  color: #777777;
+}
+
+.modern-mic-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Send button */
+.modern-send-button {
+  background: #777777 !important;
+  color: white;
+}
+
+.modern-send-button:hover {
+  background: #555555 !important;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: #f8f8f8;
+  border: 1px solid #eeeeee;
+  color: #555555;
+}
+
+.modern-option-button:hover {
+  background: #eeeeee;
+  border-color: #dddddd;
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: #33691e;
+  border: 1px solid #dcedc8;
+  background-color: #f1f8e9;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: #dcedc8;
+}
+
+.modern-yesno-button.no-button {
+  color: #bf360c;
+  border: 1px solid #ffccbc;
+  background-color: #fbe9e7;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: #ffccbc;
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: white;
+  border-top: 1px solid #eeeeee;
+}
+
+.modern-tab-button {
+  color: #777777;
+}
+
+.modern-tab-button.active {
+  color: #333333;
+  border-bottom: 2px solid #777777;
+  font-weight: 500;
+  background-color: #f5f5f5;
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: #f8f8f8;
+  color: #333333;
+}
+
+.modern-first-screen h2 {
+  color: #333333;
+}
+
+.modern-first-screen p {
+  color: #555555;
+}
+
+.modern-start-button {
+  background: #777777 !important;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-start-button:hover {
+  background: #555555 !important;
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eeeeee;
+}
+
+.modern-form-header h3 {
+  color: #333333;
+  font-weight: 500;
+}
+
+.modern-form-close-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #777777;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-group label {
+  color: #555555;
+  font-weight: 400;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input {
+  border: 1px solid #eeeeee !important;
+  background: #f8f8f8 !important;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus {
+  border-color: #777777 !important;
+  box-shadow: 0 0 0 2px rgba(119, 119, 119, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: #777777 !important;
+  color: white;
+  border-radius: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.modern-inline-submit-button:hover {
+  background: #555555 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #cccccc !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: #f1f8e9 !important;
+  color: #33691e !important;
+  border-left: 3px solid #33691e;
+}
+
+.modern-error-message .modern-message-bubble {
+  background: #fbe9e7 !important;
+  color: #bf360c !important;
+  border-left: 3px solid #bf360c;
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eeeeee;
+}
+
+/* Typing indicator */
+.modern-typing-indicator span {
+  background: #cccccc;
+}
+
+/* Button icons */
+.button-icon {
+  color: #777777;
+}
+
+/* Phone input styling */
+.react-tel-input .form-control {
+  border-color: #eeeeee !important;
+  background-color: #f8f8f8 !important;
+}
+
+.react-tel-input .selected-flag,
+.react-tel-input .flag-dropdown {
+  background-color: #f8f8f8 !important;
+  border-color: #eeeeee !important;
+}
+
+.react-tel-input .country-list {
+  background-color: white !important;
+  border-color: #eeeeee !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.react-tel-input .country-list .country.highlight,
+.react-tel-input .country-list .country:hover {
+  background-color: #f5f5f5 !important;
+}
+
+/* Remove animations and transitions for a more minimal feel */
+.modern-option-button,
+.modern-yesno-button,
+.modern-tab-button,
+.modern-send-button {
+  transition: background-color 0.2s ease;
+}
+
+/* Simplify scrollbar */
+.modern-chat-window::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modern-chat-window::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 4px;
+}
+
+.modern-chat-window::-webkit-scrollbar-track {
+  background: transparent;
+}

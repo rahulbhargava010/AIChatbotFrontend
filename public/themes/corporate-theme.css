@@ -1,0 +1,279 @@
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: #ffffff;
+  border-radius: 8px; /* More squared corners for corporate look */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: #0c4a6e; /* Solid color - more corporate */
+  color: #ffffff;
+}
+
+.modern-header-title h3 {
+  color: #ffffff;
+  text-shadow: none; /* Remove shadow for cleaner look */
+  font-weight: 500;
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: #10b981;
+  box-shadow: none;
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: white;
+  box-shadow: none;
+  border: 1px solid #e2e8f0;
+}
+
+.modern-placeholder-logo {
+  background: #0c4a6e;
+  color: white;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.modern-dropdown-menu button {
+  color: #334155;
+}
+
+.modern-dropdown-menu button:hover {
+  background: #f8fafc;
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: #f8fafc;
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: #0c4a6e;
+  color: white;
+  border-radius: 4px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: #334155;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: white;
+  border-top: 1px solid #e2e8f0;
+}
+
+.modern-input-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.modern-chat-input {
+  color: #334155;
+}
+
+/* Send button */
+.modern-send-button {
+  background: #0c4a6e !important;
+  color: white;
+}
+
+.modern-send-button:hover {
+  background: #075985 !important;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  border-radius: 4px;
+}
+
+.modern-option-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: #0f766e;
+  border-color: #e2e8f0;
+  background-color: #f0fdfa;
+  border-radius: 4px;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: #ccfbf1;
+}
+
+.modern-yesno-button.no-button {
+  color: #b91c1c;
+  border-color: #e2e8f0;
+  background-color: #fef2f2;
+  border-radius: 4px;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: #fee2e2;
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: white;
+  border-top: 1px solid #e2e8f0;
+}
+
+.modern-tab-button {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.modern-tab-button.active {
+  color: #0c4a6e;
+  border-bottom: 2px solid #0c4a6e;
+  font-weight: 600;
+  background-color: #f1f5f9;
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: #0c4a6e;
+  color: white;
+}
+
+.modern-start-button {
+  background: white !important;
+  color: #0c4a6e;
+  border-radius: 4px;
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.modern-form-header h3 {
+  color: #334155;
+  font-weight: 600;
+}
+
+.modern-form-close-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #64748b;
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-group label {
+  color: #334155;
+  font-weight: 500;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input {
+  border: 1px solid #cbd5e1 !important;
+  background: white !important;
+  border-radius: 4px !important;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus {
+  border-color: #0c4a6e !important;
+  box-shadow: 0 0 0 2px rgba(12, 74, 110, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: #0c4a6e !important;
+  color: white;
+  border-radius: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.modern-inline-submit-button:hover {
+  background: #075985 !important;
+}
+
+.modern-inline-submit-button:disabled {
+  background: #94a3b8 !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: #f0fdfa !important;
+  color: #0f766e !important;
+  border-left: 4px solid #0f766e;
+}
+
+.modern-error-message .modern-message-bubble {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border-left: 4px solid #b91c1c;
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+/* Typing indicator */
+.modern-typing-indicator span {
+  background: #94a3b8;
+}
+
+/* Button icons */
+.button-icon {
+  color: #0c4a6e;
+}
+
+/* Phone input styling */
+.react-tel-input .form-control {
+  border-color: #cbd5e1 !important;
+}
+
+.react-tel-input .selected-flag,
+.react-tel-input .flag-dropdown {
+  border-color: #cbd5e1 !important;
+}
+
+/* Custom font for corporate look */
+.modern-chatbot-container {
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+}

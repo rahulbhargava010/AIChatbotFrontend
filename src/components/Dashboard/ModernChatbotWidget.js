@@ -124,6 +124,9 @@ const ModernChatbotWidget = () => {
     sessionStorage.getItem("chatbotSessionId") || uuidv4();
   const uniqueSessionId = localStorage.getItem("uniqueSessionId") || uuidv4();
 
+  const [chatbotTheme, setChatbotTheme] = useState("default-theme.css");
+  const themeStylesheetRef = useRef(null);
+
   // Rating emojis data
   const emojis = [
     { value: "1", icon: "😠", label: "Poor" },
@@ -501,6 +504,12 @@ const ModernChatbotWidget = () => {
     }
   };
 
+  useEffect(() => {
+    if (chatbotTheme) {
+      loadThemeStylesheet(chatbotTheme);
+    }
+  }, [chatbotTheme]);
+
   // Fetch welcome data
   useEffect(() => {
     const fetchWelcomeData = async () => {
@@ -527,7 +536,8 @@ const ModernChatbotWidget = () => {
           chatbotName,
           projectLogo,
           projectLocation,
-          brochure, // Get brochure URL from response
+          brochure,
+          template,
         } = response.data;
 
         console.log("DATA:", response.data);
@@ -535,7 +545,8 @@ const ModernChatbotWidget = () => {
         setWebhook(webhook || "");
         setProjectLogo(projectLogo || "");
         setProjectImages(projectImages || []);
-        setBrochureUrl(brochure || ""); // Set brochure URL
+        setBrochureUrl(brochure || "");
+        setChatbotTheme(template || "default-theme.css");
         setChatbotData(response.data);
 
         // Set map location if available
@@ -626,6 +637,7 @@ const ModernChatbotWidget = () => {
         ]`);
 
           setButtons(dummyButtons);
+          setChatbotTheme("default-theme.css");
 
           // Store the map data
           const mapButton = dummyButtons.find((btn) => btn.action === "map");
@@ -748,7 +760,32 @@ const ModernChatbotWidget = () => {
     };
 
     fetchWelcomeData();
+
+    //clean up
+    return () => {
+      if (themeStylesheetRef.current) {
+        document.head.removeChild(themeStylesheetRef.current);
+      }
+    };
   }, [chatbotId]);
+
+  // Function to load theme CSS file
+  const loadThemeStylesheet = (themeName) => {
+    const themeFile = themeName || "default-theme.css";
+
+    if (!themeStylesheetRef.current) {
+      const linkElement = document.createElement("link");
+      linkElement.rel = "stylesheet";
+      linkElement.type = "text/css";
+      linkElement.href = `/themes/${themeFile}`;
+      document.head.appendChild(linkElement);
+      themeStylesheetRef.current = linkElement;
+    } else {
+      themeStylesheetRef.current.href = `/themes/${themeFile}`;
+    }
+
+    console.log(`Loaded theme: ${themeFile}`);
+  };
 
   // Handle rating
   const handleRateChat = () => {
