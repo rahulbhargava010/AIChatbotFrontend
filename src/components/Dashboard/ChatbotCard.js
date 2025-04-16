@@ -59,28 +59,28 @@ const ChatbotCard = () => {
   const toggleActivation = async () => {
     try {
       const token = localStorage.getItem("token");
-      const newStatus = isActive ? "inactive" : "active";
 
-      const requestBody = {
-        id: chatbotId,
-        isActive: newStatus,
-        name: data.chatbotDetails.name,
-        webhook: data.chatbotDetails.webhook,
-        buttonContent: JSON.stringify(data.chatbotDetails.button_content || {}),
-        projectLogo: data.chatbotDetails.projectLogo || null,
-        projectImages: data.chatbotDetails.projectImages || [],
-      };
+      // Use dedicated toggle endpoint instead of general create endpoint
+      const response = await api.post(
+        "/chatbots/toggle-status",
+        {
+          chatbotId: chatbotId,
+          // No need to specify the new status - the endpoint will toggle it
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      const response = await api.post("/chatbots/create", requestBody, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 200 || response.status === 201) {
+      if (response.status === 200) {
+        // Update local state to reflect the new status
         setIsActive(!isActive);
+
+        // Show success message
         Swal.fire({
           icon: "success",
           title: "Success!",
-          text: `Chatbot is now ${newStatus}.`,
+          text: `Chatbot is now ${!isActive ? "active" : "inactive"}.`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -89,10 +89,15 @@ const ChatbotCard = () => {
       }
     } catch (err) {
       console.error("Failed to update status:", err);
+
+      // Show more specific error message if available
+      const errorMessage =
+        err.response?.data?.error || "Failed to update chatbot status.";
+
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Failed to update chatbot status.",
+        text: errorMessage,
       });
     }
   };
