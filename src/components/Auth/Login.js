@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "./AuthContext"; // Import AuthContext
+import { useAuth } from "./AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../config/axios";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -52,11 +52,22 @@ const Login = () => {
     <div className="auth-container d-flex justify-content-center align-items-center vh-100">
       <div className="row w-100 align-items-center justify-content-center">
         <div className="col-md-6 d-none d-md-block text-center">
-          <img
-            src="https://magicpage-dev.propstory.com/ImageUploads/VBHC%20Landscape/1nnx5253om78z32r9.png"
-            alt="AI Chatbot"
-            className="img-fluid w-50 h-auto animated"
-          />
+          <div className="p-4">
+            <Link to="/" className="text-decoration-none">
+              <h2 className="mb-4 text-white">
+                <span className="text-primary">Prop</span>Bot
+              </h2>
+            </Link>
+            <img
+              src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=1470&auto=format&fit=crop"
+              alt="AI Chatbot"
+              className="img-fluid w-75 h-auto rounded shadow-lg animated"
+            />
+            <p className="text-white mt-4">
+              Welcome back! Log in to access your PropBot dashboard and manage
+              your AI chatbot.
+            </p>
+          </div>
         </div>
 
         <div className="col-md-5 auth-card p-4 shadow rounded bg-white">
@@ -76,6 +87,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="form-control"
+                required
               />
             </div>
             <div className="mb-3">
@@ -90,6 +102,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="form-control"
+                  required
                 />
                 <button
                   type="button"
@@ -110,9 +123,9 @@ const Login = () => {
               Login
             </button>
           </form>
-          <div class="mt-3 text-center">
+          <div className="mt-3 text-center">
             <p className="text-dark">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="text-decoration-none a-link">
                 Sign Up
               </Link>
@@ -125,9 +138,13 @@ const Login = () => {
                 Forgot Password?
               </Link>
             </p>
+            <p className="mt-3">
+              <Link to="/" className="text-decoration-none a-link">
+                <i className="fas fa-arrow-left me-1"></i> Back to Home
+              </Link>
+            </p>
           </div>
         </div>
-        <div class="col-lg-1"></div>
       </div>
     </div>
   );

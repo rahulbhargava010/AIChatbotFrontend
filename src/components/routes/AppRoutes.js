@@ -11,11 +11,11 @@ import Conversations from "../Dashboard/Conversations";
 import UpdateChatbot from "../Dashboard/UpdateChatbot";
 import ChatbotWidget from "../Dashboard/ChatbotWidget";
 import ChatbotWidget2 from "../Dashboard/ChatbotWidget2";
+import LandingPage from "../LandingPage/LandingPage"; // Import the new LandingPage component
 
 import TemplateSelection from "../Dashboard/TemplateSelection";
 import AdminAnalytics from "../Dashboard/AdminAnalytics";
 import ChatStats from "../Dashboard/ChatStats";
-// import AuthForm from "../Auth/AuthForm";
 import ResetPassword from "../Auth/ResetPassword";
 import NotFound from "../Dashboard/NotFound";
 import Navbar from "../Dashboard/Navbar";
@@ -36,8 +36,10 @@ import ModernChatbotWidget from "../Dashboard/ModernChatbotWidget";
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Add the landing page as the root route */}
+      <Route path="/" element={<LandingPage />} />
+
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -51,8 +53,6 @@ const AppRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<ProtectedLayout />}>
-          {" "}
-          {/* Navbar will be included here */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/newDash" element={<NewDash />} />
           <Route path="/dashboard/create-chatbot" element={<CreateChatbot />} />

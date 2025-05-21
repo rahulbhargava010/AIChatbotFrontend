@@ -1,0 +1,285 @@
+/* 
+  Custom Theme CSS
+  This will be dynamically generated based on user color selections
+  The placeholders will be replaced with actual color values
+*/
+
+/* Main container styles */
+.modern-chatbot-container {
+  background-color: {{background}};
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Header styling */
+.modern-header-redesigned {
+  background: {{primary}};
+  color: #ffffff;
+}
+
+.modern-header-title h3 {
+  color: #ffffff;
+  text-shadow: none;
+  font-weight: 500;
+}
+
+/* Status dot color */
+.modern-status-dot {
+  background-color: {{accent}};
+  box-shadow: none;
+}
+
+/* Logo styling */
+.modern-logo-container.modern-logo-white-bg {
+  background-color: white;
+  box-shadow: none;
+  border: 1px solid {{secondary}};
+}
+
+.modern-placeholder-logo {
+  background: {{primary}};
+  color: white;
+}
+
+/* Header buttons */
+.modern-icon-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.modern-icon-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown menu */
+.modern-dropdown-menu {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid {{secondary}};
+}
+
+.modern-dropdown-menu button {
+  color: {{text}};
+}
+
+.modern-dropdown-menu button:hover {
+  background: {{secondary}};
+}
+
+/* Chat window background */
+.modern-chat-window {
+  background: {{secondary}};
+}
+
+/* Message styling */
+.modern-user-message .modern-message-bubble {
+  background: {{primary}};
+  color: white;
+  border-radius: 8px;
+}
+
+.modern-bot-message .modern-message-bubble {
+  background: white;
+  color: {{text}};
+  border-radius: 8px;
+  border: 1px solid {{secondary}};
+}
+
+/* Chat input area */
+.modern-input-area {
+  background: white;
+  border-top: 1px solid {{secondary}};
+}
+
+.modern-input-container {
+  background: {{secondary}};
+  border: 1px solid {{secondary}};
+  border-radius: 8px;
+}
+
+.modern-chat-input {
+  color: {{text}};
+}
+
+/* Send button */
+.modern-send-button {
+  background: {{primary}} !important;
+  color: white;
+  border-radius: 8px;
+}
+
+.modern-send-button:hover {
+  background: {{primary}} !important;
+  opacity: 0.9;
+}
+
+.modern-send-button.disabled {
+  opacity: 0.5;
+}
+
+/* Option buttons */
+.modern-option-button {
+  background: white;
+  border: 1px solid {{secondary}};
+  color: {{text}};
+  border-radius: 8px;
+}
+
+.modern-option-button:hover {
+  background: {{secondary}};
+  border-color: {{secondary}};
+}
+
+/* Yes/No buttons */
+.modern-yesno-button.yes-button {
+  color: {{accent}};
+  border-color: {{secondary}};
+  background-color: rgba({{accent-rgb}}, 0.1);
+  border-radius: 8px;
+}
+
+.modern-yesno-button.yes-button:hover {
+  background-color: rgba({{accent-rgb}}, 0.2);
+}
+
+.modern-yesno-button.no-button {
+  color: #b91c1c;
+  border-color: {{secondary}};
+  background-color: #fef2f2;
+  border-radius: 8px;
+}
+
+.modern-yesno-button.no-button:hover {
+  background-color: #fee2e2;
+}
+
+/* Tabs styling */
+.modern-chat-tabs {
+  background: white;
+  border-top: 1px solid {{secondary}};
+}
+
+.modern-tab-button {
+  color: {{text}};
+  font-weight: 500;
+}
+
+.modern-tab-button.active {
+  color: {{primary}};
+  border-bottom: 2px solid {{primary}};
+  font-weight: 600;
+  background-color: {{secondary}};
+}
+
+/* First screen welcome */
+.modern-first-screen {
+  background: {{primary}};
+  color: white;
+}
+
+.modern-start-button {
+  background: white !important;
+  color: {{primary}};
+  border-radius: 8px;
+}
+
+/* Form styling */
+.modern-inline-form {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid {{secondary}};
+  border-radius: 8px;
+}
+
+.modern-form-header h3 {
+  color: {{text}};
+  font-weight: 600;
+}
+
+.modern-form-close-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: {{text}};
+}
+
+.modern-form-close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.modern-form-group label {
+  color: {{text}};
+  font-weight: 500;
+}
+
+.modern-form-group input,
+.modern-form-group .phone-input {
+  border: 1px solid {{secondary}} !important;
+  background: white !important;
+  border-radius: 8px !important;
+}
+
+.modern-form-group input:focus,
+.modern-form-group .phone-input:focus {
+  border-color: {{primary}} !important;
+  box-shadow: 0 0 0 2px rgba({{primary-rgb}}, 0.1) !important;
+}
+
+.modern-inline-submit-button {
+  background: {{primary}} !important;
+  color: white;
+  border-radius: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.modern-inline-submit-button:hover {
+  background: {{primary}} !important;
+  opacity: 0.9;
+}
+
+.modern-inline-submit-button:disabled {
+  background: {{secondary}} !important;
+}
+
+/* Success and error messages */
+.modern-success-message .modern-message-bubble {
+  background: rgba({{accent-rgb}}, 0.1) !important;
+  color: {{accent}} !important;
+  border-left: 4px solid {{accent}};
+}
+
+.modern-error-message .modern-message-bubble {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border-left: 4px solid #b91c1c;
+}
+
+/* Map message */
+.modern-message-map {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid {{secondary}};
+  border-radius: 8px;
+}
+
+/* Typing indicator */
+.modern-typing-indicator span {
+  background: {{text}};
+}
+
+/* Button icons */
+.button-icon {
+  color: {{primary}};
+}
+
+/* Phone input styling */
+.react-tel-input .form-control {
+  border-color: {{secondary}} !important;
+  border-radius: 8px !important;
+}
+
+.react-tel-input .selected-flag,
+.react-tel-input .flag-dropdown {
+  border-color: {{secondary}} !important;
+  border-radius: 8px 0 0 8px !important;
+}

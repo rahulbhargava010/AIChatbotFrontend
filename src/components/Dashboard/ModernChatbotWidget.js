@@ -73,6 +73,7 @@ const ModernChatbotWidget = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [showBrochurePrompt, setShowBrochurePrompt] = useState(false);
+  const [customThemePath, setCustomThemePath] = useState(null);
 
   // New state variables for page information
   const [pageInfo, setPageInfo] = useState({
@@ -508,7 +509,7 @@ const ModernChatbotWidget = () => {
     if (chatbotTheme) {
       loadThemeStylesheet(chatbotTheme);
     }
-  }, [chatbotTheme]);
+  }, [chatbotTheme, customThemePath]);
 
   // Fetch welcome data
   useEffect(() => {
@@ -538,6 +539,7 @@ const ModernChatbotWidget = () => {
           projectLocation,
           brochure,
           template,
+          customThemePath,
         } = response.data;
 
         console.log("DATA:", response.data);
@@ -547,6 +549,7 @@ const ModernChatbotWidget = () => {
         setProjectImages(projectImages || []);
         setBrochureUrl(brochure || "");
         setChatbotTheme(template || "default-theme.css");
+        setCustomThemePath(customThemePath);
         setChatbotData(response.data);
 
         // Set map location if available
@@ -771,13 +774,31 @@ const ModernChatbotWidget = () => {
 
   // Function to load theme CSS file
   const loadThemeStylesheet = (themeName) => {
-    // Map backend values to the correct CSS filenames
+    // Check if we have a custom theme path first
+    if (customThemePath) {
+      // Custom theme path takes precedence
+      if (!themeStylesheetRef.current) {
+        const linkElement = document.createElement("link");
+        linkElement.rel = "stylesheet";
+        linkElement.type = "text/css";
+        linkElement.href = `/${customThemePath}`; // Notice the leading slash
+        document.head.appendChild(linkElement);
+        themeStylesheetRef.current = linkElement;
+      } else {
+        themeStylesheetRef.current.href = `/${customThemePath}`;
+      }
+      console.log(`Loaded custom theme: ${customThemePath}`);
+      return;
+    }
+
+    // Original theme mapping code for standard themes
     const themeMap = {
       default: "default-theme.css",
       dark: "dark-theme.css",
       corporate: "corporate-theme.css",
       colorful: "colorful-theme.css",
       minimal: "minimal-theme.css",
+      custom: "custom-theme.css",
     };
 
     let themeFile = themeName;
