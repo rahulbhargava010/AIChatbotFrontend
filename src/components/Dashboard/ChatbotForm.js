@@ -11,8 +11,12 @@ const ThemePreview = ({ colors }) => {
       className="theme-preview-container"
       style={{
         backgroundColor: colors.background,
-        borderRadius: "4px",
+        borderRadius: "8px",
         overflow: "hidden",
+        border: "1px solid #e2e8f0",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        width: "100%",
+        margin: "0 auto",
       }}
     >
       {/* Header */}
@@ -20,50 +24,89 @@ const ThemePreview = ({ colors }) => {
         className="preview-header"
         style={{
           backgroundColor: colors.primary,
-          height: "20px",
+          padding: "10px 12px",
           display: "flex",
           alignItems: "center",
-          padding: "2px 6px",
+          justifyContent: "space-between",
         }}
       >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{
+              width: "10px",
+              height: "10px",
+              backgroundColor: colors.accent,
+              borderRadius: "50%",
+              marginRight: "8px",
+            }}
+          ></div>
+          <div
+            style={{
+              height: "8px",
+              width: "80px",
+              backgroundColor: "rgba(255,255,255,0.8)",
+              borderRadius: "4px",
+            }}
+          ></div>
+        </div>
         <div
           style={{
-            width: "40%",
-            height: "8px",
-            backgroundColor: "rgba(255,255,255,0.8)",
-            borderRadius: "4px",
+            height: "12px",
+            width: "12px",
+            backgroundColor: "rgba(255,255,255,0.5)",
+            borderRadius: "2px",
           }}
         ></div>
       </div>
 
       {/* Chat body */}
-      <div style={{ padding: "4px" }}>
+      <div style={{ padding: "10px", backgroundColor: colors.background }}>
         {/* Bot message */}
         <div
           style={{
             display: "flex",
-            marginBottom: "4px",
+            marginBottom: "8px",
             alignItems: "flex-start",
           }}
         >
           <div
             style={{
-              width: "8px",
-              height: "8px",
+              width: "12px",
+              height: "12px",
               borderRadius: "50%",
               backgroundColor: colors.accent,
-              marginTop: "2px",
-              marginRight: "3px",
+              marginTop: "4px",
+              marginRight: "6px",
+              flexShrink: 0,
             }}
           ></div>
           <div
             style={{
               width: "70%",
-              height: "12px",
+              padding: "8px",
               backgroundColor: colors.secondary,
-              borderRadius: "4px",
+              borderRadius: "8px",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
             }}
-          ></div>
+          >
+            <div
+              style={{
+                height: "8px",
+                width: "90%",
+                backgroundColor: "#CBD5E1",
+                borderRadius: "4px",
+                marginBottom: "6px",
+              }}
+            ></div>
+            <div
+              style={{
+                height: "8px",
+                width: "60%",
+                backgroundColor: "#CBD5E1",
+                borderRadius: "4px",
+              }}
+            ></div>
+          </div>
         </div>
 
         {/* User message */}
@@ -71,75 +114,93 @@ const ThemePreview = ({ colors }) => {
           style={{
             display: "flex",
             justifyContent: "flex-end",
-            marginBottom: "4px",
+            marginBottom: "8px",
           }}
         >
           <div
             style={{
               width: "60%",
-              height: "12px",
+              padding: "8px",
               backgroundColor: colors.primary,
-              borderRadius: "4px",
+              borderRadius: "8px",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
             }}
-          ></div>
-        </div>
-
-        {/* Bot message */}
-        <div
-          style={{
-            display: "flex",
-            marginBottom: "4px",
-            alignItems: "flex-start",
-          }}
-        >
-          <div
-            style={{
-              width: "8px",
-              height: "8px",
-              borderRadius: "50%",
-              backgroundColor: colors.accent,
-              marginTop: "2px",
-              marginRight: "3px",
-            }}
-          ></div>
-          <div
-            style={{
-              width: "50%",
-              height: "12px",
-              backgroundColor: colors.secondary,
-              borderRadius: "4px",
-            }}
-          ></div>
+          >
+            <div
+              style={{
+                height: "8px",
+                width: "80%",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                borderRadius: "4px",
+                marginBottom: "6px",
+              }}
+            ></div>
+            <div
+              style={{
+                height: "8px",
+                width: "50%",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                borderRadius: "4px",
+              }}
+            ></div>
+          </div>
         </div>
 
         {/* Input area */}
         <div
           style={{
             display: "flex",
-            marginTop: "8px",
+            marginTop: "12px",
             alignItems: "center",
             borderTop: `1px solid ${colors.secondary}`,
-            paddingTop: "4px",
+            paddingTop: "10px",
           }}
         >
           <div
             style={{
               flex: 1,
-              height: "10px",
+              height: "12px",
               backgroundColor: colors.secondary,
-              borderRadius: "10px",
+              borderRadius: "6px",
             }}
           ></div>
           <div
             style={{
-              width: "14px",
-              height: "14px",
+              width: "20px",
+              height: "20px",
               borderRadius: "50%",
               backgroundColor: colors.primary,
-              marginLeft: "5px",
+              marginLeft: "8px",
+              flexShrink: 0,
             }}
           ></div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Modern color picker component
+const ColorPicker = ({ label, color, onChange }) => {
+  return (
+    <div className="color-picker-container">
+      <div className="color-picker-swatch" style={{ backgroundColor: color }}>
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => onChange(e.target.value)}
+          className="color-input"
+        />
+      </div>
+      <div className="color-picker-details">
+        <span className="color-picker-label">{label}</span>
+        <input
+          type="text"
+          value={color}
+          onChange={(e) => onChange(e.target.value)}
+          className="hex-input"
+          placeholder="#RRGGBB"
+        />
       </div>
     </div>
   );
@@ -207,6 +268,19 @@ const themeOptions = [
       text: "#333333",
     },
   },
+  {
+    id: "custom-theme.css",
+    name: "Custom",
+    description: "Personalize with your own brand colors",
+    previewColors: {
+      primary: "#0c4a6e",
+      secondary: "#f8fafc",
+      accent: "#10b981",
+      background: "#ffffff",
+      text: "#334155",
+    },
+    isCustom: true,
+  },
 ];
 
 const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
@@ -236,6 +310,15 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
   const [brochureURL, setBrochureURL] = useState(null);
   const [template, setTemplate] = useState("default-theme.css"); // Default theme
 
+  // Custom theme colors
+  const [customColors, setCustomColors] = useState({
+    primary: "#0c4a6e",
+    secondary: "#f8fafc",
+    accent: "#10b981",
+    background: "#ffffff",
+    text: "#334155",
+  });
+
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -244,6 +327,37 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
       ...prevContent,
       [name]: value,
     }));
+  };
+
+  const handleColorChange = (colorKey, value) => {
+    setCustomColors((prev) => ({
+      ...prev,
+      [colorKey]: value,
+    }));
+
+    // Update the custom theme preview colors
+    const updatedThemeOptions = themeOptions.map((theme) => {
+      if (theme.id === "custom-theme.css") {
+        return {
+          ...theme,
+          previewColors: {
+            ...customColors,
+            [colorKey]: value,
+          },
+        };
+      }
+      return theme;
+    });
+
+    // We're updating the reference, not the state here
+    themeOptions.forEach((theme, index) => {
+      if (theme.id === "custom-theme.css") {
+        themeOptions[index].previewColors = {
+          ...customColors,
+          [colorKey]: value,
+        };
+      }
+    });
   };
 
   const handleFileChange = (e, setProjectLogo) => {
@@ -297,6 +411,11 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
     formData.append("conversion", conversion);
     formData.append("GTM", GTM);
     formData.append("template", template); // Include the selected theme
+
+    // If custom theme is selected, include the custom colors
+    if (template === "custom-theme.css") {
+      formData.append("customColors", JSON.stringify(customColors));
+    }
 
     if (buttonContent && typeof buttonContent === "object") {
       formData.append("buttonContent", JSON.stringify(buttonContent));
@@ -356,6 +475,28 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
             setTemplate(
               initialData?.chatbotDetails.template || "default-theme.css"
             ); // Set template from data
+
+            // REPLACE THIS SECTION:
+            // Load custom colors if available
+            if (initialData?.chatbotDetails.customColors) {
+              try {
+                const colors = initialData.chatbotDetails.customColors;
+                setCustomColors(
+                  typeof colors === "string" ? JSON.parse(colors) : colors
+                );
+
+                // Update the custom theme preview with these colors
+                themeOptions.forEach((theme, index) => {
+                  if (theme.id === "custom-theme.css") {
+                    themeOptions[index].previewColors =
+                      typeof colors === "string" ? JSON.parse(colors) : colors;
+                  }
+                });
+              } catch (err) {
+                console.error("Error parsing custom colors:", err);
+              }
+            }
+            // END OF REPLACEMENT
 
             const prevContent = initialData?.chatbotDetails.button_content;
             setButtonContent(prevContent);
@@ -696,8 +837,15 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                     onClick={() => setTemplate(theme.id)}
                   >
                     <div className="theme-preview">
-                      {/* Use our ThemePreview component instead of an image */}
-                      <ThemePreview colors={theme.previewColors} />
+                      {/* Use our ThemePreview component with the theme's colors */}
+                      <ThemePreview
+                        colors={
+                          theme.id === "custom-theme.css" &&
+                          template === "custom-theme.css"
+                            ? customColors
+                            : theme.previewColors
+                        }
+                      />
                     </div>
                     <div className="theme-details">
                       <h4>{theme.name}</h4>
@@ -715,6 +863,55 @@ const ChatbotForm = ({ initialData = {}, mode = "create" }) => {
                   </div>
                 ))}
               </div>
+
+              {/* Custom color pickers - only show when custom theme is selected */}
+              {template === "custom-theme.css" && (
+                <div className="custom-colors-container">
+                  <h4 className="colors-title">Customize Your Colors</h4>
+
+                  <div className="color-pickers-grid">
+                    <ColorPicker
+                      label="Primary Color (Header & Buttons)"
+                      color={customColors.primary}
+                      onChange={(value) => handleColorChange("primary", value)}
+                    />
+
+                    <ColorPicker
+                      label="Secondary Color (Messages & Input)"
+                      color={customColors.secondary}
+                      onChange={(value) =>
+                        handleColorChange("secondary", value)
+                      }
+                    />
+
+                    <ColorPicker
+                      label="Accent Color (Status & Highlights)"
+                      color={customColors.accent}
+                      onChange={(value) => handleColorChange("accent", value)}
+                    />
+
+                    <ColorPicker
+                      label="Background Color"
+                      color={customColors.background}
+                      onChange={(value) =>
+                        handleColorChange("background", value)
+                      }
+                    />
+
+                    <ColorPicker
+                      label="Text Color"
+                      color={customColors.text}
+                      onChange={(value) => handleColorChange("text", value)}
+                    />
+                  </div>
+
+                  <div className="preview-note">
+                    <span>
+                      * The preview above will update as you select colors.
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <div className="btn-group btn-group-justified mt-4 w-100">
                 <button
